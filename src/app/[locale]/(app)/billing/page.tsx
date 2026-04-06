@@ -26,10 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BillingPage() {
-  const [t, user] = await Promise.all([
-    getTranslations("billing"),
-    getCurrentUser(),
-  ]);
+  const [t] = await Promise.all([getTranslations("billing"), getCurrentUser()]);
 
   const subscription = await new GetSubscription(subscriptionGateway).execute();
 
@@ -52,7 +49,7 @@ export default async function BillingPage() {
     <div className="mx-auto max-w-3xl space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
 
-      {subscription ? (
+      {subscription && (
         <SubscriptionCard
           planName={planName ?? t("currentPlan")}
           status={subscription.status}
@@ -69,9 +66,9 @@ export default async function BillingPage() {
           }
           actions={<BillingPortalButton>{t("portal")}</BillingPortalButton>}
         />
-      ) : (
-        <PlansSection plans={plans} t={t} />
       )}
+
+      <PlansSection plans={plans} currentPlanId={subscription?.plan} t={t} />
 
       {products.length > 0 && (
         <div className="space-y-4">
@@ -113,15 +110,23 @@ export default async function BillingPage() {
 
 function PlansSection({
   plans,
+  currentPlanId,
   t,
 }: {
   plans: Plan[];
+  currentPlanId?: string;
   t: Awaited<ReturnType<typeof getTranslations<"billing">>>;
 }) {
+  const currentPlan = plans.find((p) => p.id === currentPlanId);
+  const currentPrice = currentPlan?.prices[0]?.amount ?? 0;
+
   const planCards: PricingTableProps["plans"] = plans.map((plan) => {
     const highlighted = plan.name.toLowerCase().includes("pro");
     const unitPrice = plan.prices[0]?.amount ?? 0;
     const isTeam = plan.context === "team";
+    const isCurrent = plan.id === currentPlanId;
+    const isUpgrade = unitPrice > currentPrice;
+    const ctaLabel = isUpgrade ? t("upgrade") : t("downgrade");
 
     return {
       name: plan.name,
@@ -129,7 +134,9 @@ function PlansSection({
       interval: isTeam ? `${t("perSeat")}/${plan.interval}` : plan.interval,
       description: plan.description,
       highlighted,
-      cta: plan.prices[0] ? (
+      cta: isCurrent ? (
+        <span />
+      ) : plan.prices[0] ? (
         isTeam ? (
           <TeamCheckoutButton
             planPriceId={plan.prices[0].stripePriceId}
@@ -140,14 +147,14 @@ function PlansSection({
             seatsLabel={t("seats")}
             perSeatLabel={t("perSeat")}
           >
-            {t("upgrade")}
+            {ctaLabel}
           </TeamCheckoutButton>
         ) : (
           <CheckoutButton
             planPriceId={plan.prices[0].stripePriceId}
             highlighted={highlighted}
           >
-            {t("upgrade")}
+            {ctaLabel}
           </CheckoutButton>
         )
       ) : (
