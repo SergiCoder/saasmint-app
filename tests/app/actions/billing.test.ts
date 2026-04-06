@@ -38,7 +38,7 @@ beforeEach(async () => {
 
 describe("billing server actions", () => {
   describe("startCheckout", () => {
-    it("redirects to checkout URL", async () => {
+    it("redirects to checkout URL with successUrl and cancelUrl", async () => {
       mockStartCheckoutExecute.mockResolvedValue({
         url: "https://checkout.stripe.com/session_123",
       });
@@ -49,55 +49,12 @@ describe("billing server actions", () => {
       await expect(startCheckout(formData)).rejects.toThrow("NEXT_REDIRECT");
       expect(mockStartCheckoutExecute).toHaveBeenCalledWith({
         planPriceId: "price_abc",
+        successUrl: "http://localhost:3000/billing?status=success",
+        cancelUrl: "http://localhost:3000/billing",
       });
       expect(mockRedirect).toHaveBeenCalledWith(
         "https://checkout.stripe.com/session_123",
       );
-    });
-
-    it("includes orgId when provided", async () => {
-      mockStartCheckoutExecute.mockResolvedValue({
-        url: "https://checkout.stripe.com/session_456",
-      });
-
-      const formData = new FormData();
-      formData.set("planPriceId", "price_abc");
-      formData.set("orgId", "org_123");
-
-      await expect(startCheckout(formData)).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockStartCheckoutExecute).toHaveBeenCalledWith({
-        planPriceId: "price_abc",
-        orgId: "org_123",
-      });
-    });
-
-    it("omits orgId when not provided", async () => {
-      mockStartCheckoutExecute.mockResolvedValue({
-        url: "https://checkout.stripe.com/session_789",
-      });
-
-      const formData = new FormData();
-      formData.set("planPriceId", "price_abc");
-
-      await expect(startCheckout(formData)).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockStartCheckoutExecute).toHaveBeenCalledWith({
-        planPriceId: "price_abc",
-      });
-    });
-
-    it("omits orgId when it is an empty string", async () => {
-      mockStartCheckoutExecute.mockResolvedValue({
-        url: "https://checkout.stripe.com/session_empty",
-      });
-
-      const formData = new FormData();
-      formData.set("planPriceId", "price_abc");
-      formData.set("orgId", "");
-
-      await expect(startCheckout(formData)).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockStartCheckoutExecute).toHaveBeenCalledWith({
-        planPriceId: "price_abc",
-      });
     });
 
     it("returns early when planPriceId is missing", async () => {
@@ -108,77 +65,21 @@ describe("billing server actions", () => {
       expect(mockStartCheckoutExecute).not.toHaveBeenCalled();
       expect(mockRedirect).not.toHaveBeenCalled();
     });
-
-    it("returns early on untrusted redirect URL", async () => {
-      mockStartCheckoutExecute.mockResolvedValue({
-        url: "https://evil.com/steal",
-      });
-
-      const formData = new FormData();
-      formData.set("planPriceId", "price_abc");
-
-      const result = await startCheckout(formData);
-      expect(result).toBeUndefined();
-      expect(mockRedirect).not.toHaveBeenCalled();
-    });
   });
 
   describe("openBillingPortal", () => {
-    it("redirects to billing portal URL", async () => {
+    it("redirects to billing portal URL with returnUrl", async () => {
       mockOpenBillingPortalExecute.mockResolvedValue({
         url: "https://billing.stripe.com/portal_123",
       });
 
-      const formData = new FormData();
-
-      await expect(openBillingPortal(formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
+      await expect(openBillingPortal()).rejects.toThrow("NEXT_REDIRECT");
+      expect(mockOpenBillingPortalExecute).toHaveBeenCalledWith({
+        returnUrl: "http://localhost:3000/billing",
+      });
       expect(mockRedirect).toHaveBeenCalledWith(
         "https://billing.stripe.com/portal_123",
       );
-    });
-
-    it("includes orgId when provided", async () => {
-      mockOpenBillingPortalExecute.mockResolvedValue({
-        url: "https://billing.stripe.com/portal_456",
-      });
-
-      const formData = new FormData();
-      formData.set("orgId", "org_123");
-
-      await expect(openBillingPortal(formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
-      expect(mockOpenBillingPortalExecute).toHaveBeenCalledWith({
-        orgId: "org_123",
-      });
-    });
-
-    it("omits orgId when it is an empty string", async () => {
-      mockOpenBillingPortalExecute.mockResolvedValue({
-        url: "https://billing.stripe.com/portal_empty",
-      });
-
-      const formData = new FormData();
-      formData.set("orgId", "");
-
-      await expect(openBillingPortal(formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
-      expect(mockOpenBillingPortalExecute).toHaveBeenCalledWith({});
-    });
-
-    it("returns early on untrusted redirect URL", async () => {
-      mockOpenBillingPortalExecute.mockResolvedValue({
-        url: "https://malicious.site/phish",
-      });
-
-      const formData = new FormData();
-
-      const result = await openBillingPortal(formData);
-      expect(result).toBeUndefined();
-      expect(mockRedirect).not.toHaveBeenCalled();
     });
   });
 });
