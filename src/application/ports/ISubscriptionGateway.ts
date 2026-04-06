@@ -2,15 +2,17 @@ import type { Subscription } from "@/domain/models/Subscription";
 
 export interface CheckoutSessionInput {
   planPriceId: string;
-  orgId?: string;
+  quantity?: number;
+  successUrl: string;
+  cancelUrl: string;
 }
 
 export interface BillingPortalInput {
-  orgId?: string;
+  returnUrl: string;
 }
 
 export interface ISubscriptionGateway {
-  getSubscription(orgId: string): Promise<Subscription | null>;
+  getSubscription(): Promise<Subscription | null>;
   createCheckoutSession(input: CheckoutSessionInput): Promise<{ url: string }>;
   createBillingPortalSession(
     input: BillingPortalInput,

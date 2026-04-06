@@ -58,3 +58,31 @@ export async function apiFetch<T>(
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
+
+export async function publicApiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const headers = new Headers();
+  if (options.body) {
+    headers.set("Content-Type", "application/json");
+  }
+  if (options.headers) {
+    new Headers(options.headers).forEach((value, key) => {
+      headers.set(key, value);
+    });
+  }
+
+  const res = await fetch(`${API_URL}/api/v1${path}`, {
+    ...options,
+    headers: Object.fromEntries(headers.entries()),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API ${res.status}: ${text}`);
+  }
+
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
