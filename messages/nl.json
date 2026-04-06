@@ -170,7 +170,8 @@
     "buy": "Kopen",
     "perSeat": "per stoel",
     "downgrade": "Downgraden",
-    "getStarted": "Aan de slag"
+    "getStarted": "Aan de slag",
+    "select": "Selecteer"
   },
   "settings": {
     "title": "Instellingen",

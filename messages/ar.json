@@ -170,7 +170,8 @@
     "buy": "شراء",
     "perSeat": "لكل مقعد",
     "downgrade": "تخفيض",
-    "getStarted": "ابدأ الآن"
+    "getStarted": "ابدأ الآن",
+    "select": "اختر"
   },
   "settings": {
     "title": "الإعدادات",

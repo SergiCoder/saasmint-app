@@ -65,10 +65,15 @@ export default async function PricingPage() {
     let cta: React.ReactNode;
 
     if (!user) {
-      cta = (
-        <GetStartedButton highlighted={highlighted}>
-          {t("getStarted")}
+      cta = plan.prices[0] ? (
+        <GetStartedButton
+          planPriceId={plan.prices[0].stripePriceId}
+          highlighted={highlighted}
+        >
+          {t("select")}
         </GetStartedButton>
+      ) : (
+        <span />
       );
     } else if (isCurrent) {
       cta = <span />;

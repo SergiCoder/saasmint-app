@@ -170,7 +170,8 @@
     "buy": "Buy",
     "perSeat": "per seat",
     "downgrade": "Downgrade",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "select": "Select"
   },
   "settings": {
     "title": "Settings",

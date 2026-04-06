@@ -170,7 +170,8 @@
     "buy": "Kaufen",
     "perSeat": "pro Platz",
     "downgrade": "Herabstufen",
-    "getStarted": "Loslegen"
+    "getStarted": "Loslegen",
+    "select": "Auswählen"
   },
   "settings": {
     "title": "Einstellungen",

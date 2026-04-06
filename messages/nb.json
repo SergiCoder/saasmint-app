@@ -170,7 +170,8 @@
     "buy": "Kjøp",
     "perSeat": "per plass",
     "downgrade": "Nedgrader",
-    "getStarted": "Kom i gang"
+    "getStarted": "Kom i gang",
+    "select": "Velg"
   },
   "settings": {
     "title": "Innstillinger",

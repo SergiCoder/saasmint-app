@@ -170,7 +170,8 @@
     "buy": "Köp",
     "perSeat": "per plats",
     "downgrade": "Nedgradera",
-    "getStarted": "Kom igång"
+    "getStarted": "Kom igång",
+    "select": "Välj"
   },
   "settings": {
     "title": "Inställningar",

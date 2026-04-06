@@ -170,7 +170,8 @@
     "buy": "Купить",
     "perSeat": "за место",
     "downgrade": "Понизить",
-    "getStarted": "Начать"
+    "getStarted": "Начать",
+    "select": "Выбрать"
   },
   "settings": {
     "title": "Настройки",

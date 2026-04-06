@@ -170,7 +170,8 @@
     "buy": "Kup",
     "perSeat": "za miejsce",
     "downgrade": "Obniż plan",
-    "getStarted": "Rozpocznij"
+    "getStarted": "Rozpocznij",
+    "select": "Wybierz"
   },
   "settings": {
     "title": "Ustawienia",

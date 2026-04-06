@@ -170,7 +170,8 @@
     "buy": "購買",
     "perSeat": "每席",
     "downgrade": "降級",
-    "getStarted": "開始使用"
+    "getStarted": "開始使用",
+    "select": "選擇"
   },
   "settings": {
     "title": "設定",

@@ -170,7 +170,8 @@
     "buy": "구매",
     "perSeat": "좌석당",
     "downgrade": "다운그레이드",
-    "getStarted": "시작하기"
+    "getStarted": "시작하기",
+    "select": "선택"
   },
   "settings": {
     "title": "설정",

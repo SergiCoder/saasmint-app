@@ -170,7 +170,8 @@
     "buy": "Beli",
     "perSeat": "per kursi",
     "downgrade": "Turunkan",
-    "getStarted": "Mulai"
+    "getStarted": "Mulai",
+    "select": "Pilih"
   },
   "settings": {
     "title": "Pengaturan",

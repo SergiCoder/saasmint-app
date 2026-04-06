@@ -56,7 +56,7 @@ export default async function MarketingLayoutRoute({
       >
         {t("signIn")}
       </Link>
-      <Link href="/signup" className={primaryLinkClass}>
+      <Link href="/pricing" className={primaryLinkClass}>
         {t("getStarted")}
       </Link>
     </>
