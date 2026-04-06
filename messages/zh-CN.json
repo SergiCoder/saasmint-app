@@ -5,6 +5,7 @@
     "getStarted": "开始使用",
     "dashboard": "仪表盘",
     "billing": "账单",
+    "pricing": "定价",
     "settings": "设置",
     "org": "组织",
     "admin": "管理",
@@ -167,7 +168,9 @@
     "products": "积分包",
     "credits": "积分",
     "buy": "购买",
-    "perSeat": "每席"
+    "perSeat": "每席",
+    "downgrade": "降级",
+    "getStarted": "开始使用"
   },
   "settings": {
     "title": "设置",

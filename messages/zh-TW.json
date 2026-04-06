@@ -5,6 +5,7 @@
     "getStarted": "開始使用",
     "dashboard": "儀表板",
     "billing": "帳單",
+    "pricing": "定價",
     "settings": "設定",
     "org": "組織",
     "admin": "管理",
@@ -167,7 +168,9 @@
     "products": "點數包",
     "credits": "點數",
     "buy": "購買",
-    "perSeat": "每席"
+    "perSeat": "每席",
+    "downgrade": "降級",
+    "getStarted": "開始使用"
   },
   "settings": {
     "title": "設定",

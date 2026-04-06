@@ -5,6 +5,7 @@
     "getStarted": "Commencer",
     "dashboard": "Tableau de bord",
     "billing": "Facturation",
+    "pricing": "Tarifs",
     "settings": "Paramètres",
     "org": "Organisation",
     "admin": "Administration",
@@ -167,7 +168,9 @@
     "products": "Packs de crédits",
     "credits": "crédits",
     "buy": "Acheter",
-    "perSeat": "par siège"
+    "perSeat": "par siège",
+    "downgrade": "Rétrograder",
+    "getStarted": "Commencer"
   },
   "settings": {
     "title": "Paramètres",

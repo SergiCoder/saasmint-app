@@ -5,6 +5,7 @@
     "getStarted": "Loslegen",
     "dashboard": "Dashboard",
     "billing": "Abrechnung",
+    "pricing": "Preise",
     "settings": "Einstellungen",
     "org": "Organisation",
     "admin": "Verwaltung",
@@ -167,7 +168,9 @@
     "products": "Guthaben-Pakete",
     "credits": "Credits",
     "buy": "Kaufen",
-    "perSeat": "pro Platz"
+    "perSeat": "pro Platz",
+    "downgrade": "Herabstufen",
+    "getStarted": "Loslegen"
   },
   "settings": {
     "title": "Einstellungen",

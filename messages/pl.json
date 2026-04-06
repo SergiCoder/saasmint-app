@@ -5,6 +5,7 @@
     "getStarted": "Rozpocznij",
     "dashboard": "Panel",
     "billing": "Rozliczenia",
+    "pricing": "Cennik",
     "settings": "Ustawienia",
     "org": "Organizacja",
     "admin": "Administracja",
@@ -167,7 +168,9 @@
     "products": "Pakiety kredytów",
     "credits": "kredyty",
     "buy": "Kup",
-    "perSeat": "za miejsce"
+    "perSeat": "za miejsce",
+    "downgrade": "Obniż plan",
+    "getStarted": "Rozpocznij"
   },
   "settings": {
     "title": "Ustawienia",

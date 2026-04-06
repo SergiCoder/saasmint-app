@@ -5,6 +5,7 @@
     "getStarted": "시작하기",
     "dashboard": "대시보드",
     "billing": "청구",
+    "pricing": "요금",
     "settings": "설정",
     "org": "조직",
     "admin": "관리",
@@ -167,7 +168,9 @@
     "products": "크레딧 팩",
     "credits": "크레딧",
     "buy": "구매",
-    "perSeat": "좌석당"
+    "perSeat": "좌석당",
+    "downgrade": "다운그레이드",
+    "getStarted": "시작하기"
   },
   "settings": {
     "title": "설정",

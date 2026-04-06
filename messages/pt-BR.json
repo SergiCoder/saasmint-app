@@ -5,6 +5,7 @@
     "getStarted": "Começar",
     "dashboard": "Painel",
     "billing": "Cobrança",
+    "pricing": "Preços",
     "settings": "Configurações",
     "org": "Organização",
     "admin": "Administração",
@@ -167,7 +168,9 @@
     "products": "Pacotes de créditos",
     "credits": "créditos",
     "buy": "Comprar",
-    "perSeat": "por assento"
+    "perSeat": "por assento",
+    "downgrade": "Reduzir plano",
+    "getStarted": "Começar"
   },
   "settings": {
     "title": "Configurações",

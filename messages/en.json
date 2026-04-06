@@ -5,6 +5,7 @@
     "getStarted": "Get started",
     "dashboard": "Dashboard",
     "billing": "Billing",
+    "pricing": "Pricing",
     "settings": "Settings",
     "org": "Organization",
     "admin": "Admin",
@@ -167,7 +168,9 @@
     "products": "Credit packs",
     "credits": "credits",
     "buy": "Buy",
-    "perSeat": "per seat"
+    "perSeat": "per seat",
+    "downgrade": "Downgrade",
+    "getStarted": "Get started"
   },
   "settings": {
     "title": "Settings",

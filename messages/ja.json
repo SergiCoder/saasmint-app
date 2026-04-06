@@ -5,6 +5,7 @@
     "getStarted": "始める",
     "dashboard": "ダッシュボード",
     "billing": "請求",
+    "pricing": "料金",
     "settings": "設定",
     "org": "組織",
     "admin": "管理",
@@ -167,7 +168,9 @@
     "products": "クレジットパック",
     "credits": "クレジット",
     "buy": "購入",
-    "perSeat": "1席あたり"
+    "perSeat": "1席あたり",
+    "downgrade": "ダウングレード",
+    "getStarted": "始める"
   },
   "settings": {
     "title": "設定",

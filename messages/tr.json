@@ -5,6 +5,7 @@
     "getStarted": "Başlayın",
     "dashboard": "Kontrol paneli",
     "billing": "Faturalandırma",
+    "pricing": "Fiyatlar",
     "settings": "Ayarlar",
     "org": "Organizasyon",
     "admin": "Yönetim",
@@ -167,7 +168,9 @@
     "products": "Kredi paketleri",
     "credits": "kredi",
     "buy": "Satın al",
-    "perSeat": "kişi başına"
+    "perSeat": "kişi başına",
+    "downgrade": "Düşür",
+    "getStarted": "Başlayın"
   },
   "settings": {
     "title": "Ayarlar",

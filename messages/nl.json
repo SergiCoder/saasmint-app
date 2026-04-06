@@ -5,6 +5,7 @@
     "getStarted": "Aan de slag",
     "dashboard": "Dashboard",
     "billing": "Facturering",
+    "pricing": "Prijzen",
     "settings": "Instellingen",
     "org": "Organisatie",
     "admin": "Beheer",
@@ -167,7 +168,9 @@
     "products": "Creditpakketten",
     "credits": "credits",
     "buy": "Kopen",
-    "perSeat": "per stoel"
+    "perSeat": "per stoel",
+    "downgrade": "Downgraden",
+    "getStarted": "Aan de slag"
   },
   "settings": {
     "title": "Instellingen",

@@ -5,6 +5,7 @@
     "getStarted": "Kom igång",
     "dashboard": "Dashboard",
     "billing": "Fakturering",
+    "pricing": "Priser",
     "settings": "Inställningar",
     "org": "Organisation",
     "admin": "Administration",
@@ -167,7 +168,9 @@
     "products": "Kreditpaket",
     "credits": "krediter",
     "buy": "Köp",
-    "perSeat": "per plats"
+    "perSeat": "per plats",
+    "downgrade": "Nedgradera",
+    "getStarted": "Kom igång"
   },
   "settings": {
     "title": "Inställningar",

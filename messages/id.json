@@ -5,6 +5,7 @@
     "getStarted": "Mulai",
     "dashboard": "Dasbor",
     "billing": "Penagihan",
+    "pricing": "Harga",
     "settings": "Pengaturan",
     "org": "Organisasi",
     "admin": "Administrasi",
@@ -167,7 +168,9 @@
     "products": "Paket kredit",
     "credits": "kredit",
     "buy": "Beli",
-    "perSeat": "per kursi"
+    "perSeat": "per kursi",
+    "downgrade": "Turunkan",
+    "getStarted": "Mulai"
   },
   "settings": {
     "title": "Pengaturan",

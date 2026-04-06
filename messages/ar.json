@@ -5,6 +5,7 @@
     "getStarted": "ابدأ الآن",
     "dashboard": "لوحة التحكم",
     "billing": "الفواتير",
+    "pricing": "الأسعار",
     "settings": "الإعدادات",
     "org": "المؤسسة",
     "admin": "الإدارة",
@@ -167,7 +168,9 @@
     "products": "حزم الرصيد",
     "credits": "أرصدة",
     "buy": "شراء",
-    "perSeat": "لكل مقعد"
+    "perSeat": "لكل مقعد",
+    "downgrade": "تخفيض",
+    "getStarted": "ابدأ الآن"
   },
   "settings": {
     "title": "الإعدادات",

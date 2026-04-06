@@ -5,6 +5,7 @@
     "getStarted": "Начать",
     "dashboard": "Панель управления",
     "billing": "Оплата",
+    "pricing": "Цены",
     "settings": "Настройки",
     "org": "Организация",
     "admin": "Администрирование",
@@ -167,7 +168,9 @@
     "products": "Пакеты кредитов",
     "credits": "кредиты",
     "buy": "Купить",
-    "perSeat": "за место"
+    "perSeat": "за место",
+    "downgrade": "Понизить",
+    "getStarted": "Начать"
   },
   "settings": {
     "title": "Настройки",
