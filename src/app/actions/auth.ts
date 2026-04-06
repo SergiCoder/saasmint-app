@@ -47,11 +47,17 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: "Full name must be between 3 and 255 characters" };
   }
 
+  const plan = formData.get("plan");
+  const callbackUrl = new URL(`${APP_ORIGIN}/auth/callback`);
+  if (typeof plan === "string" && plan) {
+    callbackUrl.searchParams.set("next", `/billing/checkout?plan=${plan}`);
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     ...result,
     options: {
-      emailRedirectTo: `${APP_ORIGIN}/auth/callback`,
+      emailRedirectTo: callbackUrl.toString(),
       data: {
         full_name: fullName,
       },
