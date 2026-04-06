@@ -25,7 +25,7 @@ export function PlanCard({
 }: PlanCardProps) {
   return (
     <div
-      className={`relative rounded-xl border p-8 ${
+      className={`relative flex flex-col rounded-xl border p-8 ${
         highlighted
           ? "border-primary-500 shadow-lg"
           : "border-gray-200 shadow-sm"
@@ -70,7 +70,7 @@ export function PlanCard({
           ))}
         </ul>
       )}
-      <div className="mt-8">{cta}</div>
+      <div className="mt-auto pt-8">{cta}</div>
     </div>
   );
 }
