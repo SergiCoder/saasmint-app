@@ -22,7 +22,7 @@ Core types in `src/domain/models/`:
 - `User` — authenticated user (Supabase UID, account type, locale/currency preferences)
 - `Org` — organisation record (id, name, slug, logoUrl)
 - `OrgMember` — org membership (userId, role: `owner | admin | member`, isBilling flag)
-- `Plan` — billing plan (context: `personal | team`, interval: `month | year`, prices)
+- `Plan` — billing plan (context: `personal | team`, interval: `month | year`, single `price`)
 - `PlanPrice` — individual price point (id, amount in cents)
 - `Subscription` — active Stripe subscription (status, plan snapshot, period dates, trial)
 
@@ -53,7 +53,7 @@ Strict atomic design in `src/presentation/components/`:
 
 - `atoms/` — Button, Input, Badge, Avatar, Label, Spinner, Logo, SectionLabel, LocaleDropdown, Divider, GitHubIcon, GoogleIcon, MicrosoftIcon
 - `molecules/` — FormField, MetricCard, NavLink, PlanCard, AlertBanner, FeatureCard, StatItem, TrustBar, OrgCard, OAuthButtons
-- `organisms/` — NavBar, Footer, PricingTable, SubscriptionCard, OrgMemberList, InvoiceTable, CtaSection, DashboardMock, FeaturesGrid, LogoCloud, StatsSection
+- `organisms/` — NavBar, Footer, PricingTable, SubscriptionCard, OrgMemberList, InvoiceTable, CtaSection, DashboardMock, ErrorView, FeaturesGrid, LogoCloud, StatsSection
 - `templates/` — MarketingLayout, AuthLayout, AppLayout, PolicyPage
 
 ## Presentation Conventions
