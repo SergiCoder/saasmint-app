@@ -80,9 +80,7 @@ describe("PlanCard", () => {
 
   describe("description and features optional", () => {
     it("renders description when provided", () => {
-      render(
-        <PlanCard {...defaultProps} description="Best for small teams" />,
-      );
+      render(<PlanCard {...defaultProps} description="Best for small teams" />);
       expect(screen.getByText("Best for small teams")).toBeInTheDocument();
     });
 

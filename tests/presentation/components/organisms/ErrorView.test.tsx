@@ -14,7 +14,9 @@ describe("ErrorView", () => {
   it("renders title, description and home link", () => {
     render(<ErrorView {...baseProps} />);
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
-    expect(screen.getByText("An unexpected error occurred")).toBeInTheDocument();
+    expect(
+      screen.getByText("An unexpected error occurred"),
+    ).toBeInTheDocument();
     const home = screen.getByRole("link", { name: "Back home" });
     expect(home).toBeInTheDocument();
     expect(home).toHaveAttribute("href", "/");
@@ -38,11 +40,7 @@ describe("ErrorView", () => {
 
   it("renders the error id only when both errorId and errorIdLabel are provided", () => {
     render(
-      <ErrorView
-        {...baseProps}
-        errorIdLabel="Error ID"
-        errorId="abc-123"
-      />,
+      <ErrorView {...baseProps} errorIdLabel="Error ID" errorId="abc-123" />,
     );
     expect(screen.getByText("Error ID: abc-123")).toBeInTheDocument();
   });
