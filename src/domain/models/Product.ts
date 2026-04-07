@@ -6,5 +6,5 @@ export interface Product {
   type: "one_time";
   credits: number;
   isActive: boolean;
-  prices: ProductPrice[];
+  price: ProductPrice | null;
 }

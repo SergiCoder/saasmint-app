@@ -20,8 +20,6 @@ const plans: Plan[] = [
     isActive: true,
     price: {
       id: "pp1",
-      stripePriceId: "price_123",
-      currency: "USD",
       amount: 999,
     },
   },
@@ -34,8 +32,6 @@ const plans: Plan[] = [
     isActive: true,
     price: {
       id: "pp2",
-      stripePriceId: "price_456",
-      currency: "USD",
       amount: 9999,
     },
   },

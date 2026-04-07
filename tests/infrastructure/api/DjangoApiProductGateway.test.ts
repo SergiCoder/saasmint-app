@@ -17,14 +17,10 @@ const products: Product[] = [
     type: "one_time",
     credits: 100,
     isActive: true,
-    prices: [
-      {
-        id: "pp1",
-        stripePriceId: "price_boost1",
-        currency: "usd",
-        amount: 999,
-      },
-    ],
+    price: {
+      id: "pp1",
+      amount: 999,
+    },
   },
 ];
 

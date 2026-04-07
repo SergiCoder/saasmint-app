@@ -85,16 +85,14 @@ export default async function BillingPage() {
                 <p className="mt-1 text-sm text-gray-500">
                   {product.credits} {t("credits")}
                 </p>
-                {product.prices[0] && (
+                {product.price && (
                   <p className="mt-2 text-2xl font-bold text-gray-900">
-                    ${(product.prices[0].amount / 100).toFixed(0)}
+                    ${(product.price.amount / 100).toFixed(0)}
                   </p>
                 )}
-                {product.prices[0] && (
+                {product.price && (
                   <div className="mt-4">
-                    <CheckoutButton
-                      planPriceId={product.prices[0].stripePriceId}
-                    >
+                    <CheckoutButton planPriceId={product.price.id}>
                       {t("buy")}
                     </CheckoutButton>
                   </div>
@@ -139,7 +137,7 @@ function PlansSection({
       ) : plan.price ? (
         isTeam ? (
           <TeamCheckoutButton
-            planPriceId={plan.price.stripePriceId}
+            planPriceId={plan.price.id}
             unitPrice={unitPrice}
             interval={plan.interval}
             highlighted={highlighted}
@@ -151,7 +149,7 @@ function PlansSection({
           </TeamCheckoutButton>
         ) : (
           <CheckoutButton
-            planPriceId={plan.price.stripePriceId}
+            planPriceId={plan.price.id}
             highlighted={highlighted}
           >
             {ctaLabel}

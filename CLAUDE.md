@@ -23,7 +23,7 @@ Core types in `src/domain/models/`:
 - `Org` — organisation record (id, name, slug, logoUrl)
 - `OrgMember` — org membership (userId, role: `owner | admin | member`, isBilling flag)
 - `Plan` — billing plan (context: `personal | team`, interval: `month | year`, prices)
-- `PlanPrice` — individual price point (stripePriceId, currency, amount)
+- `PlanPrice` — individual price point (id, amount in cents)
 - `Subscription` — active Stripe subscription (status, plan snapshot, period dates, trial)
 
 Domain errors in `src/domain/errors/`:
