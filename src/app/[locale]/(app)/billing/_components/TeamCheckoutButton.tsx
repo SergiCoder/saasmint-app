@@ -14,7 +14,7 @@ interface TeamCheckoutButtonProps {
   highlighted?: boolean;
   seatLabel: string;
   seatsLabel: string;
-  perSeatLabel: string;
+  totalLabel: string;
 }
 
 export function TeamCheckoutButton({
@@ -26,7 +26,7 @@ export function TeamCheckoutButton({
   highlighted = false,
   seatLabel,
   seatsLabel,
-  perSeatLabel,
+  totalLabel,
 }: TeamCheckoutButtonProps) {
   const [quantity, setQuantity] = useState(minSeats);
   const total = (unitPrice * quantity) / 100;
@@ -53,7 +53,7 @@ export function TeamCheckoutButton({
         </span>
       </div>
       <p className="text-sm text-gray-500">
-        ${total}/{interval} ({perSeatLabel})
+        {totalLabel}: ${total}/{interval}
       </p>
       <Button
         type="submit"

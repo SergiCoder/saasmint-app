@@ -179,7 +179,8 @@
     "teamPlans": "Takım planları",
     "personalPlansDesc": "Bireyler için.",
     "teamPlansDesc": "Takımlar ve kuruluşlar için.",
-    "pricingTitle": "Fiyatlandırma"
+    "pricingTitle": "Fiyatlandırma",
+    "total": "toplam"
   },
   "settings": {
     "title": "Ayarlar",

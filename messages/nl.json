@@ -179,7 +179,8 @@
     "teamPlans": "Teamabonnementen",
     "personalPlansDesc": "Voor individuen.",
     "teamPlansDesc": "Voor teams en organisaties.",
-    "pricingTitle": "Prijzen"
+    "pricingTitle": "Prijzen",
+    "total": "totaal"
   },
   "settings": {
     "title": "Instellingen",

@@ -82,7 +82,7 @@ export default async function BillingPage() {
             highlighted={highlighted}
             seatLabel={t("seat")}
             seatsLabel={t("seats")}
-            perSeatLabel={t("perSeat")}
+            totalLabel={t("total")}
           >
             {ctaLabel}
           </TeamCheckoutButton>

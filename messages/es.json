@@ -179,7 +179,8 @@
     "teamPlans": "Planes de equipo",
     "personalPlansDesc": "Para individuos.",
     "teamPlansDesc": "Para equipos y organizaciones.",
-    "pricingTitle": "Precios"
+    "pricingTitle": "Precios",
+    "total": "total"
   },
   "settings": {
     "title": "Configuración",

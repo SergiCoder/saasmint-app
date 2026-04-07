@@ -179,7 +179,8 @@
     "teamPlans": "团队套餐",
     "personalPlansDesc": "适合个人用户。",
     "teamPlansDesc": "适合团队和组织。",
-    "pricingTitle": "定价"
+    "pricingTitle": "定价",
+    "total": "合计"
   },
   "settings": {
     "title": "设置",

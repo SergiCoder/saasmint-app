@@ -179,7 +179,8 @@
     "teamPlans": "خطط الفريق",
     "personalPlansDesc": "للأفراد.",
     "teamPlansDesc": "للفِرق والمنظمات.",
-    "pricingTitle": "الأسعار"
+    "pricingTitle": "الأسعار",
+    "total": "الإجمالي"
   },
   "settings": {
     "title": "الإعدادات",

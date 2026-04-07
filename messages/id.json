@@ -179,7 +179,8 @@
     "teamPlans": "Paket tim",
     "personalPlansDesc": "Untuk individu.",
     "teamPlansDesc": "Untuk tim dan organisasi.",
-    "pricingTitle": "Harga"
+    "pricingTitle": "Harga",
+    "total": "total"
   },
   "settings": {
     "title": "Pengaturan",

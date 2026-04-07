@@ -179,7 +179,8 @@
     "teamPlans": "Командные тарифы",
     "personalPlansDesc": "Для частных лиц.",
     "teamPlansDesc": "Для команд и организаций.",
-    "pricingTitle": "Цены"
+    "pricingTitle": "Цены",
+    "total": "итого"
   },
   "settings": {
     "title": "Настройки",

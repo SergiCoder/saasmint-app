@@ -179,7 +179,8 @@
     "teamPlans": "Plany zespołowe",
     "personalPlansDesc": "Dla osób prywatnych.",
     "teamPlansDesc": "Dla zespołów i organizacji.",
-    "pricingTitle": "Cennik"
+    "pricingTitle": "Cennik",
+    "total": "razem"
   },
   "settings": {
     "title": "Ustawienia",

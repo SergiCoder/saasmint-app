@@ -179,7 +179,8 @@
     "teamPlans": "팀 요금제",
     "personalPlansDesc": "개인을 위한.",
     "teamPlansDesc": "팀과 조직을 위한.",
-    "pricingTitle": "요금"
+    "pricingTitle": "요금",
+    "total": "합계"
   },
   "settings": {
     "title": "설정",

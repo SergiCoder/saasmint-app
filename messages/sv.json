@@ -179,7 +179,8 @@
     "teamPlans": "Teamplaner",
     "personalPlansDesc": "För individer.",
     "teamPlansDesc": "För team och organisationer.",
-    "pricingTitle": "Priser"
+    "pricingTitle": "Priser",
+    "total": "totalt"
   },
   "settings": {
     "title": "Inställningar",

@@ -179,7 +179,8 @@
     "teamPlans": "團隊方案",
     "personalPlansDesc": "適合個人。",
     "teamPlansDesc": "適合團隊與組織。",
-    "pricingTitle": "定價"
+    "pricingTitle": "定價",
+    "total": "總計"
   },
   "settings": {
     "title": "設定",
