@@ -7,5 +7,5 @@ export interface Plan {
   context: "personal" | "team";
   interval: "month" | "year";
   isActive: boolean;
-  prices: PlanPrice[];
+  price: PlanPrice | null;
 }

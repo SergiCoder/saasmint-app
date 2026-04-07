@@ -18,9 +18,12 @@ const plans: Plan[] = [
     context: "personal",
     interval: "month",
     isActive: true,
-    prices: [
-      { id: "pp1", stripePriceId: "price_123", currency: "USD", amount: 999 },
-    ],
+    price: {
+      id: "pp1",
+      stripePriceId: "price_123",
+      currency: "USD",
+      amount: 999,
+    },
   },
   {
     id: "p2",
@@ -29,14 +32,12 @@ const plans: Plan[] = [
     context: "team",
     interval: "year",
     isActive: true,
-    prices: [
-      {
-        id: "pp2",
-        stripePriceId: "price_456",
-        currency: "USD",
-        amount: 9999,
-      },
-    ],
+    price: {
+      id: "pp2",
+      stripePriceId: "price_456",
+      currency: "USD",
+      amount: 9999,
+    },
   },
 ];
 

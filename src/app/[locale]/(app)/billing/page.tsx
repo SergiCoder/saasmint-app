@@ -118,11 +118,11 @@ function PlansSection({
   t: Awaited<ReturnType<typeof getTranslations<"billing">>>;
 }) {
   const currentPlan = plans.find((p) => p.id === currentPlanId);
-  const currentPrice = currentPlan?.prices[0]?.amount ?? 0;
+  const currentPrice = currentPlan?.price?.amount ?? 0;
 
   const planCards: PricingTableProps["plans"] = plans.map((plan) => {
     const highlighted = plan.name.toLowerCase().includes("pro");
-    const unitPrice = plan.prices[0]?.amount ?? 0;
+    const unitPrice = plan.price?.amount ?? 0;
     const isTeam = plan.context === "team";
     const isCurrent = plan.id === currentPlanId;
     const isUpgrade = unitPrice > currentPrice;
@@ -130,16 +130,16 @@ function PlansSection({
 
     return {
       name: plan.name,
-      price: plan.prices[0] ? `$${(unitPrice / 100).toFixed(0)}` : "$0",
+      price: plan.price ? `$${(unitPrice / 100).toFixed(0)}` : "$0",
       interval: isTeam ? `${t("perSeat")}/${plan.interval}` : plan.interval,
       description: plan.description,
       highlighted,
       cta: isCurrent ? (
         <span />
-      ) : plan.prices[0] ? (
+      ) : plan.price ? (
         isTeam ? (
           <TeamCheckoutButton
-            planPriceId={plan.prices[0].stripePriceId}
+            planPriceId={plan.price.stripePriceId}
             unitPrice={unitPrice}
             interval={plan.interval}
             highlighted={highlighted}
@@ -151,7 +151,7 @@ function PlansSection({
           </TeamCheckoutButton>
         ) : (
           <CheckoutButton
-            planPriceId={plan.prices[0].stripePriceId}
+            planPriceId={plan.price.stripePriceId}
             highlighted={highlighted}
           >
             {ctaLabel}

@@ -53,11 +53,11 @@ export default async function PricingPage() {
   }
 
   const currentPlan = plans.find((p) => p.id === currentPlanId);
-  const currentPrice = currentPlan?.prices[0]?.amount ?? 0;
+  const currentPrice = currentPlan?.price?.amount ?? 0;
 
   const planCards: PricingTableProps["plans"] = plans.map((plan) => {
     const highlighted = plan.name.toLowerCase().includes("pro");
-    const unitPrice = plan.prices[0]?.amount ?? 0;
+    const unitPrice = plan.price?.amount ?? 0;
     const isTeam = plan.context === "team";
     const isCurrent = Boolean(currentPlanId) && plan.id === currentPlanId;
     const isUpgrade = unitPrice > currentPrice;
@@ -65,9 +65,9 @@ export default async function PricingPage() {
     let cta: React.ReactNode;
 
     if (!user) {
-      cta = plan.prices[0] ? (
+      cta = plan.price ? (
         <GetStartedButton
-          planPriceId={plan.prices[0].stripePriceId}
+          planPriceId={plan.price.stripePriceId}
           highlighted={highlighted}
         >
           {t("select")}
@@ -77,11 +77,11 @@ export default async function PricingPage() {
       );
     } else if (isCurrent) {
       cta = <span />;
-    } else if (plan.prices[0]) {
+    } else if (plan.price) {
       const ctaLabel = isUpgrade ? t("upgrade") : t("downgrade");
       cta = isTeam ? (
         <TeamCheckoutButton
-          planPriceId={plan.prices[0].stripePriceId}
+          planPriceId={plan.price.stripePriceId}
           unitPrice={unitPrice}
           interval={plan.interval}
           highlighted={highlighted}
@@ -93,7 +93,7 @@ export default async function PricingPage() {
         </TeamCheckoutButton>
       ) : (
         <CheckoutButton
-          planPriceId={plan.prices[0].stripePriceId}
+          planPriceId={plan.price.stripePriceId}
           highlighted={highlighted}
         >
           {ctaLabel}
@@ -105,7 +105,7 @@ export default async function PricingPage() {
 
     return {
       name: plan.name,
-      price: plan.prices[0] ? `$${(unitPrice / 100).toFixed(0)}` : "$0",
+      price: plan.price ? `$${(unitPrice / 100).toFixed(0)}` : "$0",
       interval: isTeam ? `${t("perSeat")}/${plan.interval}` : plan.interval,
       description: plan.description,
       highlighted,

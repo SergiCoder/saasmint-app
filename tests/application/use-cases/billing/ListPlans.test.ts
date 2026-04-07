@@ -11,7 +11,7 @@ const plans: Plan[] = [
     context: "personal",
     interval: "month",
     isActive: true,
-    prices: [],
+    price: null,
   },
   {
     id: "p2",
@@ -20,7 +20,7 @@ const plans: Plan[] = [
     context: "team",
     interval: "year",
     isActive: true,
-    prices: [],
+    price: null,
   },
 ];
 
