@@ -18,14 +18,15 @@ export async function getAuthToken(): Promise<string> {
   return session.access_token;
 }
 
-export async function apiFetch<T>(
+async function request<T>(
   path: string,
-  options: RequestInit = {},
+  options: RequestInit,
+  authToken: string | null,
 ): Promise<T> {
-  const token = await getAuthToken();
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`,
-  });
+  const headers = new Headers();
+  if (authToken) {
+    headers.set("Authorization", `Bearer ${authToken}`);
+  }
   if (options.body) {
     headers.set("Content-Type", "application/json");
   }
@@ -42,7 +43,7 @@ export async function apiFetch<T>(
 
   if (!res.ok) {
     const text = await res.text();
-    if (res.status === 401) {
+    if (authToken && res.status === 401) {
       let code = "BACKEND_REJECTED";
       try {
         const body = JSON.parse(text) as { code?: string };
@@ -59,30 +60,17 @@ export async function apiFetch<T>(
   return res.json() as Promise<T>;
 }
 
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const token = await getAuthToken();
+  return request<T>(path, options, token);
+}
+
 export async function publicApiFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const headers = new Headers();
-  if (options.body) {
-    headers.set("Content-Type", "application/json");
-  }
-  if (options.headers) {
-    new Headers(options.headers).forEach((value, key) => {
-      headers.set(key, value);
-    });
-  }
-
-  const res = await fetch(`${API_URL}/api/v1${path}`, {
-    ...options,
-    headers: Object.fromEntries(headers.entries()),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`API ${res.status}: ${text}`);
-  }
-
-  if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
+  return request<T>(path, options, null);
 }
