@@ -39,7 +39,6 @@ export function SubscriptionCard({
   actions,
   className = "",
 }: SubscriptionCardProps) {
-  const showPeriodEnd = Boolean(currentPeriodEndIso && periodEndLabel);
   return (
     <div
       className={`rounded-lg border border-gray-200 bg-white p-6 shadow-sm ${className}`}
@@ -59,13 +58,13 @@ export function SubscriptionCard({
         <Badge variant={statusVariant[status]}>{statusLabel}</Badge>
       </div>
 
-      {showPeriodEnd && (
+      {currentPeriodEndIso && periodEndLabel && (
         <dl className="mt-6 space-y-3 text-sm">
           <div className="flex justify-between">
             <dt className="text-gray-500">{periodEndLabel}</dt>
             <dd className="font-medium text-gray-900">
               <FormattedDate
-                iso={currentPeriodEndIso!}
+                iso={currentPeriodEndIso}
                 locale={periodEndLocale}
               />
             </dd>

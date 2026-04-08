@@ -1,12 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export interface FormattedDateProps {
   iso: string;
   locale?: string;
   dateStyle?: "full" | "long" | "medium" | "short";
 }
+
+// useSyncExternalStore with a no-op subscription is the React-recommended way
+// to read a client-only value without triggering a setState-in-effect lint
+// warning. The "snapshot" returns true once on the client, false on the server.
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 /**
  * Formats an ISO date string with `Intl.DateTimeFormat`.
@@ -24,16 +31,19 @@ export function FormattedDate({
   dateStyle = "medium",
 }: FormattedDateProps) {
   const fallback = iso.slice(0, 10);
-  const [formatted, setFormatted] = useState<string | null>(null);
+  const isClient = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
 
-  useEffect(() => {
+  let display = fallback;
+  if (isClient) {
     const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) {
-      setFormatted(fallback);
-      return;
-    }
-    setFormatted(new Intl.DateTimeFormat(locale, { dateStyle }).format(date));
-  }, [iso, locale, dateStyle, fallback]);
+    display = Number.isNaN(date.getTime())
+      ? fallback
+      : new Intl.DateTimeFormat(locale, { dateStyle }).format(date);
+  }
 
-  return <span suppressHydrationWarning>{formatted ?? fallback}</span>;
+  return <span suppressHydrationWarning>{display}</span>;
 }
