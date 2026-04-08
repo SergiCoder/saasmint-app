@@ -4,8 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/infrastructure/supabase/server";
 import { SignOut } from "@/application/use-cases/auth/SignOut";
 import { authGateway } from "@/infrastructure/registry";
-
-const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+import { APP_ORIGIN } from "@/app/[locale]/(app)/subscription/_data/trustedRedirect";
 
 function extractCredentials(
   formData: FormData,
