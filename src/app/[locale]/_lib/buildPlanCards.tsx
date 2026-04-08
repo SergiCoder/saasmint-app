@@ -68,6 +68,32 @@ export function maxYearlySavingsPct(groups: PlanCardGroup[]): number {
   return groups.reduce((max, g) => Math.max(max, g.yearlySavingsPct ?? 0), 0);
 }
 
+export interface SplitPlanGroups {
+  personal: PlanCardGroup[];
+  team: PlanCardGroup[];
+  personalSavingsPct: number;
+  teamSavingsPct: number;
+}
+
+/**
+ * Splits a list of plan card groups into the personal and team subsets and
+ * pre-computes the "save up to X%" percentage for each subset. Callers use
+ * this to render two `PricingSection`s without repeating the bookkeeping on
+ * every page.
+ */
+export function splitPlanGroupsByContext(
+  groups: PlanCardGroup[],
+): SplitPlanGroups {
+  const personal = groups.filter((g) => g.context === "personal");
+  const team = groups.filter((g) => g.context === "team");
+  return {
+    personal,
+    team,
+    personalSavingsPct: maxYearlySavingsPct(personal),
+    teamSavingsPct: maxYearlySavingsPct(team),
+  };
+}
+
 function tierDisplayName(tier: PlanTier): string {
   return tier.charAt(0).toUpperCase() + tier.slice(1);
 }

@@ -16,7 +16,7 @@ import { TeamCheckoutButton } from "@/app/[locale]/(app)/subscription/_component
 import { getOptionalUser } from "../_data/getOptionalUser";
 import {
   buildPlanCardGroups,
-  maxYearlySavingsPct,
+  splitPlanGroupsByContext,
 } from "@/app/[locale]/_lib/buildPlanCards";
 import type { Plan } from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
@@ -111,11 +111,12 @@ export default async function PricingPage() {
     return null;
   }
 
-  const personalGroups = groups.filter((g) => g.context === "personal");
-  const teamGroups = groups.filter((g) => g.context === "team");
-
-  const personalSavingsPct = maxYearlySavingsPct(personalGroups);
-  const teamSavingsPct = maxYearlySavingsPct(teamGroups);
+  const {
+    personal: personalGroups,
+    team: teamGroups,
+    personalSavingsPct,
+    teamSavingsPct,
+  } = splitPlanGroupsByContext(groups);
 
   const sectionLabels = {
     monthly: t("monthly"),
