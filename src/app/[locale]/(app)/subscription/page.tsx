@@ -138,7 +138,7 @@ export default async function BillingPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12">
+    <div className="mx-auto max-w-5xl space-y-12 pb-12">
       <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
 
       {subscription &&
@@ -164,23 +164,24 @@ export default async function BillingPage() {
                 )
               : "";
 
-          const manageAction = canManage ? (
-            isCanceling ? (
-              <ResumeSubscriptionButton>
-                {t("resumeSubscription")}
-              </ResumeSubscriptionButton>
-            ) : (
-              <CancelRenewalButton
-                label={t("cancelRenewal")}
-                confirmTitle={t("cancelRenewalTitle")}
-                confirmBody={t("cancelRenewalBody", {
-                  date: periodEndDisplay,
-                })}
-                confirmAction={t("cancelRenewal")}
-                confirmDismiss={t("cancelRenewalKeep")}
-              />
-            )
-          ) : null;
+          const manageAction =
+            canManage && hasRealPeriodEnd ? (
+              isCanceling ? (
+                <ResumeSubscriptionButton>
+                  {t("resumeSubscription")}
+                </ResumeSubscriptionButton>
+              ) : (
+                <CancelRenewalButton
+                  label={t("cancelRenewal")}
+                  confirmTitle={t("cancelRenewalTitle")}
+                  confirmBody={t("cancelRenewalBody", {
+                    date: periodEndDisplay,
+                  })}
+                  confirmAction={t("cancelRenewal")}
+                  confirmDismiss={t("cancelRenewalKeep")}
+                />
+              )
+            ) : null;
 
           return (
             <SubscriptionCard
