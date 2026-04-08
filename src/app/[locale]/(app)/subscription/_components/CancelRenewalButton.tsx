@@ -33,8 +33,12 @@ export function CancelRenewalButton({
   const confirm = () => {
     startTransition(async () => {
       try {
-        await cancelSubscription();
-        close();
+        const result = await cancelSubscription();
+        if (result.ok) {
+          close();
+        } else {
+          setError(result.error);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       }
