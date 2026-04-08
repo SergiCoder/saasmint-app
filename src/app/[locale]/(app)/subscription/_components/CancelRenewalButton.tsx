@@ -43,12 +43,16 @@ export function CancelRenewalButton({
 
   return (
     <>
-      <Button type="button" variant="danger" onClick={open}>
+      <button
+        type="button"
+        onClick={open}
+        className="ml-auto cursor-pointer text-sm text-gray-500 underline-offset-2 hover:text-gray-700 hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400"
+      >
         {label}
-      </Button>
+      </button>
       <dialog
         ref={dialogRef}
-        className="rounded-lg p-0 shadow-xl backdrop:bg-black/40"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 p-0 shadow-xl backdrop:bg-black/40"
         onClose={() => setError(null)}
       >
         <div className="w-[min(90vw,28rem)] space-y-4 p-6">

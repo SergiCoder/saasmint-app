@@ -203,9 +203,9 @@ export default async function BillingPage() {
               cancelAtPeriodEnd={isCanceling}
               cancelLabel={isCanceling ? t("cancel") : undefined}
               actions={
-                <div className="flex flex-wrap gap-2">
-                  {manageAction}
+                <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2">
                   <BillingPortalButton>{t("portal")}</BillingPortalButton>
+                  {manageAction}
                 </div>
               }
             />
