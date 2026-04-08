@@ -25,7 +25,7 @@ export default async function AppLayoutRoute({
   const userMenuItems = [
     { href: "/dashboard", label: t("dashboard") },
     { href: "/settings", label: t("profile") },
-    { href: "/billing", label: t("billing") },
+    { href: "/subscription", label: t("subscription") },
   ];
 
   return (

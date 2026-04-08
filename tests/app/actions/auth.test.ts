@@ -98,7 +98,7 @@ describe("auth server actions", () => {
         "NEXT_REDIRECT",
       );
       expect(mockRedirect).toHaveBeenCalledWith(
-        "/billing/checkout?plan=price_pro_monthly",
+        "/subscription/checkout?plan=price_pro_monthly",
       );
     });
   });
@@ -172,7 +172,7 @@ describe("auth server actions", () => {
       const redirectUrl = new URL(call.options.emailRedirectTo);
       expect(redirectUrl.pathname).toBe("/auth/callback");
       expect(redirectUrl.searchParams.get("next")).toBe(
-        "/billing/checkout?plan=price_pro_monthly",
+        "/subscription/checkout?plan=price_pro_monthly",
       );
     });
 

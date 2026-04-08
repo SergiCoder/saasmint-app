@@ -8,7 +8,7 @@ const intlMiddleware = createMiddleware(routing);
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
-  "/billing",
+  "/subscription",
   "/settings",
   "/org",
   "/admin",

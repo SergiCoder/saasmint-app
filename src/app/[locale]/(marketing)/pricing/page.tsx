@@ -11,8 +11,8 @@ import {
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
 import { GetStartedButton } from "./_components/GetStartedButton";
-import { CheckoutButton } from "@/app/[locale]/(app)/billing/_components/CheckoutButton";
-import { TeamCheckoutButton } from "@/app/[locale]/(app)/billing/_components/TeamCheckoutButton";
+import { CheckoutButton } from "@/app/[locale]/(app)/subscription/_components/CheckoutButton";
+import { TeamCheckoutButton } from "@/app/[locale]/(app)/subscription/_components/TeamCheckoutButton";
 import { getOptionalUser } from "../_data/getOptionalUser";
 import {
   buildPlanCardGroups,

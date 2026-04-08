@@ -33,7 +33,7 @@ export async function signIn(_prevState: unknown, formData: FormData) {
 
   const plan = formData.get("plan");
   if (typeof plan === "string" && plan) {
-    redirect(`/billing/checkout?plan=${encodeURIComponent(plan)}`);
+    redirect(`/subscription/checkout?plan=${encodeURIComponent(plan)}`);
   }
 
   redirect("/dashboard");
@@ -55,7 +55,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   const plan = formData.get("plan");
   const callbackUrl = new URL(`${APP_ORIGIN}/auth/callback`);
   if (typeof plan === "string" && plan) {
-    callbackUrl.searchParams.set("next", `/billing/checkout?plan=${plan}`);
+    callbackUrl.searchParams.set("next", `/subscription/checkout?plan=${plan}`);
   }
 
   const supabase = await createClient();

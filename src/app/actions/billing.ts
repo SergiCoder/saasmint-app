@@ -47,8 +47,8 @@ export async function startCheckout(formData: FormData) {
     ({ url } = await new StartCheckout(subscriptionGateway).execute({
       planPriceId,
       ...(quantity ? { quantity } : {}),
-      successUrl: `${APP_ORIGIN}/billing?status=success`,
-      cancelUrl: `${APP_ORIGIN}/billing`,
+      successUrl: `${APP_ORIGIN}/subscription?status=success`,
+      cancelUrl: `${APP_ORIGIN}/subscription`,
     }));
     assertTrustedRedirect(url);
   } catch (err) {
@@ -63,7 +63,7 @@ export async function openBillingPortal() {
   let url: string;
   try {
     ({ url } = await new OpenBillingPortal(subscriptionGateway).execute({
-      returnUrl: `${APP_ORIGIN}/billing`,
+      returnUrl: `${APP_ORIGIN}/subscription`,
     }));
     assertTrustedRedirect(url);
   } catch (err) {

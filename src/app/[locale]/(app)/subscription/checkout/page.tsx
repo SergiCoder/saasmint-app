@@ -32,21 +32,21 @@ export default async function CheckoutPage({
   const [, { plan }] = await Promise.all([getCurrentUser(), searchParams]);
 
   if (!plan) {
-    redirect("/billing");
+    redirect("/subscription");
   }
 
   let url: string;
   try {
     ({ url } = await new StartCheckout(subscriptionGateway).execute({
       planPriceId: plan,
-      successUrl: `${APP_ORIGIN}/billing?status=success`,
-      cancelUrl: `${APP_ORIGIN}/billing`,
+      successUrl: `${APP_ORIGIN}/subscription?status=success`,
+      cancelUrl: `${APP_ORIGIN}/subscription`,
     }));
     assertTrustedRedirect(url);
   } catch (err) {
     if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
     console.error("Failed to start checkout", err);
-    redirect("/billing");
+    redirect("/subscription");
   }
 
   redirect(url);

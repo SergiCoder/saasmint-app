@@ -46,7 +46,7 @@ export function OAuthButtons({ plan }: OAuthButtonsProps = {}) {
     if (plan) {
       callbackUrl.searchParams.set(
         "next",
-        `/billing/checkout?plan=${encodeURIComponent(plan)}`,
+        `/subscription/checkout?plan=${encodeURIComponent(plan)}`,
       );
     }
     const { error } = await supabase.auth.signInWithOAuth({

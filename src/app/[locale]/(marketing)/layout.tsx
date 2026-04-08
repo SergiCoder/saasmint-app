@@ -66,7 +66,7 @@ export default async function MarketingLayoutRoute({
     ? [
         { href: "/dashboard", label: t("dashboard") },
         { href: "/settings", label: t("profile") },
-        { href: "/billing", label: t("billing") },
+        { href: "/subscription", label: t("subscription") },
       ]
     : undefined;
 
