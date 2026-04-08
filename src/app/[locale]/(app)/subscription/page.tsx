@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
 import { ListPlans } from "@/application/use-cases/billing/ListPlans";
 import { ListProducts } from "@/application/use-cases/billing/ListProducts";
@@ -45,8 +45,9 @@ export default async function BillingPage() {
       return [];
     });
 
-  const [t, , subscription, plans, products] = await Promise.all([
+  const [t, locale, , subscription, plans, products] = await Promise.all([
     getTranslations("billing"),
+    getLocale(),
     getCurrentUser(),
     new GetSubscription(subscriptionGateway).execute(),
     plansPromise,
@@ -126,29 +127,45 @@ export default async function BillingPage() {
     <div className="mx-auto max-w-5xl space-y-12">
       <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
 
-      {subscription && (
-        <SubscriptionCard
-          eyebrowLabel={t("currentPlan")}
-          planName={planName ?? t("currentPlan")}
-          status={subscription.status}
-          statusLabel={subscription.status}
-          interval={currentPlan?.interval}
-          price={
-            isTeamSubscription
-              ? `${subscription.quantity} ${subscription.quantity === 1 ? t("seat") : t("seats")}`
-              : undefined
-          }
-          currentPeriodEnd={
-            hasRealPeriodEnd ? periodEndDate!.toLocaleDateString() : undefined
-          }
-          periodEndLabel={hasRealPeriodEnd ? t("periodEnd") : undefined}
-          cancelAtPeriodEnd={subscription.canceledAt !== null}
-          cancelLabel={
-            subscription.canceledAt !== null ? t("cancel") : undefined
-          }
-          actions={<BillingPortalButton>{t("portal")}</BillingPortalButton>}
-        />
-      )}
+      {subscription &&
+        (() => {
+          const intervalLabel =
+            currentPlan?.interval === "year"
+              ? t("billedYearly")
+              : currentPlan?.interval === "month"
+                ? t("billedMonthly")
+                : undefined;
+          const seatsLabel = isTeamSubscription
+            ? `${subscription.quantity} ${subscription.quantity === 1 ? t("seat") : t("seats")}`
+            : undefined;
+          const subtitle = [seatsLabel, intervalLabel]
+            .filter(Boolean)
+            .join(" · ");
+          const isCanceling = subscription.canceledAt !== null;
+          return (
+            <SubscriptionCard
+              eyebrowLabel={t("currentPlan")}
+              planName={planName ?? t("currentPlan")}
+              status={subscription.status}
+              statusLabel={subscription.status}
+              subtitle={subtitle || undefined}
+              currentPeriodEndIso={
+                hasRealPeriodEnd ? periodEndDate!.toISOString() : undefined
+              }
+              periodEndLocale={locale}
+              periodEndLabel={
+                hasRealPeriodEnd
+                  ? isCanceling
+                    ? t("endsOn")
+                    : t("renewsOn")
+                  : undefined
+              }
+              cancelAtPeriodEnd={isCanceling}
+              cancelLabel={isCanceling ? t("cancel") : undefined}
+              actions={<BillingPortalButton>{t("portal")}</BillingPortalButton>}
+            />
+          );
+        })()}
 
       {groups.length === 0 ? (
         <p className="text-sm text-gray-500">{t("changePlan")}</p>
