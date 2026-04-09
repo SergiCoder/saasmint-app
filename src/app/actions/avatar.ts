@@ -16,8 +16,12 @@ export async function uploadAvatar(
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    return { error: `Upload failed: ${text}` };
+    const contentType = res.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      const data = (await res.json()) as { detail?: string };
+      return { error: data.detail ?? "Upload failed." };
+    }
+    return { error: "Upload failed. Please try again." };
   }
 
   const data = (await res.json()) as { avatar_url: string };
@@ -33,8 +37,12 @@ export async function deleteAvatar(): Promise<{ error?: string }> {
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    return { error: `Delete failed: ${text}` };
+    const contentType = res.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      const data = (await res.json()) as { detail?: string };
+      return { error: data.detail ?? "Delete failed." };
+    }
+    return { error: "Delete failed. Please try again." };
   }
 
   return {};
