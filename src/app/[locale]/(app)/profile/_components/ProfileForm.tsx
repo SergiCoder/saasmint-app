@@ -76,6 +76,8 @@ export function ProfileForm({ user, phonePrefixes }: ProfileFormProps) {
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const [formKey, setFormKey] = useState(0);
+  const [phonePrefix, setPhonePrefix] = useState(user.phonePrefix || "");
+  const [phone, setPhone] = useState(user.phone || "");
 
   useEffect(() => {
     if (state?.success) {
@@ -131,7 +133,9 @@ export function ProfileForm({ user, phonePrefixes }: ProfileFormProps) {
       }}
       className="space-y-6"
     >
-      {state?.error && <AlertBanner variant="error">{state.error}</AlertBanner>}
+      {state?.error && !state.fieldErrors && (
+        <AlertBanner variant="error">{state.error}</AlertBanner>
+      )}
       {saved && <AlertBanner variant="success">{t("saved")}</AlertBanner>}
 
       <AvatarUpload
@@ -173,27 +177,44 @@ export function ProfileForm({ user, phonePrefixes }: ProfileFormProps) {
       <div className="space-y-1">
         <Label htmlFor="phone">{t("phone")}</Label>
         <div className="flex gap-2">
-          <select
-            id="phonePrefix"
-            name="phonePrefix"
-            defaultValue={user.phonePrefix ?? ""}
-            aria-label={t("phonePrefix")}
-            className="focus:border-primary-500 focus:ring-primary-500 max-w-[35%] min-w-0 shrink-0 truncate rounded-md border border-gray-300 py-2 pr-8 pl-3 text-sm shadow-sm transition-colors focus:ring-2 focus:ring-offset-0 focus:outline-none"
-          >
-            <option value="">{t("phonePrefix")}</option>
-            {phonePrefixes.map((p) => (
-              <option key={p.prefix} value={p.prefix}>
-                {p.label} ({p.prefix})
-              </option>
-            ))}
-          </select>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            defaultValue={user.phone ?? ""}
-            className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:ring-2 focus:ring-offset-0 focus:outline-none"
-          />
+          <div className="max-w-[35%] shrink-0">
+            <select
+              id="phonePrefix"
+              name="phonePrefix"
+              value={phonePrefix}
+              onChange={(e) => setPhonePrefix(e.target.value)}
+              aria-label={t("phonePrefix")}
+              className="focus:border-primary-500 focus:ring-primary-500 w-full min-w-0 truncate rounded-md border border-gray-300 py-2 pr-8 pl-3 text-sm shadow-sm transition-colors focus:ring-2 focus:ring-offset-0 focus:outline-none"
+            >
+              <option value="">{t("phonePrefix")}</option>
+              {phonePrefixes.map((p) => (
+                <option key={p.prefix} value={p.prefix}>
+                  {p.label} ({p.prefix})
+                </option>
+              ))}
+            </select>
+            {state?.fieldErrors?.phone === "phonePrefixRequired" && (
+              <p className="mt-1 text-sm text-red-600">
+                {t("phonePrefixRequired")}
+              </p>
+            )}
+          </div>
+          <div className="w-full">
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:ring-2 focus:ring-offset-0 focus:outline-none"
+            />
+            {(state?.fieldErrors?.phone === "phoneNumberRequired" ||
+              state?.fieldErrors?.phone === "phoneTooShort") && (
+              <p className="mt-1 text-sm text-red-600">
+                {t(state.fieldErrors.phone)}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 

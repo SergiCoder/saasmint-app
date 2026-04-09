@@ -33,6 +33,23 @@ export async function updateProfile(_prevState: unknown, formData: FormData) {
     return { error: "Full name must be between 3 and 255 characters" };
   }
 
+  const hasPrefix = typeof phonePrefix === "string" && phonePrefix !== "";
+  const hasPhone = typeof phone === "string" && phone !== "";
+
+  if (hasPrefix !== hasPhone) {
+    return {
+      fieldErrors: {
+        phone: hasPrefix ? "phoneNumberRequired" : "phonePrefixRequired",
+      },
+    };
+  }
+
+  if (hasPhone && (phone as string).length < 4) {
+    return {
+      fieldErrors: { phone: "phoneTooShort" },
+    };
+  }
+
   try {
     await new UpdateUserProfile(userGateway).execute(user.id, {
       fullName,
@@ -40,15 +57,15 @@ export async function updateProfile(_prevState: unknown, formData: FormData) {
         preferredLocale && { preferredLocale }),
       ...(typeof preferredCurrency === "string" &&
         preferredCurrency && { preferredCurrency }),
-      phonePrefix:
-        typeof phonePrefix === "string" && phonePrefix ? phonePrefix : null,
-      phone: typeof phone === "string" && phone ? phone : null,
+      phonePrefix: hasPrefix ? (phonePrefix as string) : null,
+      phone: hasPhone ? (phone as string) : null,
       timezone: typeof timezone === "string" && timezone ? timezone : null,
       jobTitle: typeof jobTitle === "string" && jobTitle ? jobTitle : null,
       pronouns: typeof pronouns === "string" && pronouns ? pronouns : null,
       bio: typeof bio === "string" && bio ? bio : null,
     });
-  } catch {
+  } catch (err) {
+    console.error("[updateProfile]", err);
     return { error: "Failed to update profile" };
   }
 
