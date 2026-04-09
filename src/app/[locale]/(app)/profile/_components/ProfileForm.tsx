@@ -8,10 +8,8 @@ import { PronounsPicker } from "@/presentation/components/molecules/PronounsPick
 import { AvatarUpload } from "@/presentation/components/atoms/AvatarUpload";
 import { Button } from "@/presentation/components/atoms/Button";
 import { Label } from "@/presentation/components/atoms/Label";
-import {
-  uploadAvatar,
-  deleteAvatar,
-} from "@/infrastructure/supabase/avatarStorage";
+import { uploadAvatar, deleteAvatar } from "@/app/actions/avatar";
+import { compressImage } from "@/lib/compressImage";
 import { updateProfile, updateAvatarUrl } from "@/app/actions/user";
 import type { User } from "@/domain/models/User";
 import type { PhonePrefix } from "@/domain/models/PhonePrefix";
@@ -86,11 +84,22 @@ export function ProfileForm({ user, phonePrefixes }: ProfileFormProps) {
     setAvatarUploading(true);
     try {
       if (file) {
-        const url = await uploadAvatar(file);
-        await updateAvatarUrl(url);
-        setAvatarUrl(url);
+        const compressed = await compressImage(file);
+        const formData = new FormData();
+        formData.append("file", compressed, "avatar.webp");
+        const result = await uploadAvatar(formData);
+        if (result.error) {
+          setAvatarError(result.error);
+          return;
+        }
+        await updateAvatarUrl(result.avatarUrl!);
+        setAvatarUrl(result.avatarUrl!);
       } else {
-        await deleteAvatar();
+        const result = await deleteAvatar();
+        if (result.error) {
+          setAvatarError(result.error);
+          return;
+        }
         await updateAvatarUrl(null);
         setAvatarUrl(null);
       }
