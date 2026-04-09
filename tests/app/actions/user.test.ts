@@ -78,7 +78,7 @@ describe("user server actions", () => {
       expect(mockGetCurrentUserExecute).toHaveBeenCalledOnce();
       expect(mockUpdateUserProfileExecute).toHaveBeenCalledWith("user_123", {
         fullName: "Jane Doe",
-        avatarUrl: null,
+
         preferredLocale: "fr",
         preferredCurrency: "eur",
         phonePrefix: null,
@@ -139,7 +139,7 @@ describe("user server actions", () => {
       const result = await updateProfile(undefined, formData);
       expect(mockUpdateUserProfileExecute).toHaveBeenCalledWith("user_123", {
         fullName: "Jane Doe",
-        avatarUrl: null,
+
         phonePrefix: null,
         phone: "+1234567890",
         timezone: "Europe/Madrid",
@@ -163,7 +163,7 @@ describe("user server actions", () => {
       const result = await updateProfile(undefined, formData);
       expect(mockUpdateUserProfileExecute).toHaveBeenCalledWith("user_123", {
         fullName: "Jane",
-        avatarUrl: null,
+
         phonePrefix: null,
         phone: null,
         timezone: null,
@@ -183,7 +183,7 @@ describe("user server actions", () => {
       const result = await updateProfile(undefined, formData);
       expect(mockUpdateUserProfileExecute).toHaveBeenCalledWith("user_123", {
         fullName: "Jane",
-        avatarUrl: null,
+
         phonePrefix: null,
         phone: null,
         timezone: null,

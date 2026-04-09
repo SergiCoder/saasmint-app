@@ -143,12 +143,6 @@ export function ProfileForm({ user, phonePrefixes }: ProfileFormProps) {
         onChange={handleAvatarChange}
       />
       {avatarError && <AlertBanner variant="error">{avatarError}</AlertBanner>}
-      <input
-        type="hidden"
-        name="avatarUrl"
-        value={avatarUrl ?? ""}
-        data-auto-save
-      />
 
       <FormField
         label={t("email")}

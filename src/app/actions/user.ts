@@ -16,7 +16,6 @@ export async function updateProfile(_prevState: unknown, formData: FormData) {
   const user = await new GetCurrentUser(authGateway).execute();
 
   const fullName = formData.get("fullName");
-  const avatarUrl = formData.get("avatarUrl");
   const preferredLocale = formData.get("preferredLocale");
   const preferredCurrency = formData.get("preferredCurrency");
   const phonePrefix = formData.get("phonePrefix");
@@ -37,7 +36,6 @@ export async function updateProfile(_prevState: unknown, formData: FormData) {
   try {
     await new UpdateUserProfile(userGateway).execute(user.id, {
       fullName,
-      avatarUrl: typeof avatarUrl === "string" && avatarUrl ? avatarUrl : null,
       ...(typeof preferredLocale === "string" &&
         preferredLocale && { preferredLocale }),
       ...(typeof preferredCurrency === "string" &&
