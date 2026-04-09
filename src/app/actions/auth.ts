@@ -9,7 +9,7 @@ import { setAuthCookies } from "@/infrastructure/auth/cookies";
 interface TokenResponse {
   access_token: string;
   refresh_token: string;
-  expires_in: number;
+  token_type?: string;
 }
 
 /** Extract a human-readable message from an API error thrown by apiClient. */
@@ -55,7 +55,7 @@ export async function signIn(_prevState: unknown, formData: FormData) {
     return { error: friendlyError(err, "Login failed. Please try again.") };
   }
 
-  await setAuthCookies(data.access_token, data.refresh_token, data.expires_in);
+  await setAuthCookies(data.access_token, data.refresh_token);
 
   const plan = formData.get("plan");
   if (typeof plan === "string" && plan) {
@@ -79,7 +79,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   }
 
   try {
-    await publicApiFetch("/auth/register/", {
+    await publicApiFetch<TokenResponse>("/auth/register/", {
       method: "POST",
       body: JSON.stringify({
         email: result.email,
@@ -93,6 +93,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     };
   }
 
+  // Registration returns tokens but user must verify email first.
   redirect("/login?registered=true");
 }
 
@@ -138,8 +139,9 @@ export async function resetPasswordWithToken(
     return { error: "Passwords do not match" };
   }
 
+  let data: TokenResponse;
   try {
-    await publicApiFetch("/auth/reset-password/", {
+    data = await publicApiFetch<TokenResponse>("/auth/reset-password/", {
       method: "POST",
       body: JSON.stringify({ token, password }),
     });
@@ -150,6 +152,7 @@ export async function resetPasswordWithToken(
     };
   }
 
+  await setAuthCookies(data.access_token, data.refresh_token);
   return { success: true };
 }
 
@@ -170,8 +173,9 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
     return { error: "Passwords do not match" };
   }
 
+  let data: TokenResponse;
   try {
-    await apiFetch("/auth/change-password/", {
+    data = await apiFetch<TokenResponse>("/auth/change-password/", {
       method: "POST",
       body: JSON.stringify({
         current_password: currentPassword,
@@ -184,6 +188,7 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
     };
   }
 
+  await setAuthCookies(data.access_token, data.refresh_token);
   return { success: true };
 }
 
@@ -200,7 +205,7 @@ export async function verifyEmail(token: string): Promise<{ error?: string }> {
     };
   }
 
-  await setAuthCookies(data.access_token, data.refresh_token, data.expires_in);
+  await setAuthCookies(data.access_token, data.refresh_token);
   return {};
 }
 

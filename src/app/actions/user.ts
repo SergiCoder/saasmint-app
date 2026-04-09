@@ -76,11 +76,12 @@ export async function updateProfile(_prevState: unknown, formData: FormData) {
 export async function deleteAccount(): Promise<{
   error?: string;
   success?: boolean;
+  scheduledDeletionAt?: string | null;
 }> {
   try {
-    await new DeleteAccount(authGateway).execute();
+    const result = await new DeleteAccount(authGateway).execute();
+    return { success: true, scheduledDeletionAt: result.scheduledDeletionAt };
   } catch {
     return { error: "Failed to delete account" };
   }
-  return { success: true };
 }

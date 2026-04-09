@@ -4,6 +4,7 @@ export interface ProductsGridProps {
   title: string;
   products: Product[];
   creditsLabel: string;
+  locale: string;
   renderCta: (product: Product) => React.ReactNode;
   className?: string;
 }
@@ -12,6 +13,7 @@ export function ProductsGrid({
   title,
   products,
   creditsLabel,
+  locale,
   renderCta,
   className = "",
 }: ProductsGridProps) {
@@ -33,7 +35,13 @@ export function ProductsGrid({
             {product.price && (
               <>
                 <p className="mt-2 text-2xl font-bold text-gray-900">
-                  ${(product.price.amount / 100).toFixed(0)}
+                  {new Intl.NumberFormat(locale, {
+                    style: "currency",
+                    currency: product.price.currency.toUpperCase(),
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits:
+                      product.price.displayAmount % 1 === 0 ? 0 : 2,
+                  }).format(product.price.displayAmount)}
                 </p>
                 <div className="mt-4">{renderCta(product)}</div>
               </>

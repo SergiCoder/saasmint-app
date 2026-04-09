@@ -8,6 +8,9 @@ import { startCheckout } from "@/app/actions/billing";
 interface TeamCheckoutButtonProps {
   planPriceId: string;
   unitPrice: number;
+  displayAmount: number;
+  currency: string;
+  locale: string;
   interval: string;
   minSeats?: number;
   children: React.ReactNode;
@@ -20,6 +23,9 @@ interface TeamCheckoutButtonProps {
 export function TeamCheckoutButton({
   planPriceId,
   unitPrice,
+  displayAmount,
+  currency,
+  locale,
   interval,
   minSeats = 2,
   children,
@@ -29,7 +35,13 @@ export function TeamCheckoutButton({
   totalLabel,
 }: TeamCheckoutButtonProps) {
   const [quantity, setQuantity] = useState(minSeats);
-  const total = (unitPrice * quantity) / 100;
+  const total = displayAmount * quantity;
+  const formattedTotal = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: 0,
+    maximumFractionDigits: total % 1 === 0 ? 0 : 2,
+  }).format(total);
 
   return (
     <form action={startCheckout} className="space-y-3">
@@ -53,7 +65,7 @@ export function TeamCheckoutButton({
         </span>
       </div>
       <p className="pb-3 text-base font-medium text-gray-900">
-        {totalLabel}: ${total}/{interval}
+        {totalLabel}: {formattedTotal}/{interval}
       </p>
       <Button
         type="submit"

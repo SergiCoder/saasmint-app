@@ -77,6 +77,7 @@ export default async function BillingPage() {
   const groups = buildPlanCardGroups({
     plans,
     currentPlanId: currentPlan?.id,
+    locale,
     labels: {
       upgrade: t("upgrade"),
       seat: t("seat"),
@@ -87,6 +88,8 @@ export default async function BillingPage() {
       isUpgrade,
       isTeam,
       unitPrice,
+      displayAmount,
+      currency,
       ctaLabel,
     }) => {
       if (isCurrent) {
@@ -104,6 +107,9 @@ export default async function BillingPage() {
           <TeamCheckoutButton
             planPriceId={plan.price.id}
             unitPrice={unitPrice}
+            displayAmount={displayAmount}
+            currency={currency}
+            locale={locale}
             interval={plan.interval}
             highlighted={highlighted}
             seatLabel={t("seat")}
@@ -251,6 +257,7 @@ export default async function BillingPage() {
         title={t("products")}
         products={products}
         creditsLabel={t("credits")}
+        locale={locale}
         renderCta={(product) =>
           product.price && (
             <CheckoutButton planPriceId={product.price.id}>
