@@ -34,7 +34,7 @@ let signIn: typeof import("@/app/actions/auth").signIn;
 let signUp: typeof import("@/app/actions/auth").signUp;
 let signOut: typeof import("@/app/actions/auth").signOut;
 let resetPassword: typeof import("@/app/actions/auth").resetPassword;
-let updatePassword: typeof import("@/app/actions/auth").updatePassword;
+let resetPasswordWithToken: typeof import("@/app/actions/auth").resetPasswordWithToken;
 
 beforeEach(async () => {
   vi.clearAllMocks();
@@ -43,7 +43,7 @@ beforeEach(async () => {
   signUp = mod.signUp;
   signOut = mod.signOut;
   resetPassword = mod.resetPassword;
-  updatePassword = mod.updatePassword;
+  resetPasswordWithToken = mod.resetPasswordWithToken;
 });
 
 describe("auth server actions", () => {
@@ -77,9 +77,11 @@ describe("auth server actions", () => {
       expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
     });
 
-    it("returns error message on failure", async () => {
+    it("returns friendly error from API detail field", async () => {
       mockPublicApiFetch.mockRejectedValue(
-        new Error("API 401: Invalid credentials"),
+        new Error(
+          'API 401: {"detail":"Invalid credentials.","code":"invalid_credentials"}',
+        ),
       );
 
       const formData = new FormData();
@@ -87,8 +89,21 @@ describe("auth server actions", () => {
       formData.set("password", "wrong");
 
       const result = await signIn(undefined, formData);
-      expect(result).toEqual({ error: "API 401: Invalid credentials" });
+      expect(result).toEqual({ error: "Invalid credentials." });
       expect(mockRedirect).not.toHaveBeenCalled();
+    });
+
+    it("returns fallback on non-JSON API error", async () => {
+      mockPublicApiFetch.mockRejectedValue(new Error("API 500: Internal"));
+
+      const formData = new FormData();
+      formData.set("email", "user@example.com");
+      formData.set("password", "wrong");
+
+      const result = await signIn(undefined, formData);
+      expect(result).toEqual({
+        error: "Login failed. Please try again.",
+      });
     });
 
     it("redirects to billing checkout when plan is supplied", async () => {
@@ -135,9 +150,9 @@ describe("auth server actions", () => {
       expect(mockRedirect).toHaveBeenCalledWith("/login?registered=true");
     });
 
-    it("returns error message on failure", async () => {
+    it("returns friendly error from API detail field", async () => {
       mockPublicApiFetch.mockRejectedValue(
-        new Error("API 400: Email already in use"),
+        new Error('API 400: {"detail":"Email already in use."}'),
       );
 
       const formData = new FormData();
@@ -146,7 +161,21 @@ describe("auth server actions", () => {
       formData.set("password", "secret123");
 
       const result = await signUp(undefined, formData);
-      expect(result).toEqual({ error: "API 400: Email already in use" });
+      expect(result).toEqual({ error: "Email already in use." });
+    });
+
+    it("returns fallback on non-JSON API error", async () => {
+      mockPublicApiFetch.mockRejectedValue(new Error("API 500: Internal"));
+
+      const formData = new FormData();
+      formData.set("fullName", "Jane Doe");
+      formData.set("email", "existing@example.com");
+      formData.set("password", "secret123");
+
+      const result = await signUp(undefined, formData);
+      expect(result).toEqual({
+        error: "Registration failed. Please try again.",
+      });
     });
 
     it("returns error when fullName is too short", async () => {
@@ -241,7 +270,7 @@ describe("auth server actions", () => {
     });
   });
 
-  describe("updatePassword", () => {
+  describe("resetPasswordWithToken", () => {
     it("returns success when password is updated", async () => {
       mockPublicApiFetch.mockResolvedValue({});
 
@@ -250,7 +279,7 @@ describe("auth server actions", () => {
       formData.set("confirmPassword", "newpassword123");
       formData.set("token", "reset-token-123");
 
-      const result = await updatePassword(undefined, formData);
+      const result = await resetPasswordWithToken(undefined, formData);
       expect(result).toEqual({ success: true });
       expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/reset-password/", {
         method: "POST",
@@ -261,12 +290,25 @@ describe("auth server actions", () => {
       });
     });
 
+    it("returns error when token is missing", async () => {
+      const formData = new FormData();
+      formData.set("password", "newpassword123");
+      formData.set("confirmPassword", "newpassword123");
+
+      const result = await resetPasswordWithToken(undefined, formData);
+      expect(result).toEqual({
+        error: "Invalid or expired reset link. Please request a new one.",
+      });
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
+    });
+
     it("returns error when password is too short", async () => {
       const formData = new FormData();
       formData.set("password", "short");
       formData.set("confirmPassword", "short");
+      formData.set("token", "reset-token-123");
 
-      const result = await updatePassword(undefined, formData);
+      const result = await resetPasswordWithToken(undefined, formData);
       expect(result).toEqual({
         error: "Password must be at least 8 characters",
       });
@@ -276,8 +318,9 @@ describe("auth server actions", () => {
     it("returns error when password is missing", async () => {
       const formData = new FormData();
       formData.set("confirmPassword", "newpassword123");
+      formData.set("token", "reset-token-123");
 
-      const result = await updatePassword(undefined, formData);
+      const result = await resetPasswordWithToken(undefined, formData);
       expect(result).toEqual({
         error: "Password must be at least 8 characters",
       });
@@ -288,8 +331,9 @@ describe("auth server actions", () => {
       const formData = new FormData();
       formData.set("password", "newpassword123");
       formData.set("confirmPassword", "differentpassword");
+      formData.set("token", "reset-token-123");
 
-      const result = await updatePassword(undefined, formData);
+      const result = await resetPasswordWithToken(undefined, formData);
       expect(result).toEqual({ error: "Passwords do not match" });
       expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
@@ -304,9 +348,10 @@ describe("auth server actions", () => {
       formData.set("confirmPassword", "newpassword123");
       formData.set("token", "expired-token");
 
-      const result = await updatePassword(undefined, formData);
+      const result = await resetPasswordWithToken(undefined, formData);
       expect(result).toEqual({
-        error: "API 400: Invalid or expired token",
+        error:
+          "This reset link is invalid or has expired. Please request a new one.",
       });
     });
   });

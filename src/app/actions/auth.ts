@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { publicApiFetch } from "@/infrastructure/api/apiClient";
+import { apiFetch, publicApiFetch } from "@/infrastructure/api/apiClient";
 import { SignOut } from "@/application/use-cases/auth/SignOut";
 import { authGateway } from "@/infrastructure/registry";
 import { setAuthCookies } from "@/infrastructure/auth/cookies";
@@ -10,6 +10,22 @@ interface TokenResponse {
   access_token: string;
   refresh_token: string;
   expires_in: number;
+}
+
+/** Extract a human-readable message from an API error thrown by apiClient. */
+function friendlyError(err: unknown, fallback: string): string {
+  if (!(err instanceof Error)) return fallback;
+  // apiClient throws `Error("API <status>: <body>")` — try to parse the JSON body
+  const match = err.message.match(/^API \d+: (.+)$/s);
+  if (match) {
+    try {
+      const body = JSON.parse(match[1]) as { detail?: string };
+      if (typeof body.detail === "string") return body.detail;
+    } catch {
+      // not JSON — fall through
+    }
+  }
+  return fallback;
 }
 
 function extractCredentials(
@@ -36,8 +52,7 @@ export async function signIn(_prevState: unknown, formData: FormData) {
       body: JSON.stringify(result),
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Login failed";
-    return { error: message };
+    return { error: friendlyError(err, "Login failed. Please try again.") };
   }
 
   await setAuthCookies(data.access_token, data.refresh_token, data.expires_in);
@@ -73,8 +88,9 @@ export async function signUp(_prevState: unknown, formData: FormData) {
       }),
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Registration failed";
-    return { error: message };
+    return {
+      error: friendlyError(err, "Registration failed. Please try again."),
+    };
   }
 
   redirect("/login?registered=true");
@@ -100,10 +116,19 @@ export async function resetPassword(_prevState: unknown, formData: FormData) {
   return { success: true };
 }
 
-export async function updatePassword(_prevState: unknown, formData: FormData) {
+export async function resetPasswordWithToken(
+  _prevState: unknown,
+  formData: FormData,
+) {
   const password = formData.get("password");
   const confirmPassword = formData.get("confirmPassword");
   const token = formData.get("token");
+
+  if (typeof token !== "string" || !token) {
+    return {
+      error: "Invalid or expired reset link. Please request a new one.",
+    };
+  }
 
   if (typeof password !== "string" || password.length < 8) {
     return { error: "Password must be at least 8 characters" };
@@ -116,15 +141,47 @@ export async function updatePassword(_prevState: unknown, formData: FormData) {
   try {
     await publicApiFetch("/auth/reset-password/", {
       method: "POST",
+      body: JSON.stringify({ token, password }),
+    });
+  } catch {
+    return {
+      error:
+        "This reset link is invalid or has expired. Please request a new one.",
+    };
+  }
+
+  return { success: true };
+}
+
+export async function changePassword(_prevState: unknown, formData: FormData) {
+  const currentPassword = formData.get("currentPassword");
+  const password = formData.get("password");
+  const confirmPassword = formData.get("confirmPassword");
+
+  if (typeof currentPassword !== "string" || !currentPassword) {
+    return { error: "Current password is required" };
+  }
+
+  if (typeof password !== "string" || password.length < 8) {
+    return { error: "Password must be at least 8 characters" };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match" };
+  }
+
+  try {
+    await apiFetch("/auth/change-password/", {
+      method: "POST",
       body: JSON.stringify({
-        token: typeof token === "string" ? token : "",
-        password,
+        current_password: currentPassword,
+        new_password: password,
       }),
     });
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to update password";
-    return { error: message };
+    return {
+      error: friendlyError(err, "Failed to change password. Please try again."),
+    };
   }
 
   return { success: true };
@@ -138,8 +195,9 @@ export async function verifyEmail(token: string): Promise<{ error?: string }> {
       body: JSON.stringify({ token }),
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Verification failed";
-    return { error: message };
+    return {
+      error: friendlyError(err, "Verification failed. Please try again."),
+    };
   }
 
   await setAuthCookies(data.access_token, data.refresh_token, data.expires_in);
