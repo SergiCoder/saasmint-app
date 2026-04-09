@@ -130,7 +130,8 @@ describe("user server actions", () => {
 
       const formData = new FormData();
       formData.set("fullName", "Jane Doe");
-      formData.set("phone", "+1234567890");
+      formData.set("phonePrefix", "+34");
+      formData.set("phone", "612345678");
       formData.set("timezone", "Europe/Madrid");
       formData.set("jobTitle", "Engineer");
       formData.set("pronouns", "she/her");
@@ -140,8 +141,8 @@ describe("user server actions", () => {
       expect(mockUpdateUserProfileExecute).toHaveBeenCalledWith("user_123", {
         fullName: "Jane Doe",
 
-        phonePrefix: null,
-        phone: "+1234567890",
+        phonePrefix: "+34",
+        phone: "612345678",
         timezone: "Europe/Madrid",
         jobTitle: "Engineer",
         pronouns: "she/her",
@@ -231,12 +232,17 @@ describe("user server actions", () => {
 
   describe("deleteAccount", () => {
     it("deletes account and returns success", async () => {
-      mockDeleteAccountExecute.mockResolvedValue(undefined);
+      mockDeleteAccountExecute.mockResolvedValue({
+        scheduledDeletionAt: null,
+      });
 
       const result = await deleteAccount();
 
       expect(mockDeleteAccountExecute).toHaveBeenCalledOnce();
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual({
+        success: true,
+        scheduledDeletionAt: null,
+      });
     });
 
     it("returns error on failure", async () => {

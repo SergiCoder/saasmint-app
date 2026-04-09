@@ -21,6 +21,8 @@ const plans: Plan[] = [
     price: {
       id: "pp1",
       amount: 999,
+      displayAmount: 9.99,
+      currency: "usd",
     },
   },
   {
@@ -33,6 +35,8 @@ const plans: Plan[] = [
     price: {
       id: "pp2",
       amount: 9999,
+      displayAmount: 99.99,
+      currency: "usd",
     },
   },
 ];

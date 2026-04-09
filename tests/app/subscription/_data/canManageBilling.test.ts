@@ -56,8 +56,8 @@ describe("canManageBilling", () => {
   it("returns true when the user is the billing member of their org", async () => {
     mockListUserOrgs.mockResolvedValueOnce([{ id: "org-1" }]);
     mockListOrgMembers.mockResolvedValueOnce([
-      { userId: "user-1", isBilling: true },
-      { userId: "user-2", isBilling: false },
+      { user: { id: "user-1" }, isBilling: true },
+      { user: { id: "user-2" }, isBilling: false },
     ]);
 
     const result = await canManageBilling(user, teamSub);
@@ -70,7 +70,7 @@ describe("canManageBilling", () => {
   it("returns false when the user is a member but not the billing one", async () => {
     mockListUserOrgs.mockResolvedValueOnce([{ id: "org-1" }]);
     mockListOrgMembers.mockResolvedValueOnce([
-      { userId: "user-1", isBilling: false },
+      { user: { id: "user-1" }, isBilling: false },
     ]);
 
     const result = await canManageBilling(user, teamSub);
@@ -80,7 +80,7 @@ describe("canManageBilling", () => {
   it("returns false when the user is not in the org member list", async () => {
     mockListUserOrgs.mockResolvedValueOnce([{ id: "org-1" }]);
     mockListOrgMembers.mockResolvedValueOnce([
-      { userId: "someone-else", isBilling: true },
+      { user: { id: "someone-else" }, isBilling: true },
     ]);
 
     const result = await canManageBilling(user, teamSub);

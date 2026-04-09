@@ -52,7 +52,6 @@ describe("auth server actions", () => {
       mockPublicApiFetch.mockResolvedValue({
         access_token: "tok_abc",
         refresh_token: "ref_abc",
-        expires_in: 900,
       });
 
       const formData = new FormData();
@@ -72,7 +71,6 @@ describe("auth server actions", () => {
       expect(mockSetAuthCookies).toHaveBeenCalledWith(
         "tok_abc",
         "ref_abc",
-        900,
       );
       expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
     });
@@ -110,7 +108,6 @@ describe("auth server actions", () => {
       mockPublicApiFetch.mockResolvedValue({
         access_token: "tok_abc",
         refresh_token: "ref_abc",
-        expires_in: 900,
       });
 
       const formData = new FormData();
