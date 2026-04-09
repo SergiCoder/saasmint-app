@@ -1,6 +1,5 @@
 export interface User {
   id: string;
-  supabaseUid: string;
   email: string;
   fullName: string;
   avatarUrl: string | null;

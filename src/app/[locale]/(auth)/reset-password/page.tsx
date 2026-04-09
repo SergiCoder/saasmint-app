@@ -9,12 +9,17 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("pageTitle") };
 }
 
-export default async function ResetPasswordPage() {
+export default async function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>;
+}) {
   const t = await getTranslations("auth.resetPassword");
+  const { token } = await searchParams;
 
   return (
     <AuthLayout appName="SaaSmint" title={t("title")}>
-      <ResetPasswordForm action={updatePassword} />
+      <ResetPasswordForm action={updatePassword} token={token} />
     </AuthLayout>
   );
 }
