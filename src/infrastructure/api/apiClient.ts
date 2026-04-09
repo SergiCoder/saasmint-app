@@ -14,6 +14,18 @@ async function _getAuthToken(): Promise<string> {
   return token;
 }
 
+function isNetworkError(err: unknown): boolean {
+  if (!(err instanceof TypeError)) return false;
+  const cause = (err as TypeError & { cause?: { code?: string } }).cause;
+  if (cause && typeof cause.code === "string") {
+    return ["ECONNREFUSED", "ENOTFOUND", "ETIMEDOUT", "ECONNRESET"].includes(
+      cause.code,
+    );
+  }
+  // Node 18+ fetch: "fetch failed" with a cause; older runtimes: "Failed to fetch" / "NetworkError"
+  return /\bfetch failed\b|Failed to fetch|NetworkError/i.test(err.message);
+}
+
 async function request<T>(
   path: string,
   options: RequestInit,
@@ -32,10 +44,18 @@ async function request<T>(
     });
   }
 
-  const res = await fetch(`${API_URL}/api/v1${path}`, {
-    ...options,
-    headers: Object.fromEntries(headers.entries()),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/api/v1${path}`, {
+      ...options,
+      headers: Object.fromEntries(headers.entries()),
+    });
+  } catch (err) {
+    if (isNetworkError(err)) {
+      throw new Error("Unable to reach the server. Please try again later.");
+    }
+    throw err;
+  }
 
   if (!res.ok) {
     const text = await res.text();

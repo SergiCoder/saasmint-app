@@ -36,9 +36,6 @@ export async function signIn(_prevState: unknown, formData: FormData) {
       body: JSON.stringify(result),
     });
   } catch (err) {
-    if (err instanceof TypeError) {
-      return { error: "Unable to reach the server. Please try again later." };
-    }
     const message = err instanceof Error ? err.message : "Login failed";
     return { error: message };
   }
@@ -76,9 +73,6 @@ export async function signUp(_prevState: unknown, formData: FormData) {
       }),
     });
   } catch (err) {
-    if (err instanceof TypeError) {
-      return { error: "Unable to reach the server. Please try again later." };
-    }
     const message = err instanceof Error ? err.message : "Registration failed";
     return { error: message };
   }
@@ -128,9 +122,6 @@ export async function updatePassword(_prevState: unknown, formData: FormData) {
       }),
     });
   } catch (err) {
-    if (err instanceof TypeError) {
-      return { error: "Unable to reach the server. Please try again later." };
-    }
     const message =
       err instanceof Error ? err.message : "Failed to update password";
     return { error: message };
@@ -147,9 +138,6 @@ export async function verifyEmail(token: string): Promise<{ error?: string }> {
       body: JSON.stringify({ token }),
     });
   } catch (err) {
-    if (err instanceof TypeError) {
-      return { error: "Unable to reach the server. Please try again later." };
-    }
     const message = err instanceof Error ? err.message : "Verification failed";
     return { error: message };
   }
