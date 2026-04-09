@@ -254,6 +254,9 @@
     "name": "Naam",
     "email": "E-mail",
     "slug": "Slug",
+    "userId": "Gebruikers-ID",
+    "addMember": "Lid toevoegen",
+    "memberAdded": "Lid succesvol toegevoegd",
     "roleMember": "Lid",
     "roleAdmin": "Beheerder",
     "roleOwner": "Eigenaar"

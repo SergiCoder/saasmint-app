@@ -254,6 +254,9 @@
     "name": "Имя",
     "email": "Эл. почта",
     "slug": "Slug",
+    "userId": "ID пользователя",
+    "addMember": "Добавить участника",
+    "memberAdded": "Участник успешно добавлен",
     "roleMember": "Участник",
     "roleAdmin": "Администратор",
     "roleOwner": "Владелец"

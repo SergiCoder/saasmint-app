@@ -254,6 +254,9 @@
     "name": "Nome",
     "email": "E-mail",
     "slug": "Slug",
+    "userId": "ID do usuário",
+    "addMember": "Adicionar membro",
+    "memberAdded": "Membro adicionado com sucesso",
     "roleMember": "Membro",
     "roleAdmin": "Administrador",
     "roleOwner": "Proprietário"

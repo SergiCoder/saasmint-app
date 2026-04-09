@@ -254,6 +254,9 @@
     "name": "名稱",
     "email": "電子郵件",
     "slug": "Slug",
+    "userId": "使用者 ID",
+    "addMember": "新增成員",
+    "memberAdded": "成員新增成功",
     "roleMember": "成員",
     "roleAdmin": "管理員",
     "roleOwner": "擁有者"

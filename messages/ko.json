@@ -254,6 +254,9 @@
     "name": "이름",
     "email": "이메일",
     "slug": "Slug",
+    "userId": "사용자 ID",
+    "addMember": "멤버 추가",
+    "memberAdded": "멤버가 추가되었습니다",
     "roleMember": "멤버",
     "roleAdmin": "관리자",
     "roleOwner": "소유자"

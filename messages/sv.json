@@ -254,6 +254,9 @@
     "name": "Namn",
     "email": "E-post",
     "slug": "Slug",
+    "userId": "Användar-ID",
+    "addMember": "Lägg till medlem",
+    "memberAdded": "Medlem har lagts till",
     "roleMember": "Medlem",
     "roleAdmin": "Administratör",
     "roleOwner": "Ägare"

@@ -254,6 +254,9 @@
     "name": "名前",
     "email": "メール",
     "slug": "Slug",
+    "userId": "ユーザーID",
+    "addMember": "メンバーを追加",
+    "memberAdded": "メンバーを追加しました",
     "roleMember": "メンバー",
     "roleAdmin": "管理者",
     "roleOwner": "オーナー"

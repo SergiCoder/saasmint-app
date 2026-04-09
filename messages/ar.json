@@ -254,6 +254,9 @@
     "name": "الاسم",
     "email": "البريد الإلكتروني",
     "slug": "Slug",
+    "userId": "معرّف المستخدم",
+    "addMember": "إضافة عضو",
+    "memberAdded": "تمت إضافة العضو بنجاح",
     "roleMember": "عضو",
     "roleAdmin": "مدير",
     "roleOwner": "مالك"

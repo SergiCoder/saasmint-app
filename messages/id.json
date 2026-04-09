@@ -254,6 +254,9 @@
     "name": "Nama",
     "email": "Email",
     "slug": "Slug",
+    "userId": "ID Pengguna",
+    "addMember": "Tambah anggota",
+    "memberAdded": "Anggota berhasil ditambahkan",
     "roleMember": "Anggota",
     "roleAdmin": "Administrator",
     "roleOwner": "Pemilik"

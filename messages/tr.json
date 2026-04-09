@@ -254,6 +254,9 @@
     "name": "Ad",
     "email": "E-posta",
     "slug": "Slug",
+    "userId": "Kullanıcı ID",
+    "addMember": "Üye ekle",
+    "memberAdded": "Üye başarıyla eklendi",
     "roleMember": "Üye",
     "roleAdmin": "Yönetici",
     "roleOwner": "Sahip"

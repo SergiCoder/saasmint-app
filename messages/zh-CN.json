@@ -254,6 +254,9 @@
     "name": "名称",
     "email": "邮箱",
     "slug": "Slug",
+    "userId": "用户 ID",
+    "addMember": "添加成员",
+    "memberAdded": "成员添加成功",
     "roleMember": "成员",
     "roleAdmin": "管理员",
     "roleOwner": "所有者"
