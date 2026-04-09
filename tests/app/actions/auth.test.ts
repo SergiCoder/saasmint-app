@@ -8,21 +8,14 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-const mockSignInWithPassword = vi.fn();
-const mockSignUp = vi.fn();
-const mockResetPasswordForEmail = vi.fn();
-const mockUpdateUser = vi.fn();
-vi.mock("@/infrastructure/supabase/server", () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: {
-      signInWithPassword: (...args: unknown[]) =>
-        mockSignInWithPassword(...args),
-      signUp: (...args: unknown[]) => mockSignUp(...args),
-      resetPasswordForEmail: (...args: unknown[]) =>
-        mockResetPasswordForEmail(...args),
-      updateUser: (...args: unknown[]) => mockUpdateUser(...args),
-    },
-  }),
+const mockPublicApiFetch = vi.fn();
+vi.mock("@/infrastructure/api/apiClient", () => ({
+  publicApiFetch: (...args: unknown[]) => mockPublicApiFetch(...args),
+}));
+
+const mockSetAuthCookies = vi.fn();
+vi.mock("@/infrastructure/auth/cookies", () => ({
+  setAuthCookies: (...args: unknown[]) => mockSetAuthCookies(...args),
 }));
 
 const mockSignOutExecute = vi.fn();
@@ -55,8 +48,12 @@ beforeEach(async () => {
 
 describe("auth server actions", () => {
   describe("signIn", () => {
-    it("redirects to /dashboard on success", async () => {
-      mockSignInWithPassword.mockResolvedValue({ error: null });
+    it("calls Django login and redirects to /dashboard on success", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+        expires_in: 900,
+      });
 
       const formData = new FormData();
       formData.set("email", "user@example.com");
@@ -65,29 +62,41 @@ describe("auth server actions", () => {
       await expect(signIn(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
       );
-      expect(mockSignInWithPassword).toHaveBeenCalledWith({
-        email: "user@example.com",
-        password: "secret123",
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/login/", {
+        method: "POST",
+        body: JSON.stringify({
+          email: "user@example.com",
+          password: "secret123",
+        }),
       });
+      expect(mockSetAuthCookies).toHaveBeenCalledWith(
+        "tok_abc",
+        "ref_abc",
+        900,
+      );
       expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
     });
 
     it("returns error message on failure", async () => {
-      mockSignInWithPassword.mockResolvedValue({
-        error: { message: "Invalid credentials" },
-      });
+      mockPublicApiFetch.mockRejectedValue(
+        new Error("API 401: Invalid credentials"),
+      );
 
       const formData = new FormData();
       formData.set("email", "user@example.com");
       formData.set("password", "wrong");
 
       const result = await signIn(undefined, formData);
-      expect(result).toEqual({ error: "Invalid credentials" });
+      expect(result).toEqual({ error: "API 401: Invalid credentials" });
       expect(mockRedirect).not.toHaveBeenCalled();
     });
 
     it("redirects to billing checkout when plan is supplied", async () => {
-      mockSignInWithPassword.mockResolvedValue({ error: null });
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+        expires_in: 900,
+      });
 
       const formData = new FormData();
       formData.set("email", "user@example.com");
@@ -104,8 +113,8 @@ describe("auth server actions", () => {
   });
 
   describe("signUp", () => {
-    it("redirects to /login on success", async () => {
-      mockSignUp.mockResolvedValue({ error: null });
+    it("calls Django register and redirects to /login on success", async () => {
+      mockPublicApiFetch.mockResolvedValue({});
 
       const formData = new FormData();
       formData.set("fullName", "Jane Doe");
@@ -115,23 +124,21 @@ describe("auth server actions", () => {
       await expect(signUp(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
       );
-      expect(mockSignUp).toHaveBeenCalledWith(
-        expect.objectContaining({
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/register/", {
+        method: "POST",
+        body: JSON.stringify({
           email: "new@example.com",
           password: "secret123",
-          options: {
-            emailRedirectTo: "http://localhost:3000/auth/callback",
-            data: { full_name: "Jane Doe" },
-          },
+          full_name: "Jane Doe",
         }),
-      );
+      });
       expect(mockRedirect).toHaveBeenCalledWith("/login?registered=true");
     });
 
     it("returns error message on failure", async () => {
-      mockSignUp.mockResolvedValue({
-        error: { message: "Email already in use" },
-      });
+      mockPublicApiFetch.mockRejectedValue(
+        new Error("API 400: Email already in use"),
+      );
 
       const formData = new FormData();
       formData.set("fullName", "Jane Doe");
@@ -139,7 +146,7 @@ describe("auth server actions", () => {
       formData.set("password", "secret123");
 
       const result = await signUp(undefined, formData);
-      expect(result).toEqual({ error: "Email already in use" });
+      expect(result).toEqual({ error: "API 400: Email already in use" });
     });
 
     it("returns error when fullName is too short", async () => {
@@ -152,46 +159,7 @@ describe("auth server actions", () => {
       expect(result).toEqual({
         error: "Full name must be between 3 and 255 characters",
       });
-      expect(mockSignUp).not.toHaveBeenCalled();
-    });
-
-    it("encodes plan into emailRedirectTo next param when plan is supplied", async () => {
-      mockSignUp.mockResolvedValue({ error: null });
-
-      const formData = new FormData();
-      formData.set("fullName", "Jane Doe");
-      formData.set("email", "new@example.com");
-      formData.set("password", "secret123");
-      formData.set("plan", "price_pro_monthly");
-
-      await expect(signUp(undefined, formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
-
-      const call = mockSignUp.mock.calls[0][0];
-      const redirectUrl = new URL(call.options.emailRedirectTo);
-      expect(redirectUrl.pathname).toBe("/auth/callback");
-      expect(redirectUrl.searchParams.get("next")).toBe(
-        "/subscription/checkout?plan=price_pro_monthly",
-      );
-    });
-
-    it("does not set next param when plan is empty string", async () => {
-      mockSignUp.mockResolvedValue({ error: null });
-
-      const formData = new FormData();
-      formData.set("fullName", "Jane Doe");
-      formData.set("email", "new@example.com");
-      formData.set("password", "secret123");
-      formData.set("plan", "");
-
-      await expect(signUp(undefined, formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
-
-      const call = mockSignUp.mock.calls[0][0];
-      const redirectUrl = new URL(call.options.emailRedirectTo);
-      expect(redirectUrl.searchParams.get("next")).toBeNull();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
     it("returns error when fullName is missing", async () => {
@@ -203,7 +171,7 @@ describe("auth server actions", () => {
       expect(result).toEqual({
         error: "Full name must be between 3 and 255 characters",
       });
-      expect(mockSignUp).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
   });
 
@@ -214,7 +182,7 @@ describe("auth server actions", () => {
 
       const result = await signIn(undefined, formData);
       expect(result).toEqual({ error: "Email and password are required" });
-      expect(mockSignInWithPassword).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
     it("returns error when password is missing", async () => {
@@ -223,7 +191,7 @@ describe("auth server actions", () => {
 
       const result = await signIn(undefined, formData);
       expect(result).toEqual({ error: "Email and password are required" });
-      expect(mockSignInWithPassword).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
     it("returns error when both fields are missing", async () => {
@@ -236,18 +204,18 @@ describe("auth server actions", () => {
 
   describe("resetPassword", () => {
     it("returns success when reset email is sent", async () => {
-      mockResetPasswordForEmail.mockResolvedValue({ error: null });
+      mockPublicApiFetch.mockResolvedValue({});
 
       const formData = new FormData();
       formData.set("email", "user@example.com");
 
       const result = await resetPassword(undefined, formData);
       expect(result).toEqual({ success: true });
-      expect(mockResetPasswordForEmail).toHaveBeenCalledWith(
-        "user@example.com",
+      expect(mockPublicApiFetch).toHaveBeenCalledWith(
+        "/auth/forgot-password/",
         {
-          redirectTo:
-            "http://localhost:3000/auth/callback?next=/reset-password",
+          method: "POST",
+          body: JSON.stringify({ email: "user@example.com" }),
         },
       );
     });
@@ -257,13 +225,13 @@ describe("auth server actions", () => {
 
       const result = await resetPassword(undefined, formData);
       expect(result).toEqual({ error: "Email is required" });
-      expect(mockResetPasswordForEmail).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
-    it("returns success even on Supabase failure to avoid email enumeration", async () => {
-      mockResetPasswordForEmail.mockResolvedValue({
-        error: { message: "Rate limit exceeded" },
-      });
+    it("returns success even on API failure to avoid email enumeration", async () => {
+      mockPublicApiFetch.mockRejectedValue(
+        new Error("API 429: Rate limit exceeded"),
+      );
 
       const formData = new FormData();
       formData.set("email", "user@example.com");
@@ -275,16 +243,21 @@ describe("auth server actions", () => {
 
   describe("updatePassword", () => {
     it("returns success when password is updated", async () => {
-      mockUpdateUser.mockResolvedValue({ error: null });
+      mockPublicApiFetch.mockResolvedValue({});
 
       const formData = new FormData();
       formData.set("password", "newpassword123");
       formData.set("confirmPassword", "newpassword123");
+      formData.set("token", "reset-token-123");
 
       const result = await updatePassword(undefined, formData);
       expect(result).toEqual({ success: true });
-      expect(mockUpdateUser).toHaveBeenCalledWith({
-        password: "newpassword123",
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/reset-password/", {
+        method: "POST",
+        body: JSON.stringify({
+          token: "reset-token-123",
+          password: "newpassword123",
+        }),
       });
     });
 
@@ -297,7 +270,7 @@ describe("auth server actions", () => {
       expect(result).toEqual({
         error: "Password must be at least 8 characters",
       });
-      expect(mockUpdateUser).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
     it("returns error when password is missing", async () => {
@@ -308,7 +281,7 @@ describe("auth server actions", () => {
       expect(result).toEqual({
         error: "Password must be at least 8 characters",
       });
-      expect(mockUpdateUser).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
     it("returns error when passwords do not match", async () => {
@@ -318,20 +291,23 @@ describe("auth server actions", () => {
 
       const result = await updatePassword(undefined, formData);
       expect(result).toEqual({ error: "Passwords do not match" });
-      expect(mockUpdateUser).not.toHaveBeenCalled();
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
     });
 
-    it("returns error message on Supabase failure", async () => {
-      mockUpdateUser.mockResolvedValue({
-        error: { message: "Session expired" },
-      });
+    it("returns error message on API failure", async () => {
+      mockPublicApiFetch.mockRejectedValue(
+        new Error("API 400: Invalid or expired token"),
+      );
 
       const formData = new FormData();
       formData.set("password", "newpassword123");
       formData.set("confirmPassword", "newpassword123");
+      formData.set("token", "expired-token");
 
       const result = await updatePassword(undefined, formData);
-      expect(result).toEqual({ error: "Session expired" });
+      expect(result).toEqual({
+        error: "API 400: Invalid or expired token",
+      });
     });
   });
 

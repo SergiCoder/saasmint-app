@@ -11,7 +11,7 @@ const { DjangoApiUserGateway } =
 
 const snakeUser = {
   id: "u1",
-  supabase_uid: "sb-u1",
+
   email: "alice@example.com",
   full_name: "Alice",
   avatar_url: null,
@@ -30,7 +30,7 @@ const snakeUser = {
 
 const camelUser = {
   id: "u1",
-  supabaseUid: "sb-u1",
+
   email: "alice@example.com",
   fullName: "Alice",
   avatarUrl: null,

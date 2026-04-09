@@ -6,7 +6,7 @@ import type { User } from "@/domain/models/User";
 
 const user: User = {
   id: "u1",
-  supabaseUid: "sb-u1",
+
   email: "alice@example.com",
   fullName: "Alice",
   avatarUrl: null,

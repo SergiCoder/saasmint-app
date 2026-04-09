@@ -1,13 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { AuthError } from "@/domain/errors/AuthError";
 
-const mockGetUser = vi.fn();
-const mockGetSession = vi.fn();
+const mockGetAccessToken = vi.fn();
 
-vi.mock("@/infrastructure/supabase/server", () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: { getUser: mockGetUser, getSession: mockGetSession },
-  }),
+vi.mock("@/infrastructure/auth/cookies", () => ({
+  getAccessToken: (...args: unknown[]) => mockGetAccessToken(...args),
 }));
 
 const fetchSpy = vi.fn();
@@ -19,12 +16,7 @@ const { getAuthToken, apiFetch, publicApiFetch } =
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetUser.mockResolvedValue({
-    data: { user: { id: "u1" } },
-  });
-  mockGetSession.mockResolvedValue({
-    data: { session: { access_token: "tok_abc" } },
-  });
+  mockGetAccessToken.mockResolvedValue("tok_abc");
 });
 
 afterEach(() => {
@@ -32,15 +24,13 @@ afterEach(() => {
 });
 
 describe("getAuthToken", () => {
-  it("returns the access token from the active session", async () => {
+  it("returns the access token from the cookie", async () => {
     const token = await getAuthToken();
     expect(token).toBe("tok_abc");
   });
 
-  it("throws AuthError when no user exists", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: null },
-    });
+  it("throws AuthError when no token exists", async () => {
+    mockGetAccessToken.mockResolvedValue(undefined);
 
     await expect(getAuthToken()).rejects.toThrow(AuthError);
     await expect(getAuthToken()).rejects.toMatchObject({
@@ -65,7 +55,7 @@ describe("apiFetch", () => {
     );
   });
 
-  it("sends Authorization header with bearer token from session", async () => {
+  it("sends Authorization header with bearer token from cookie", async () => {
     fetchSpy.mockResolvedValue({
       ok: true,
       status: 200,
@@ -219,10 +209,8 @@ describe("apiFetch", () => {
     });
   });
 
-  it("throws AuthError when no user exists", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: null },
-    });
+  it("throws AuthError when no token exists in cookie", async () => {
+    mockGetAccessToken.mockResolvedValue(undefined);
 
     await expect(apiFetch("/account/")).rejects.toThrow(AuthError);
   });
@@ -247,19 +235,17 @@ describe("publicApiFetch", () => {
     expect(result).toEqual([{ id: "p1" }]);
   });
 
-  it("does not call Supabase / getAuthToken", async () => {
+  it("does not read auth cookies", async () => {
     fetchSpy.mockResolvedValue({
       ok: true,
       status: 200,
       json: () => Promise.resolve([]),
     });
 
-    mockGetUser.mockClear();
-    mockGetSession.mockClear();
+    mockGetAccessToken.mockClear();
     await publicApiFetch("/billing/plans/");
 
-    expect(mockGetUser).not.toHaveBeenCalled();
-    expect(mockGetSession).not.toHaveBeenCalled();
+    expect(mockGetAccessToken).not.toHaveBeenCalled();
   });
 
   it("sets Content-Type when a body is present", async () => {
@@ -309,18 +295,5 @@ describe("publicApiFetch", () => {
     await expect(publicApiFetch("/billing/plans/")).rejects.not.toBeInstanceOf(
       AuthError,
     );
-  });
-});
-
-describe("getAuthToken — session edge cases", () => {
-  it("throws AuthError when user exists but session is null", async () => {
-    mockGetSession.mockResolvedValue({
-      data: { session: null },
-    });
-
-    await expect(getAuthToken()).rejects.toThrow(AuthError);
-    await expect(getAuthToken()).rejects.toMatchObject({
-      code: "NO_SESSION",
-    });
   });
 });

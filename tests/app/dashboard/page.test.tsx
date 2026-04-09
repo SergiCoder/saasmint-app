@@ -52,7 +52,7 @@ const { default: DashboardPage } =
 function makeUser(overrides: Partial<User> = {}): User {
   return {
     id: "u1",
-    supabaseUid: "sb-1",
+
     email: "test@example.com",
     fullName: "Test User",
     avatarUrl: null,
