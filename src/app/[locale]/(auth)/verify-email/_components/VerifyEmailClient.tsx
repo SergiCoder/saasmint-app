@@ -38,7 +38,7 @@ export function VerifyEmailClient({ token }: VerifyEmailClientProps) {
     return () => {
       ignore = true;
     };
-  }, [token, router]);
+  }, [token, router, t]);
 
   if (error) {
     return (

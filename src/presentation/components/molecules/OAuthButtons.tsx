@@ -56,7 +56,7 @@ export function OAuthButtons({ plan }: OAuthButtonsProps = {}) {
     const oauthUrl = new URL(`${API_URL}/api/v1/auth/oauth/${provider}/`);
     oauthUrl.searchParams.set("redirect_uri", callbackUrl.toString());
 
-    window.location.href = oauthUrl.toString();
+    window.location.assign(oauthUrl.toString());
   }
 
   return (
