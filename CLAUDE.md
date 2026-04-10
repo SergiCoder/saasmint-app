@@ -21,11 +21,11 @@ Core types in `src/domain/models/`:
 
 - `User` — authenticated user (id, account type, locale/currency preferences)
 - `Org` — organisation record (id, name, slug, logoUrl)
-- `OrgMember` — org membership (userId, role: `owner | admin | member`, isBilling flag)
+- `OrgMember` — org membership (nested `user: OrgMemberUser`, role: `owner | admin | member`, isBilling flag)
 - `Plan` — billing plan (context: `personal | team`, tier: `free | basic | pro`, interval: `month | year`, single `price`)
-- `PlanPrice` — individual plan price point (id, amount in cents)
+- `PlanPrice` — individual plan price point (id, amount, displayAmount, currency)
 - `Product` — one-time purchase product (id, name, type: `one_time`, credits, `price`)
-- `ProductPrice` — individual product price point (id, amount in cents)
+- `ProductPrice` — individual product price point (id, amount, displayAmount, currency)
 - `Subscription` — active Stripe subscription (status, plan snapshot, period dates, trial)
 
 Domain errors in `src/domain/errors/`:
