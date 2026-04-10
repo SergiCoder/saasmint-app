@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

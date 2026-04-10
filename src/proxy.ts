@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 
 const intlMiddleware = createMiddleware(routing);
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://localhost:8443";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
@@ -26,6 +26,8 @@ function isTokenExpired(token: string): boolean {
 }
 
 const isProduction = process.env.NODE_ENV === "production";
+
+export const runtime = "nodejs";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -60,6 +62,11 @@ export async function proxy(request: NextRequest) {
             refresh_token: string;
           };
           accessToken = data.access_token;
+
+          // Forward refreshed tokens to downstream server code (pages,
+          // server components) so they read the new token, not the stale one.
+          request.cookies.set("access_token", data.access_token);
+          request.cookies.set("refresh_token", data.refresh_token);
 
           const intlResponse = intlMiddleware(request);
           intlResponse.cookies.set("access_token", data.access_token, {
