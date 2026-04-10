@@ -2,6 +2,12 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "@/lib/i18n/routing";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  ACCESS_TOKEN_NAME,
+  REFRESH_TOKEN_NAME,
+  accessTokenCookieOptions,
+  refreshTokenCookieOptions,
+} from "@/infrastructure/auth/cookies";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -28,8 +34,6 @@ function isTokenExpired(token: string): boolean {
   }
 }
 
-const isProduction = process.env.NODE_ENV === "production";
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -45,8 +49,8 @@ export async function proxy(request: NextRequest) {
   );
 
   if (isProtected) {
-    let accessToken = request.cookies.get("access_token")?.value;
-    const refreshToken = request.cookies.get("refresh_token")?.value;
+    let accessToken = request.cookies.get(ACCESS_TOKEN_NAME)?.value;
+    const refreshToken = request.cookies.get(REFRESH_TOKEN_NAME)?.value;
 
     // Attempt token refresh if access token is missing or expired
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {
@@ -66,24 +70,20 @@ export async function proxy(request: NextRequest) {
 
           // Forward refreshed tokens to downstream server code (pages,
           // server components) so they read the new token, not the stale one.
-          request.cookies.set("access_token", data.access_token);
-          request.cookies.set("refresh_token", data.refresh_token);
+          request.cookies.set(ACCESS_TOKEN_NAME, data.access_token);
+          request.cookies.set(REFRESH_TOKEN_NAME, data.refresh_token);
 
           const intlResponse = intlMiddleware(request);
-          intlResponse.cookies.set("access_token", data.access_token, {
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: "lax",
-            maxAge: 15 * 60, // 15 minutes
-            path: "/",
-          });
-          intlResponse.cookies.set("refresh_token", data.refresh_token, {
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: "lax",
-            maxAge: 60 * 60 * 24 * 7,
-            path: "/",
-          });
+          intlResponse.cookies.set(
+            ACCESS_TOKEN_NAME,
+            data.access_token,
+            accessTokenCookieOptions,
+          );
+          intlResponse.cookies.set(
+            REFRESH_TOKEN_NAME,
+            data.refresh_token,
+            refreshTokenCookieOptions,
+          );
           return intlResponse;
         }
       } catch {

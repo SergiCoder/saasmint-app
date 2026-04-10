@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-
-const isProduction = process.env.NODE_ENV === "production";
+import {
+  ACCESS_TOKEN_NAME,
+  REFRESH_TOKEN_NAME,
+  ACCESS_TOKEN_MAX_AGE,
+  accessTokenCookieOptions,
+  refreshTokenCookieOptions,
+} from "@/infrastructure/auth/cookies";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -23,27 +28,23 @@ export async function GET(request: NextRequest) {
   if (accessToken && refreshToken) {
     const response = NextResponse.redirect(new URL(next, origin));
 
-    response.cookies.set("access_token", accessToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
-      maxAge: (() => {
-        const parsed = expiresIn ? parseInt(expiresIn, 10) : NaN;
-        // Cap at 1 hour to limit damage if the parameter is tampered with
-        return Number.isFinite(parsed) && parsed > 0 && parsed <= 3600
-          ? parsed
-          : 900;
-      })(),
-      path: "/",
+    const parsed = expiresIn ? parseInt(expiresIn, 10) : NaN;
+    // Cap at 1 hour to limit damage if the parameter is tampered with
+    const accessMaxAge =
+      Number.isFinite(parsed) && parsed > 0 && parsed <= 3600
+        ? parsed
+        : ACCESS_TOKEN_MAX_AGE;
+
+    response.cookies.set(ACCESS_TOKEN_NAME, accessToken, {
+      ...accessTokenCookieOptions,
+      maxAge: accessMaxAge,
     });
 
-    response.cookies.set("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
+    response.cookies.set(
+      REFRESH_TOKEN_NAME,
+      refreshToken,
+      refreshTokenCookieOptions,
+    );
 
     return response;
   }
