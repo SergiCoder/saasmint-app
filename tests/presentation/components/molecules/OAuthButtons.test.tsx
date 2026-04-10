@@ -59,7 +59,9 @@ describe("OAuthButtons", () => {
     );
 
     await waitFor(() => {
-      expect(window.location.href).toContain("/api/v1/auth/oauth/github/");
+      expect(locationAssignSpy).toHaveBeenCalledWith(
+        expect.stringContaining("/api/v1/auth/oauth/github/"),
+      );
     });
   });
 
@@ -70,7 +72,9 @@ describe("OAuthButtons", () => {
     );
 
     await waitFor(() => {
-      expect(window.location.href).toContain("/api/v1/auth/oauth/google/");
+      expect(locationAssignSpy).toHaveBeenCalledWith(
+        expect.stringContaining("/api/v1/auth/oauth/google/"),
+      );
     });
   });
 
@@ -81,7 +85,9 @@ describe("OAuthButtons", () => {
     );
 
     await waitFor(() => {
-      expect(window.location.href).toContain("/api/v1/auth/oauth/microsoft/");
+      expect(locationAssignSpy).toHaveBeenCalledWith(
+        expect.stringContaining("/api/v1/auth/oauth/microsoft/"),
+      );
     });
   });
 
