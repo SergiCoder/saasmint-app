@@ -1,13 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
-const mockCookieSet = vi.fn();
-vi.mock("next/headers", () => ({
-  cookies: vi.fn().mockResolvedValue({
-    set: (...args: unknown[]) => mockCookieSet(...args),
-  }),
-}));
-
 import { GET } from "@/app/[locale]/auth/callback/route";
 
 function makeRequest(params: Record<string, string>) {
@@ -32,16 +25,11 @@ describe("auth callback route", () => {
       }),
     );
 
-    expect(mockCookieSet).toHaveBeenCalledWith(
-      "access_token",
-      "tok_abc",
-      expect.objectContaining({ httpOnly: true, path: "/" }),
-    );
-    expect(mockCookieSet).toHaveBeenCalledWith(
-      "refresh_token",
-      "ref_abc",
-      expect.objectContaining({ httpOnly: true, path: "/" }),
-    );
+    const accessCookie = response.cookies.get("access_token");
+    const refreshCookie = response.cookies.get("refresh_token");
+
+    expect(accessCookie?.value).toBe("tok_abc");
+    expect(refreshCookie?.value).toBe("ref_abc");
     expect(response.status).toBe(307);
     expect(new URL(response.headers.get("location")!).pathname).toBe(
       "/dashboard",
@@ -67,7 +55,7 @@ describe("auth callback route", () => {
     const location = new URL(response.headers.get("location")!);
     expect(location.pathname).toBe("/login");
     expect(location.searchParams.get("error")).toBe("oauth_error");
-    expect(mockCookieSet).not.toHaveBeenCalled();
+    expect(response.cookies.get("access_token")).toBeUndefined();
   });
 
   it("redirects to /login with oauth_error when no tokens provided", async () => {

@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { cookies } from "next/headers";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -22,9 +21,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (accessToken && refreshToken) {
-    const cookieStore = await cookies();
+    const response = NextResponse.redirect(new URL(next, origin));
 
-    cookieStore.set("access_token", accessToken, {
+    response.cookies.set("access_token", accessToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: "lax",
@@ -32,7 +31,7 @@ export async function GET(request: NextRequest) {
       path: "/",
     });
 
-    cookieStore.set("refresh_token", refreshToken, {
+    response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: "lax",
@@ -40,7 +39,7 @@ export async function GET(request: NextRequest) {
       path: "/",
     });
 
-    return NextResponse.redirect(new URL(next, origin));
+    return response;
   }
 
   return NextResponse.redirect(new URL("/login?error=oauth_error", origin));
