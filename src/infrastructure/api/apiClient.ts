@@ -2,7 +2,7 @@ import { cache } from "react";
 import { AuthError } from "@/domain/errors/AuthError";
 import { getAccessToken } from "@/infrastructure/auth/cookies";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://localhost:8443";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 // Wrapped with React.cache so that multiple apiFetch() calls within a single
 // server render share one cookie read instead of repeating it per request.

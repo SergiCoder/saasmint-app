@@ -11,7 +11,7 @@ import {
 
 const intlMiddleware = createMiddleware(routing);
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://localhost:8443";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
