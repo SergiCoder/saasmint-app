@@ -9,7 +9,6 @@ import { TeamCheckoutButton } from "@/app/[locale]/(app)/subscription/_component
 
 const defaultProps = {
   planPriceId: "price_team_1",
-  unitPrice: 1000, // cents
   displayAmount: 10,
   currency: "usd",
   locale: "en-US",
