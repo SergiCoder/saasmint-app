@@ -31,18 +31,19 @@ export function keysToCamel<T>(obj: Record<string, unknown>): T {
  * Flatten a nested `phone: { prefix, number }` API object into flat
  * `phonePrefix` / `phone` fields on the target user object.
  */
-export function flattenPhone(raw: Record<string, unknown>, user: Record<string, unknown>): void {
+export function flattenPhone(raw: Record<string, unknown>, user: object): void {
   const phoneData = raw.phone as
     | { prefix: string; number: string }
     | null
     | undefined;
 
+  const target = user as Record<string, unknown>;
   if (phoneData && typeof phoneData === "object") {
-    user.phonePrefix = phoneData.prefix;
-    user.phone = phoneData.number;
+    target.phonePrefix = phoneData.prefix;
+    target.phone = phoneData.number;
   } else {
-    user.phonePrefix = null;
-    user.phone = null;
+    target.phonePrefix = null;
+    target.phone = null;
   }
 }
 
