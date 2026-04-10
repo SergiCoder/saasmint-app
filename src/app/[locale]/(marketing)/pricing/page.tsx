@@ -27,34 +27,32 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PricingPage() {
-  const plansPromise = new ListPlans(planGateway)
-    .execute()
-    .catch((err): Plan[] => {
-      console.error("Failed to fetch plans", err);
-      return [];
-    });
-
-  const [t, locale, user, plans] = await Promise.all([
+  const [t, locale, user] = await Promise.all([
     getTranslations("billing"),
     getLocale(),
     getOptionalUser(),
-    plansPromise,
   ]);
 
-  let currentPlanId: string | undefined;
-  let products: Product[] = [];
-  if (user) {
-    try {
-      const [subscription, fetchedProducts] = await Promise.all([
-        new GetSubscription(subscriptionGateway).execute(),
-        new ListProducts(productGateway).execute(),
-      ]);
-      currentPlanId = subscription?.plan.id;
-      products = fetchedProducts;
-    } catch (err) {
-      console.error("Failed to fetch subscription/products", err);
-    }
-  }
+  const currency = user?.preferredCurrency;
+
+  const [plans, subscription, products] = await Promise.all([
+    new ListPlans(planGateway).execute(currency).catch((err): Plan[] => {
+      console.error("Failed to fetch plans", err);
+      return [];
+    }),
+    user
+      ? new GetSubscription(subscriptionGateway)
+          .execute(currency)
+          .catch(() => null)
+      : Promise.resolve(null),
+    user
+      ? new ListProducts(productGateway)
+          .execute(currency)
+          .catch((): Product[] => [])
+      : Promise.resolve([] as Product[]),
+  ]);
+
+  const currentPlanId = subscription?.plan.id;
 
   const groups = buildPlanCardGroups({
     plans,
