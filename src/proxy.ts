@@ -27,8 +27,6 @@ function isTokenExpired(token: string): boolean {
 
 const isProduction = process.env.NODE_ENV === "production";
 
-export const runtime = "nodejs";
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
