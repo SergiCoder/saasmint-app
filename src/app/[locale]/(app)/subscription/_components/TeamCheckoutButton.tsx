@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/presentation/components/atoms/Button";
 import { Input } from "@/presentation/components/atoms/Input";
 import { startCheckout } from "@/app/actions/billing";
@@ -36,12 +36,17 @@ export function TeamCheckoutButton({
 }: TeamCheckoutButtonProps) {
   const [quantity, setQuantity] = useState(minSeats);
   const total = displayAmount * quantity;
-  const formattedTotal = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 0,
-    maximumFractionDigits: total % 1 === 0 ? 0 : 2,
-  }).format(total);
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: currency.toUpperCase(),
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }),
+    [locale, currency],
+  );
+  const formattedTotal = currencyFormatter.format(total);
 
   return (
     <form action={startCheckout} className="space-y-3">
