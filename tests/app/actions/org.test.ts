@@ -114,9 +114,7 @@ describe("org server actions", () => {
     });
 
     it("returns error on failure", async () => {
-      mockAddOrgMemberExecute.mockRejectedValue(
-        new Error("Already a member"),
-      );
+      mockAddOrgMemberExecute.mockRejectedValue(new Error("Already a member"));
 
       const formData = new FormData();
       formData.set("orgId", "org_1");

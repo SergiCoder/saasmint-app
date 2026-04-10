@@ -154,7 +154,6 @@ describe("billing server actions", () => {
       expect(errSpy).toHaveBeenCalled();
       errSpy.mockRestore();
     });
-
   });
 
   describe("openBillingPortal", () => {
@@ -205,7 +204,6 @@ describe("billing server actions", () => {
       expect(errSpy).toHaveBeenCalled();
       errSpy.mockRestore();
     });
-
   });
 
   describe("cancelSubscription", () => {

@@ -68,10 +68,7 @@ describe("auth server actions", () => {
           password: "secret123",
         }),
       });
-      expect(mockSetAuthCookies).toHaveBeenCalledWith(
-        "tok_abc",
-        "ref_abc",
-      );
+      expect(mockSetAuthCookies).toHaveBeenCalledWith("tok_abc", "ref_abc");
       expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
     });
 

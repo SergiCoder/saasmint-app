@@ -101,7 +101,9 @@ describe("ProductsGrid", () => {
       />,
     );
     expect(screen.getByText("Free Sample")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Buy" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Buy" }),
+    ).not.toBeInTheDocument();
   });
 
   it("forwards a custom className to the wrapper", () => {

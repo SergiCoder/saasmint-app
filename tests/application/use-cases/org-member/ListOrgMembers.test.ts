@@ -6,7 +6,12 @@ import type { OrgMember } from "@/domain/models/OrgMember";
 const members: OrgMember[] = [
   {
     id: "m1",
-    user: { id: "u1", email: "alice@example.com", fullName: "Alice", avatarUrl: null },
+    user: {
+      id: "u1",
+      email: "alice@example.com",
+      fullName: "Alice",
+      avatarUrl: null,
+    },
     org: "o1",
     role: "owner",
     isBilling: true,
@@ -14,7 +19,12 @@ const members: OrgMember[] = [
   },
   {
     id: "m2",
-    user: { id: "u2", email: "bob@example.com", fullName: "Bob", avatarUrl: null },
+    user: {
+      id: "u2",
+      email: "bob@example.com",
+      fullName: "Bob",
+      avatarUrl: null,
+    },
     org: "o1",
     role: "member",
     isBilling: false,

@@ -20,9 +20,7 @@ export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
 
   async getSubscription(currency?: string): Promise<Subscription | null> {
     try {
-      const query = currency
-        ? `?currency=${encodeURIComponent(currency)}`
-        : "";
+      const query = currency ? `?currency=${encodeURIComponent(currency)}` : "";
       const raw = await apiFetch<Record<string, unknown>>(
         `/billing/subscription/${query}`,
       );

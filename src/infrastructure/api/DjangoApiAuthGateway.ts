@@ -28,9 +28,10 @@ export class DjangoApiAuthGateway implements IAuthGateway {
   }
 
   async deleteAccount(): Promise<DeleteAccountResult> {
-    const res = await apiFetch<
-      { scheduled_deletion_at: string } | undefined
-    >("/account/", { method: "DELETE" });
+    const res = await apiFetch<{ scheduled_deletion_at: string } | undefined>(
+      "/account/",
+      { method: "DELETE" },
+    );
     await clearAuthCookies();
     return {
       scheduledDeletionAt: res?.scheduled_deletion_at ?? null,

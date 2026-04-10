@@ -18,10 +18,6 @@ describe("AddOrgMember", () => {
   it("calls addMember with correct args", async () => {
     const gateway = makeGateway();
     await new AddOrgMember(gateway).execute("o1", "user-uuid", "admin");
-    expect(gateway.addMember).toHaveBeenCalledWith(
-      "o1",
-      "user-uuid",
-      "admin",
-    );
+    expect(gateway.addMember).toHaveBeenCalledWith("o1", "user-uuid", "admin");
   });
 });
