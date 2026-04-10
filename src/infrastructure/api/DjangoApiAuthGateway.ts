@@ -10,10 +10,27 @@ import {
   getRefreshToken,
 } from "@/infrastructure/auth/cookies";
 
+function flattenPhone(raw: Record<string, unknown>, user: User): void {
+  const phoneData = raw.phone as
+    | { prefix: string; number: string }
+    | null
+    | undefined;
+
+  if (phoneData && typeof phoneData === "object") {
+    user.phonePrefix = phoneData.prefix;
+    user.phone = phoneData.number;
+  } else {
+    user.phonePrefix = null;
+    user.phone = null;
+  }
+}
+
 export class DjangoApiAuthGateway implements IAuthGateway {
   async getCurrentUser(): Promise<User> {
     const raw = await apiFetch<Record<string, unknown>>("/account/");
-    return keysToCamel<User>(raw);
+    const user = keysToCamel<User>(raw);
+    flattenPhone(raw, user);
+    return user;
   }
 
   async signOut(): Promise<void> {
@@ -43,6 +60,8 @@ export class DjangoApiAuthGateway implements IAuthGateway {
       "/account/cancel-deletion/",
       { method: "POST" },
     );
-    return keysToCamel<User>(raw);
+    const user = keysToCamel<User>(raw);
+    flattenPhone(raw, user);
+    return user;
   }
 }
