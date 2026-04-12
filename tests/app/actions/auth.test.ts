@@ -418,9 +418,7 @@ describe("auth server actions", () => {
 
     it("returns friendly error from API detail field", async () => {
       mockApiFetch.mockRejectedValue(
-        new Error(
-          'API 400: {"detail":"Current password is incorrect."}',
-        ),
+        new Error('API 400: {"detail":"Current password is incorrect."}'),
       );
 
       const formData = new FormData();
