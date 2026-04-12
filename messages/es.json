@@ -196,7 +196,9 @@
     "personalPlansDesc": "Para individuos.",
     "teamPlansDesc": "Para equipos y organizaciones.",
     "pricingTitle": "Precios",
-    "total": "total"
+    "total": "total",
+    "orgName": "Organization name",
+    "orgSlug": "Organization URL slug"
   },
   "profile": {
     "title": "Configuración",
@@ -246,20 +248,36 @@
   },
   "org": {
     "title": "Organización",
-    "create": "Crear organización",
     "members": "Miembros",
-    "invite": "Invitar miembro",
     "role": "Rol",
     "remove": "Eliminar",
     "name": "Nombre",
     "email": "Correo electrónico",
     "slug": "Slug",
-    "userId": "ID de usuario",
-    "addMember": "Añadir miembro",
-    "memberAdded": "Miembro añadido correctamente",
     "roleMember": "Miembro",
     "roleAdmin": "Administrador",
-    "roleOwner": "Propietario"
+    "roleOwner": "Propietario",
+    "inviteByEmail": "Invite by email",
+    "inviteMember": "Send invitation",
+    "invitationSent": "Invitation sent successfully",
+    "pendingInvitations": "Pending invitations",
+    "cancelInvitation": "Cancel",
+    "invitedBy": "Invited by",
+    "expiresAt": "Expires",
+    "noInvitations": "No pending invitations",
+    "leaveOrg": "Leave organization",
+    "leaveOrgConfirmTitle": "Leave organization?",
+    "leaveOrgConfirmBody": "You will lose access to this organization. Your subscription will revert to a free personal plan.",
+    "transferOwnership": "Transfer ownership",
+    "transferOwnershipConfirmTitle": "Transfer ownership?",
+    "transferOwnershipConfirmBody": "This will make {name} the new owner. You will become an admin.",
+    "selectNewOwner": "Select new owner",
+    "deleteOrg": "Delete organization",
+    "deleteOrgConfirmTitle": "Delete organization?",
+    "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "dangerZone": "Danger zone",
+    "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
+    "goToSubscription": "View team plans"
   },
   "common": {
     "loading": "Cargando...",
@@ -319,5 +337,11 @@
     "retry": "Reintentar",
     "home": "Volver al inicio",
     "errorId": "ID del error"
+  },
+  "invitation": {
+    "title": "You've been invited",
+    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
+    "accept": "Accept invitation",
+    "decline": "Decline invitation"
   }
 }

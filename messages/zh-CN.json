@@ -196,7 +196,9 @@
     "personalPlansDesc": "适合个人用户。",
     "teamPlansDesc": "适合团队和组织。",
     "pricingTitle": "定价",
-    "total": "合计"
+    "total": "合计",
+    "orgName": "Organization name",
+    "orgSlug": "Organization URL slug"
   },
   "profile": {
     "title": "设置",
@@ -246,20 +248,36 @@
   },
   "org": {
     "title": "组织",
-    "create": "创建组织",
     "members": "成员",
-    "invite": "邀请成员",
     "role": "角色",
     "remove": "移除",
     "name": "名称",
     "email": "邮箱",
     "slug": "Slug",
-    "userId": "用户 ID",
-    "addMember": "添加成员",
-    "memberAdded": "成员添加成功",
     "roleMember": "成员",
     "roleAdmin": "管理员",
-    "roleOwner": "所有者"
+    "roleOwner": "所有者",
+    "inviteByEmail": "Invite by email",
+    "inviteMember": "Send invitation",
+    "invitationSent": "Invitation sent successfully",
+    "pendingInvitations": "Pending invitations",
+    "cancelInvitation": "Cancel",
+    "invitedBy": "Invited by",
+    "expiresAt": "Expires",
+    "noInvitations": "No pending invitations",
+    "leaveOrg": "Leave organization",
+    "leaveOrgConfirmTitle": "Leave organization?",
+    "leaveOrgConfirmBody": "You will lose access to this organization. Your subscription will revert to a free personal plan.",
+    "transferOwnership": "Transfer ownership",
+    "transferOwnershipConfirmTitle": "Transfer ownership?",
+    "transferOwnershipConfirmBody": "This will make {name} the new owner. You will become an admin.",
+    "selectNewOwner": "Select new owner",
+    "deleteOrg": "Delete organization",
+    "deleteOrgConfirmTitle": "Delete organization?",
+    "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "dangerZone": "Danger zone",
+    "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
+    "goToSubscription": "View team plans"
   },
   "common": {
     "loading": "加载中...",
@@ -319,5 +337,11 @@
     "retry": "重试",
     "home": "返回首页",
     "errorId": "错误 ID"
+  },
+  "invitation": {
+    "title": "You've been invited",
+    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
+    "accept": "Accept invitation",
+    "decline": "Decline invitation"
   }
 }

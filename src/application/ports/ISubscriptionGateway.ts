@@ -3,6 +3,8 @@ import type { Subscription } from "@/domain/models/Subscription";
 export interface CheckoutSessionInput {
   planPriceId: string;
   quantity?: number;
+  orgName?: string;
+  orgSlug?: string;
   successUrl: string;
   cancelUrl: string;
 }

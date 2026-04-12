@@ -19,17 +19,6 @@ export class DjangoApiOrgMemberGateway implements IOrgMemberGateway {
     return data.map(mapMember);
   }
 
-  async addMember(
-    orgId: string,
-    userId: string,
-    role: OrgMember["role"],
-  ): Promise<void> {
-    await apiFetch<OrgMember>(`/orgs/${orgId}/members/`, {
-      method: "POST",
-      body: JSON.stringify({ user_id: userId, role }),
-    });
-  }
-
   async removeMember(orgId: string, userId: string): Promise<void> {
     await apiFetch<void>(`/orgs/${orgId}/members/${userId}/`, {
       method: "DELETE",
@@ -44,6 +33,17 @@ export class DjangoApiOrgMemberGateway implements IOrgMemberGateway {
     await apiFetch<OrgMember>(`/orgs/${orgId}/members/${userId}/`, {
       method: "PATCH",
       body: JSON.stringify({ role }),
+    });
+  }
+
+  async leaveOrg(orgId: string): Promise<void> {
+    await apiFetch<void>(`/orgs/${orgId}/leave/`, { method: "POST" });
+  }
+
+  async transferOwnership(orgId: string, userId: string): Promise<void> {
+    await apiFetch<void>(`/orgs/${orgId}/transfer-ownership/`, {
+      method: "POST",
+      body: JSON.stringify({ user_id: userId }),
     });
   }
 }

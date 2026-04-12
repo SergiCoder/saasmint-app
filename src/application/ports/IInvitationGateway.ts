@@ -1,0 +1,17 @@
+import type { Invitation } from "@/domain/models/Invitation";
+
+export interface CreateInvitationInput {
+  email: string;
+  role: "admin" | "member";
+}
+
+export interface IInvitationGateway {
+  createInvitation(
+    orgId: string,
+    input: CreateInvitationInput,
+  ): Promise<Invitation>;
+  listInvitations(orgId: string): Promise<Invitation[]>;
+  cancelInvitation(orgId: string, invitationId: string): Promise<void>;
+  acceptInvitation(token: string): Promise<void>;
+  declineInvitation(token: string): Promise<void>;
+}

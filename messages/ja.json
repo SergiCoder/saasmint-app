@@ -196,7 +196,9 @@
     "personalPlansDesc": "個人向け。",
     "teamPlansDesc": "チームと組織向け。",
     "pricingTitle": "料金",
-    "total": "合計"
+    "total": "合計",
+    "orgName": "Organization name",
+    "orgSlug": "Organization URL slug"
   },
   "profile": {
     "title": "設定",
@@ -246,20 +248,36 @@
   },
   "org": {
     "title": "組織",
-    "create": "組織を作成",
     "members": "メンバー",
-    "invite": "メンバーを招待",
     "role": "役割",
     "remove": "削除",
     "name": "名前",
     "email": "メール",
     "slug": "Slug",
-    "userId": "ユーザーID",
-    "addMember": "メンバーを追加",
-    "memberAdded": "メンバーを追加しました",
     "roleMember": "メンバー",
     "roleAdmin": "管理者",
-    "roleOwner": "オーナー"
+    "roleOwner": "オーナー",
+    "inviteByEmail": "Invite by email",
+    "inviteMember": "Send invitation",
+    "invitationSent": "Invitation sent successfully",
+    "pendingInvitations": "Pending invitations",
+    "cancelInvitation": "Cancel",
+    "invitedBy": "Invited by",
+    "expiresAt": "Expires",
+    "noInvitations": "No pending invitations",
+    "leaveOrg": "Leave organization",
+    "leaveOrgConfirmTitle": "Leave organization?",
+    "leaveOrgConfirmBody": "You will lose access to this organization. Your subscription will revert to a free personal plan.",
+    "transferOwnership": "Transfer ownership",
+    "transferOwnershipConfirmTitle": "Transfer ownership?",
+    "transferOwnershipConfirmBody": "This will make {name} the new owner. You will become an admin.",
+    "selectNewOwner": "Select new owner",
+    "deleteOrg": "Delete organization",
+    "deleteOrgConfirmTitle": "Delete organization?",
+    "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "dangerZone": "Danger zone",
+    "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
+    "goToSubscription": "View team plans"
   },
   "common": {
     "loading": "読み込み中...",
@@ -319,5 +337,11 @@
     "retry": "再試行",
     "home": "ホームに戻る",
     "errorId": "エラー ID"
+  },
+  "invitation": {
+    "title": "You've been invited",
+    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
+    "accept": "Accept invitation",
+    "decline": "Decline invitation"
   }
 }

@@ -196,7 +196,9 @@
     "personalPlansDesc": "개인을 위한.",
     "teamPlansDesc": "팀과 조직을 위한.",
     "pricingTitle": "요금",
-    "total": "합계"
+    "total": "합계",
+    "orgName": "Organization name",
+    "orgSlug": "Organization URL slug"
   },
   "profile": {
     "title": "설정",
@@ -246,20 +248,36 @@
   },
   "org": {
     "title": "조직",
-    "create": "조직 만들기",
     "members": "멤버",
-    "invite": "멤버 초대",
     "role": "역할",
     "remove": "제거",
     "name": "이름",
     "email": "이메일",
     "slug": "Slug",
-    "userId": "사용자 ID",
-    "addMember": "멤버 추가",
-    "memberAdded": "멤버가 추가되었습니다",
     "roleMember": "멤버",
     "roleAdmin": "관리자",
-    "roleOwner": "소유자"
+    "roleOwner": "소유자",
+    "inviteByEmail": "Invite by email",
+    "inviteMember": "Send invitation",
+    "invitationSent": "Invitation sent successfully",
+    "pendingInvitations": "Pending invitations",
+    "cancelInvitation": "Cancel",
+    "invitedBy": "Invited by",
+    "expiresAt": "Expires",
+    "noInvitations": "No pending invitations",
+    "leaveOrg": "Leave organization",
+    "leaveOrgConfirmTitle": "Leave organization?",
+    "leaveOrgConfirmBody": "You will lose access to this organization. Your subscription will revert to a free personal plan.",
+    "transferOwnership": "Transfer ownership",
+    "transferOwnershipConfirmTitle": "Transfer ownership?",
+    "transferOwnershipConfirmBody": "This will make {name} the new owner. You will become an admin.",
+    "selectNewOwner": "Select new owner",
+    "deleteOrg": "Delete organization",
+    "deleteOrgConfirmTitle": "Delete organization?",
+    "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "dangerZone": "Danger zone",
+    "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
+    "goToSubscription": "View team plans"
   },
   "common": {
     "loading": "로딩 중...",
@@ -319,5 +337,11 @@
     "retry": "다시 시도",
     "home": "홈으로 돌아가기",
     "errorId": "오류 ID"
+  },
+  "invitation": {
+    "title": "You've been invited",
+    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
+    "accept": "Accept invitation",
+    "decline": "Decline invitation"
   }
 }

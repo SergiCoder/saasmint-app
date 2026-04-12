@@ -16,6 +16,8 @@ const defaultProps = {
   seatLabel: "seat",
   seatsLabel: "seats",
   totalLabel: "Total",
+  orgNameLabel: "Organization name",
+  orgSlugLabel: "Organization URL slug",
   children: "Buy team",
 };
 

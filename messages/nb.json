@@ -196,7 +196,9 @@
     "personalPlansDesc": "For enkeltpersoner.",
     "teamPlansDesc": "For team og organisasjoner.",
     "pricingTitle": "Priser",
-    "total": "totalt"
+    "total": "totalt",
+    "orgName": "Organization name",
+    "orgSlug": "Organization URL slug"
   },
   "profile": {
     "title": "Innstillinger",
@@ -246,20 +248,36 @@
   },
   "org": {
     "title": "Organisasjon",
-    "create": "Opprett organisasjon",
     "members": "Medlemmer",
-    "invite": "Inviter medlem",
     "role": "Rolle",
     "remove": "Fjern",
     "name": "Navn",
     "email": "E-post",
     "slug": "Slug",
-    "userId": "Bruker-ID",
-    "addMember": "Legg til medlem",
-    "memberAdded": "Medlem lagt til",
     "roleMember": "Medlem",
     "roleAdmin": "Administrator",
-    "roleOwner": "Eier"
+    "roleOwner": "Eier",
+    "inviteByEmail": "Invite by email",
+    "inviteMember": "Send invitation",
+    "invitationSent": "Invitation sent successfully",
+    "pendingInvitations": "Pending invitations",
+    "cancelInvitation": "Cancel",
+    "invitedBy": "Invited by",
+    "expiresAt": "Expires",
+    "noInvitations": "No pending invitations",
+    "leaveOrg": "Leave organization",
+    "leaveOrgConfirmTitle": "Leave organization?",
+    "leaveOrgConfirmBody": "You will lose access to this organization. Your subscription will revert to a free personal plan.",
+    "transferOwnership": "Transfer ownership",
+    "transferOwnershipConfirmTitle": "Transfer ownership?",
+    "transferOwnershipConfirmBody": "This will make {name} the new owner. You will become an admin.",
+    "selectNewOwner": "Select new owner",
+    "deleteOrg": "Delete organization",
+    "deleteOrgConfirmTitle": "Delete organization?",
+    "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "dangerZone": "Danger zone",
+    "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
+    "goToSubscription": "View team plans"
   },
   "common": {
     "loading": "Laster...",
@@ -319,5 +337,11 @@
     "retry": "Prøv igjen",
     "home": "Tilbake til start",
     "errorId": "Feil-ID"
+  },
+  "invitation": {
+    "title": "You've been invited",
+    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
+    "accept": "Accept invitation",
+    "decline": "Decline invitation"
   }
 }

@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_EXTRA_CA_CERTS=../saasmint-core/infra/certs/rootCA.pem next dev --turbo --experimental-https --experimental-https-key ../saasmint-core/infra/certs/localhost-key.pem --experimental-https-cert ../saasmint-core/infra/certs/localhost.pem --experimental-https-ca ../saasmint-core/infra/certs/rootCA.pem",
+    "dev": "NODE_EXTRA_CA_CERTS=../saasmint-core/infra/certs/rootCA.pem NODE_OPTIONS='--no-warnings' next dev --turbo --experimental-https --experimental-https-key ../saasmint-core/infra/certs/localhost-key.pem --experimental-https-cert ../saasmint-core/infra/certs/localhost.pem --experimental-https-ca ../saasmint-core/infra/certs/rootCA.pem",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

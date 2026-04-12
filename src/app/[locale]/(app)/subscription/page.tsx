@@ -3,10 +3,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
 import { ListPlans } from "@/application/use-cases/billing/ListPlans";
 import { ListProducts } from "@/application/use-cases/billing/ListProducts";
+import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import {
   subscriptionGateway,
   planGateway,
   productGateway,
+  orgGateway,
 } from "@/infrastructure/registry";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { SubscriptionCard } from "@/presentation/components/organisms/SubscriptionCard";
@@ -39,7 +41,7 @@ export default async function BillingPage() {
 
   const currency = user.preferredCurrency;
 
-  const [subscription, plans, products] = await Promise.all([
+  const [subscription, plans, products, userOrgs] = await Promise.all([
     new GetSubscription(subscriptionGateway).execute(currency),
     new ListPlans(planGateway).execute(currency).catch((err): Plan[] => {
       console.error("Failed to fetch plans", err);
@@ -51,7 +53,10 @@ export default async function BillingPage() {
         console.error("Failed to fetch products", err);
         return [];
       }),
+    new ListUserOrgs(orgGateway).execute(user.id).catch(() => []),
   ]);
+
+  const hasOrg = userOrgs.length > 0;
 
   const canManage = subscription
     ? await canManageBilling(user, subscription)
@@ -102,6 +107,7 @@ export default async function BillingPage() {
       if (!isUpgrade) return null;
       const highlighted = plan.tier === "pro";
       if (isTeam) {
+        if (hasOrg) return null;
         return (
           <TeamCheckoutButton
             planPriceId={plan.price.id}
@@ -113,6 +119,8 @@ export default async function BillingPage() {
             seatLabel={t("seat")}
             seatsLabel={t("seats")}
             totalLabel={t("total")}
+            orgNameLabel={t("orgName")}
+            orgSlugLabel={t("orgSlug")}
           >
             {ctaLabel}
           </TeamCheckoutButton>
@@ -234,7 +242,7 @@ export default async function BillingPage() {
               defaultInterval={initialInterval}
             />
           )}
-          {teamGroups.length > 0 && (
+          {teamGroups.length > 0 && !hasOrg && (
             <PricingSection
               title={t("teamPlans")}
               description={t("teamPlansDesc")}

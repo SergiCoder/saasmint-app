@@ -97,6 +97,8 @@ export default async function PricingPage() {
             seatLabel={t("seat")}
             seatsLabel={t("seats")}
             totalLabel={t("total")}
+            orgNameLabel={t("orgName")}
+            orgSlugLabel={t("orgSlug")}
           >
             {ctaLabel}
           </TeamCheckoutButton>
