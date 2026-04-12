@@ -17,9 +17,13 @@ vi.mock("@/infrastructure/api/apiClient", () => ({
 
 const mockSetAuthCookies = vi.fn();
 const mockClearAuthCookies = vi.fn();
+const mockSetPendingPlan = vi.fn();
+const mockConsumePendingPlan = vi.fn();
 vi.mock("@/infrastructure/auth/cookies", () => ({
   setAuthCookies: (...args: unknown[]) => mockSetAuthCookies(...args),
   clearAuthCookies: (...args: unknown[]) => mockClearAuthCookies(...args),
+  setPendingPlan: (...args: unknown[]) => mockSetPendingPlan(...args),
+  consumePendingPlan: (...args: unknown[]) => mockConsumePendingPlan(...args),
 }));
 
 const mockSignOutExecute = vi.fn();
@@ -178,6 +182,24 @@ describe("auth server actions", () => {
       expect(result).toEqual({
         error: "Registration failed. Please try again.",
       });
+    });
+
+    it("sets pending plan cookie and includes plan in login redirect", async () => {
+      mockPublicApiFetch.mockResolvedValue({});
+
+      const formData = new FormData();
+      formData.set("fullName", "Jane Doe");
+      formData.set("email", "new@example.com");
+      formData.set("password", "secret123");
+      formData.set("plan", "price_team_pro");
+
+      await expect(signUp(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro");
+      expect(mockRedirect).toHaveBeenCalledWith(
+        "/login?registered=true&plan=price_team_pro",
+      );
     });
 
     it("returns error when fullName is too short", async () => {
@@ -451,6 +473,7 @@ describe("auth server actions", () => {
         access_token: "tok_verified",
         refresh_token: "ref_verified",
       });
+      mockConsumePendingPlan.mockResolvedValue(undefined);
 
       const result = await verifyEmail("verify-token-123");
       expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/verify-email/", {
@@ -462,6 +485,18 @@ describe("auth server actions", () => {
         "ref_verified",
       );
       expect(result).toEqual({});
+    });
+
+    it("returns pendingPlan when a plan cookie was set during signup", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_verified",
+        refresh_token: "ref_verified",
+      });
+      mockConsumePendingPlan.mockResolvedValue("price_team_pro");
+
+      const result = await verifyEmail("verify-token-123");
+      expect(result).toEqual({ pendingPlan: "price_team_pro" });
+      expect(mockConsumePendingPlan).toHaveBeenCalledOnce();
     });
 
     it("returns friendly error from API detail field", async () => {

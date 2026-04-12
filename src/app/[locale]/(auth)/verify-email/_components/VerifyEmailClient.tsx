@@ -27,6 +27,10 @@ export function VerifyEmailClient({ token }: VerifyEmailClientProps) {
         if (ignore) return;
         if (result?.error) {
           setError(result.error);
+        } else if (result?.pendingPlan) {
+          router.push(
+            `/subscription/checkout?plan=${encodeURIComponent(result.pendingPlan)}`,
+          );
         } else {
           router.push("/dashboard");
         }

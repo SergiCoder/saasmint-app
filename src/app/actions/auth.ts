@@ -6,7 +6,9 @@ import { SignOut } from "@/application/use-cases/auth/SignOut";
 import { authGateway } from "@/infrastructure/registry";
 import {
   clearAuthCookies,
+  consumePendingPlan,
   setAuthCookies,
+  setPendingPlan,
 } from "@/infrastructure/auth/cookies";
 
 interface TokenResponse {
@@ -96,8 +98,17 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     };
   }
 
+  const plan = formData.get("plan");
+  if (typeof plan === "string" && plan) {
+    await setPendingPlan(plan);
+  }
+
   // Registration returns tokens but user must verify email first.
-  redirect("/login?registered=true");
+  const loginUrl =
+    typeof plan === "string" && plan
+      ? `/login?registered=true&plan=${encodeURIComponent(plan)}`
+      : "/login?registered=true";
+  redirect(loginUrl);
 }
 
 export async function resetPassword(_prevState: unknown, formData: FormData) {
@@ -195,7 +206,9 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
   return { success: true };
 }
 
-export async function verifyEmail(token: string): Promise<{ error?: string }> {
+export async function verifyEmail(
+  token: string,
+): Promise<{ error?: string; pendingPlan?: string }> {
   let data: TokenResponse;
   try {
     data = await publicApiFetch<TokenResponse>("/auth/verify-email/", {
@@ -209,7 +222,8 @@ export async function verifyEmail(token: string): Promise<{ error?: string }> {
   }
 
   await setAuthCookies(data.access_token, data.refresh_token);
-  return {};
+  const pendingPlan = await consumePendingPlan();
+  return pendingPlan ? { pendingPlan } : {};
 }
 
 export async function signOut() {
