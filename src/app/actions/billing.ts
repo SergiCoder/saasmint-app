@@ -35,7 +35,6 @@ export async function startCheckout(formData: FormData) {
   }
 
   const orgName = formData.get("orgName");
-  const orgSlug = formData.get("orgSlug");
 
   let url: string | null = null;
   try {
@@ -43,7 +42,6 @@ export async function startCheckout(formData: FormData) {
       planPriceId,
       ...(quantity ? { quantity } : {}),
       ...(typeof orgName === "string" && orgName ? { orgName } : {}),
-      ...(typeof orgSlug === "string" && orgSlug ? { orgSlug } : {}),
       successUrl: `${APP_ORIGIN}/subscription?status=success`,
       cancelUrl: `${APP_ORIGIN}/subscription`,
     });

@@ -4,7 +4,6 @@ export interface CheckoutSessionInput {
   planPriceId: string;
   quantity?: number;
   orgName?: string;
-  orgSlug?: string;
   successUrl: string;
   cancelUrl: string;
 }

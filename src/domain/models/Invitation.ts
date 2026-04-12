@@ -9,7 +9,7 @@ export interface Invitation {
   org: string;
   email: string;
   role: "admin" | "member";
-  status: "pending" | "accepted" | "declined" | "expired";
+  status: "pending" | "accepted" | "expired" | "cancelled";
   invitedBy: InvitedBy;
   createdAt: string;
   expiresAt: string;
