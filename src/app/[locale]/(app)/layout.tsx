@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { AppLayout } from "@/presentation/components/templates/AppLayout";
+import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
+import { subscriptionGateway } from "@/infrastructure/registry";
 import { SignOutButton } from "../_components/SignOutButton";
 import { getCurrentUser } from "./_data/getCurrentUser";
 
@@ -10,22 +12,27 @@ interface AppLayoutRouteProps {
 export default async function AppLayoutRoute({
   children,
 }: AppLayoutRouteProps) {
-  const [t, tCommon, user] = await Promise.all([
+  const [t, tCommon, user, subscription] = await Promise.all([
     getTranslations("nav"),
     getTranslations("common"),
     getCurrentUser(),
+    new GetSubscription(subscriptionGateway).execute().catch(() => null),
   ]);
+
+  const isTeamSubscription = subscription?.plan.context === "team";
 
   const navLinks = [
     { href: "/dashboard", label: t("dashboard") },
     { href: "/feature1", label: t("feature1") },
     { href: "/feature2", label: t("feature2") },
+    ...(isTeamSubscription ? [{ href: "/org", label: t("org") }] : []),
   ];
 
   const userMenuItems = [
     { href: "/dashboard", label: t("dashboard") },
     { href: "/profile", label: t("profile") },
     { href: "/subscription", label: t("subscription") },
+    ...(isTeamSubscription ? [{ href: "/org", label: t("org") }] : []),
   ];
 
   return (
