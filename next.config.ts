@@ -25,6 +25,7 @@ const config: NextConfig = {
         ? [{ protocol: apiProtocol, hostname: apiHostname }]
         : []),
       ...(isDev ? [{ hostname: "localhost" }] : []),
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
     ...(isDev && { dangerouslyAllowLocalIP: true }),
   },
