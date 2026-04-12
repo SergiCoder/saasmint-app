@@ -3,10 +3,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ListPlans } from "@/application/use-cases/billing/ListPlans";
 import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
 import { ListProducts } from "@/application/use-cases/billing/ListProducts";
+import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import {
   planGateway,
   productGateway,
   subscriptionGateway,
+  orgGateway,
 } from "@/infrastructure/registry";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
@@ -35,7 +37,7 @@ export default async function PricingPage() {
 
   const currency = user?.preferredCurrency;
 
-  const [plans, subscription, products] = await Promise.all([
+  const [plans, subscription, products, userOrgs] = await Promise.all([
     new ListPlans(planGateway).execute(currency).catch((err): Plan[] => {
       console.error("Failed to fetch plans", err);
       return [];
@@ -50,9 +52,15 @@ export default async function PricingPage() {
           .execute(currency)
           .catch((): Product[] => [])
       : Promise.resolve([] as Product[]),
+    user
+      ? new ListUserOrgs(orgGateway).execute(user.id).catch(() => [])
+      : Promise.resolve([]),
   ]);
 
-  const currentPlanId = subscription?.plan.id;
+  const hasOrg = userOrgs.length > 0;
+  const currentPlan = subscription?.plan;
+  const currentPlanId = currentPlan?.id;
+  const isTeamSubscription = currentPlan?.context === "team";
 
   const groups = buildPlanCardGroups({
     plans,
@@ -86,6 +94,7 @@ export default async function PricingPage() {
       if (isCurrent) return null;
       if (!isUpgrade) return null;
       if (isTeam) {
+        if (hasOrg) return null;
         return (
           <TeamCheckoutButton
             planPriceId={plan.price.id}
@@ -128,32 +137,34 @@ export default async function PricingPage() {
       </div>
 
       <div className="mt-12 space-y-16">
-        {personalGroups.length > 0 && (
-          <PricingSection
-            title={t("personalPlans")}
-            description={t("personalPlansDesc")}
-            groups={personalGroups}
-            labels={sectionLabels}
-            savingsBadge={
-              personalSavingsPct > 0
-                ? t("savingsBadge", { pct: personalSavingsPct })
-                : undefined
-            }
-          />
-        )}
-        {teamGroups.length > 0 && (
-          <PricingSection
-            title={t("teamPlans")}
-            description={t("teamPlansDesc")}
-            groups={teamGroups}
-            labels={sectionLabels}
-            savingsBadge={
-              teamSavingsPct > 0
-                ? t("savingsBadge", { pct: teamSavingsPct })
-                : undefined
-            }
-          />
-        )}
+        {personalGroups.length > 0 &&
+          (!user || !isTeamSubscription) && (
+            <PricingSection
+              title={t("personalPlans")}
+              description={t("personalPlansDesc")}
+              groups={personalGroups}
+              labels={sectionLabels}
+              savingsBadge={
+                personalSavingsPct > 0
+                  ? t("savingsBadge", { pct: personalSavingsPct })
+                  : undefined
+              }
+            />
+          )}
+        {teamGroups.length > 0 &&
+          (!user || isTeamSubscription || !hasOrg) && (
+            <PricingSection
+              title={t("teamPlans")}
+              description={t("teamPlansDesc")}
+              groups={teamGroups}
+              labels={sectionLabels}
+              savingsBadge={
+                teamSavingsPct > 0
+                  ? t("savingsBadge", { pct: teamSavingsPct })
+                  : undefined
+              }
+            />
+          )}
       </div>
 
       <ProductsGrid
