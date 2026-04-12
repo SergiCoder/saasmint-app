@@ -13,6 +13,7 @@ import {
   orgMemberGateway,
 } from "@/infrastructure/registry";
 import { getCurrentUser } from "../_data/getCurrentUser";
+import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { SubscriptionCard } from "@/presentation/components/organisms/SubscriptionCard";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
@@ -34,11 +35,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function BillingPage() {
-  const [t, locale, user] = await Promise.all([
+interface BillingPageProps {
+  searchParams: Promise<{ status?: string; error?: string }>;
+}
+
+export default async function BillingPage({ searchParams }: BillingPageProps) {
+  const [t, locale, user, params] = await Promise.all([
     getTranslations("billing"),
     getLocale(),
     getCurrentUser(),
+    searchParams,
   ]);
 
   const currency = user.preferredCurrency;
@@ -156,6 +162,10 @@ export default async function BillingPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-12 pb-12">
       <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+
+      {params.error && (
+        <AlertBanner variant="error">{params.error}</AlertBanner>
+      )}
 
       {subscription &&
         (() => {
