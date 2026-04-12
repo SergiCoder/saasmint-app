@@ -89,16 +89,7 @@ export default async function PricingPage() {
         return (
           <TeamCheckoutButton
             planPriceId={plan.price.id}
-            displayAmount={displayAmount}
-            currency={currency}
-            locale={locale}
-            interval={plan.interval}
             highlighted={highlighted}
-            seatLabel={t("seat")}
-            seatsLabel={t("seats")}
-            totalLabel={t("total")}
-            orgNameLabel={t("orgName")}
-            orgSlugLabel={t("orgSlug")}
           >
             {ctaLabel}
           </TeamCheckoutButton>
