@@ -58,9 +58,7 @@ export default async function PricingPage() {
   ]);
 
   const hasOrg = userOrgs.length > 0;
-  const currentPlan = subscription?.plan;
-  const currentPlanId = currentPlan?.id;
-  const isTeamSubscription = currentPlan?.context === "team";
+  const currentPlanId = subscription?.plan?.id;
 
   const groups = buildPlanCardGroups({
     plans,
@@ -137,34 +135,32 @@ export default async function PricingPage() {
       </div>
 
       <div className="mt-12 space-y-16">
-        {personalGroups.length > 0 &&
-          (!user || !isTeamSubscription) && (
-            <PricingSection
-              title={t("personalPlans")}
-              description={t("personalPlansDesc")}
-              groups={personalGroups}
-              labels={sectionLabels}
-              savingsBadge={
-                personalSavingsPct > 0
-                  ? t("savingsBadge", { pct: personalSavingsPct })
-                  : undefined
-              }
-            />
-          )}
-        {teamGroups.length > 0 &&
-          (!user || isTeamSubscription || !hasOrg) && (
-            <PricingSection
-              title={t("teamPlans")}
-              description={t("teamPlansDesc")}
-              groups={teamGroups}
-              labels={sectionLabels}
-              savingsBadge={
-                teamSavingsPct > 0
-                  ? t("savingsBadge", { pct: teamSavingsPct })
-                  : undefined
-              }
-            />
-          )}
+        {personalGroups.length > 0 && (
+          <PricingSection
+            title={t("personalPlans")}
+            description={t("personalPlansDesc")}
+            groups={personalGroups}
+            labels={sectionLabels}
+            savingsBadge={
+              personalSavingsPct > 0
+                ? t("savingsBadge", { pct: personalSavingsPct })
+                : undefined
+            }
+          />
+        )}
+        {teamGroups.length > 0 && (
+          <PricingSection
+            title={t("teamPlans")}
+            description={t("teamPlansDesc")}
+            groups={teamGroups}
+            labels={sectionLabels}
+            savingsBadge={
+              teamSavingsPct > 0
+                ? t("savingsBadge", { pct: teamSavingsPct })
+                : undefined
+            }
+          />
+        )}
       </div>
 
       <ProductsGrid

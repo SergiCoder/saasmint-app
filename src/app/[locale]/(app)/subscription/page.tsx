@@ -244,7 +244,7 @@ export default async function BillingPage() {
         <p className="text-sm text-gray-500">{t("changePlan")}</p>
       ) : (
         <>
-          {personalGroups.length > 0 && !isTeamSubscription && (
+          {personalGroups.length > 0 && (
             <PricingSection
               title={t("personalPlans")}
               description={t("personalPlansDesc")}
@@ -258,7 +258,7 @@ export default async function BillingPage() {
               defaultInterval={initialInterval}
             />
           )}
-          {teamGroups.length > 0 && (isTeamSubscription || !hasOrg) && (
+          {teamGroups.length > 0 && (
             <PricingSection
               title={t("teamPlans")}
               description={t("teamPlansDesc")}
