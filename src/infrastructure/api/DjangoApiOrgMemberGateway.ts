@@ -13,10 +13,10 @@ function mapMember(raw: Record<string, unknown>): OrgMember {
 
 export class DjangoApiOrgMemberGateway implements IOrgMemberGateway {
   async listMembers(orgId: string): Promise<OrgMember[]> {
-    const data = await apiFetch<Record<string, unknown>[]>(
+    const data = await apiFetch<{ results: Record<string, unknown>[] }>(
       `/orgs/${orgId}/members/`,
     );
-    return data.map(mapMember);
+    return data.results.map(mapMember);
   }
 
   async removeMember(orgId: string, userId: string): Promise<void> {

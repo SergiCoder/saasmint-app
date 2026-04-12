@@ -36,8 +36,13 @@ describe("DjangoApiOrgMemberGateway", () => {
   const gateway = new DjangoApiOrgMemberGateway();
 
   describe("listMembers", () => {
-    it("fetches GET /orgs/:orgId/members/ and maps results", async () => {
-      mockApiFetch.mockResolvedValue([rawMember]);
+    it("fetches GET /orgs/:orgId/members/ and maps paginated results", async () => {
+      mockApiFetch.mockResolvedValue({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [rawMember],
+      });
 
       const result = await gateway.listMembers("o1");
 
@@ -50,7 +55,12 @@ describe("DjangoApiOrgMemberGateway", () => {
     });
 
     it("returns an empty array when no members exist", async () => {
-      mockApiFetch.mockResolvedValue([]);
+      mockApiFetch.mockResolvedValue({
+        count: 0,
+        next: null,
+        previous: null,
+        results: [],
+      });
 
       const result = await gateway.listMembers("o1");
       expect(result).toEqual([]);
