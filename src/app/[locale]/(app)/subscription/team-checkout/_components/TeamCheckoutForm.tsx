@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/presentation/components/atoms/Button";
 import { Input } from "@/presentation/components/atoms/Input";
 import { FormField } from "@/presentation/components/molecules/FormField";
+import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { startCheckout } from "@/app/actions/billing";
+import type { BillingActionResult } from "@/app/actions/billing";
 import { formatCurrency } from "@/lib/formatCurrency";
 
 interface TeamCheckoutFormProps {
@@ -21,6 +23,7 @@ interface TeamCheckoutFormProps {
     seats: string;
     total: string;
     checkout: string;
+    error: string;
   };
 }
 
@@ -35,12 +38,13 @@ export function TeamCheckoutForm({
   labels,
 }: TeamCheckoutFormProps) {
   const [quantity, setQuantity] = useState(minSeats);
+  const [state, action, isPending] = useActionState(startCheckout, undefined);
   const total = displayAmount * quantity;
   const formattedTotal = formatCurrency(total, currency, locale);
   const formattedPerSeat = formatCurrency(displayAmount, currency, locale);
 
   return (
-    <form action={startCheckout} className="space-y-6">
+    <form action={action} className="space-y-6">
       <input type="hidden" name="planPriceId" value={planPriceId} />
       <input type="hidden" name="quantity" value={quantity} />
 
@@ -50,6 +54,10 @@ export function TeamCheckoutForm({
           {formattedPerSeat}/{labels.seat}/{interval}
         </p>
       </div>
+
+      {state && !state.ok && (
+        <AlertBanner variant="error">{state.error || labels.error}</AlertBanner>
+      )}
 
       <FormField label={labels.orgName} name="orgName" required />
 
@@ -81,7 +89,12 @@ export function TeamCheckoutForm({
         {labels.total}: {formattedTotal}/{interval}
       </p>
 
-      <Button type="submit" variant="primary" className="w-full">
+      <Button
+        type="submit"
+        variant="primary"
+        className="w-full"
+        loading={isPending}
+      >
         {labels.checkout}
       </Button>
     </form>

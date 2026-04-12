@@ -198,7 +198,8 @@
     "pricingTitle": "Priser",
     "total": "totalt",
     "orgName": "Organization name",
-    "teamCheckout": "Team checkout"
+    "teamCheckout": "Team checkout",
+    "checkoutError": "Failed to start checkout. Please try again."
   },
   "profile": {
     "title": "Innstillinger",

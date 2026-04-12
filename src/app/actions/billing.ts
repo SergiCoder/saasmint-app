@@ -18,12 +18,15 @@ import {
 
 const MAX_CHECKOUT_QUANTITY = 100;
 
-export async function startCheckout(formData: FormData) {
+export async function startCheckout(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<BillingActionResult> {
   const planPriceId = formData.get("planPriceId");
   const quantityRaw = formData.get("quantity");
 
   if (typeof planPriceId !== "string") {
-    return;
+    return { ok: false, error: "Invalid input" };
   }
 
   let quantity: number | undefined;
@@ -36,7 +39,7 @@ export async function startCheckout(formData: FormData) {
 
   const orgName = formData.get("orgName");
 
-  let url: string | null = null;
+  let url: string;
   try {
     const session = await new StartCheckout(subscriptionGateway).execute({
       planPriceId,
@@ -49,9 +52,9 @@ export async function startCheckout(formData: FormData) {
     url = session.url;
   } catch (err) {
     console.error("Failed to start checkout", err);
+    return { ok: false, error: "Failed to start checkout" };
   }
 
-  if (!url) return;
   redirect(url);
 }
 

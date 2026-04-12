@@ -198,7 +198,8 @@
     "pricingTitle": "定价",
     "total": "合计",
     "orgName": "Organization name",
-    "teamCheckout": "Team checkout"
+    "teamCheckout": "Team checkout",
+    "checkoutError": "Failed to start checkout. Please try again."
   },
   "profile": {
     "title": "设置",

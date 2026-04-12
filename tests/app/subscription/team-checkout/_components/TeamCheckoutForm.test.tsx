@@ -20,6 +20,7 @@ const defaultProps = {
     seats: "seats",
     total: "Total",
     checkout: "Upgrade",
+    error: "Failed to start checkout. Please try again.",
   },
 };
 

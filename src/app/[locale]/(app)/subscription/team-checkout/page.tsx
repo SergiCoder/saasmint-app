@@ -48,6 +48,7 @@ export default async function TeamCheckoutPage({
             seats: t("seats"),
             total: t("total"),
             checkout: t("upgrade"),
+            error: t("checkoutError"),
           }}
         />
       </div>

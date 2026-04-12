@@ -198,7 +198,8 @@
     "pricingTitle": "Fiyatlandırma",
     "total": "toplam",
     "orgName": "Organization name",
-    "teamCheckout": "Team checkout"
+    "teamCheckout": "Team checkout",
+    "checkoutError": "Failed to start checkout. Please try again."
   },
   "profile": {
     "title": "Ayarlar",
