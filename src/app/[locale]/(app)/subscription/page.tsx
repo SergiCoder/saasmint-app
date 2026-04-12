@@ -4,11 +4,13 @@ import { GetSubscription } from "@/application/use-cases/billing/GetSubscription
 import { ListPlans } from "@/application/use-cases/billing/ListPlans";
 import { ListProducts } from "@/application/use-cases/billing/ListProducts";
 import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
+import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import {
   subscriptionGateway,
   planGateway,
   productGateway,
   orgGateway,
+  orgMemberGateway,
 } from "@/infrastructure/registry";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { SubscriptionCard } from "@/presentation/components/organisms/SubscriptionCard";
@@ -67,6 +69,20 @@ export default async function BillingPage() {
   const initialInterval: "month" | "year" =
     currentPlan?.interval === "year" ? "year" : "month";
   const isTeamSubscription = currentPlan?.context === "team";
+
+  // For team subscriptions, fetch org owner info
+  let teamOwnerName: string | null = null;
+  if (isTeamSubscription && hasOrg) {
+    try {
+      const members = await new ListOrgMembers(orgMemberGateway).execute(
+        userOrgs[0].id,
+      );
+      const owner = members.find((m) => m.role === "owner");
+      if (owner) teamOwnerName = owner.user.fullName;
+    } catch {
+      // Owner name is a nice-to-have; proceed without it
+    }
+  }
 
   // Detect placeholder period-end dates returned by the backend for users
   // without a real Stripe subscription (e.g. free tier). Anything more than
@@ -205,21 +221,30 @@ export default async function BillingPage() {
               }
               cancelAtPeriodEnd={isCanceling}
               cancelLabel={isCanceling ? t("cancel") : undefined}
+              footer={
+                isTeamSubscription && !canManage && teamOwnerName
+                  ? t("managedBy", { name: teamOwnerName })
+                  : undefined
+              }
               actions={
-                <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2">
-                  <BillingPortalButton>{t("portal")}</BillingPortalButton>
-                  {manageAction}
-                </div>
+                canManage ? (
+                  <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2">
+                    <BillingPortalButton>{t("portal")}</BillingPortalButton>
+                    {manageAction}
+                  </div>
+                ) : undefined
               }
             />
           );
         })()}
 
-      {groups.length === 0 ? (
+      {isTeamSubscription && !canManage ? (
+        <p className="text-sm text-gray-500">{t("teamPlanReadonly")}</p>
+      ) : groups.length === 0 ? (
         <p className="text-sm text-gray-500">{t("changePlan")}</p>
       ) : (
         <>
-          {personalGroups.length > 0 && (
+          {personalGroups.length > 0 && !isTeamSubscription && (
             <PricingSection
               title={t("personalPlans")}
               description={t("personalPlansDesc")}
@@ -233,7 +258,7 @@ export default async function BillingPage() {
               defaultInterval={initialInterval}
             />
           )}
-          {teamGroups.length > 0 && !hasOrg && (
+          {teamGroups.length > 0 && (isTeamSubscription || !hasOrg) && (
             <PricingSection
               title={t("teamPlans")}
               description={t("teamPlansDesc")}

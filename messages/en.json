@@ -199,7 +199,9 @@
     "total": "Total",
     "orgName": "Organization name",
     "teamCheckout": "Team checkout",
-    "checkoutError": "Failed to start checkout. Please try again."
+    "checkoutError": "Failed to start checkout. Please try again.",
+    "managedBy": "Managed by {name}",
+    "teamPlanReadonly": "Your team subscription is managed by the organization owner."
   },
   "profile": {
     "title": "Profile",
@@ -236,6 +238,8 @@
     "deleteDialogSubmit": "Permanently delete account",
     "deleteDialogMismatch": "Email does not match your account email.",
     "deleteDialogError": "Failed to delete account. Please try again.",
+    "deleteBlockedOwner": "You own an organization. Please contact our support team to delete your account.",
+    "deleteBlockedMember": "You belong to a team. Please contact your team owner to be removed first.",
     "pronounsHeHim": "He/Him",
     "pronounsSheHer": "She/Her",
     "pronounsTheyThem": "They/Them",
@@ -275,7 +279,9 @@
     "deleteOrg": "Delete organization",
     "deleteOrgConfirmTitle": "Delete organization?",
     "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "spotsUsed": "{used} / {total} spots",
     "dangerZone": "Danger zone",
+    "deleteOrgBlockedSubscription": "You have an active team subscription. Please cancel it first or contact our support team to delete the organization.",
     "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
     "goToSubscription": "View team plans"
   },

@@ -199,7 +199,9 @@
     "total": "totaal",
     "orgName": "Organization name",
     "teamCheckout": "Team checkout",
-    "checkoutError": "Failed to start checkout. Please try again."
+    "checkoutError": "Failed to start checkout. Please try again.",
+    "managedBy": "Beheerd door {name}",
+    "teamPlanReadonly": "Het teamabonnement wordt beheerd door de eigenaar van de organisatie."
   },
   "profile": {
     "title": "Instellingen",
@@ -237,6 +239,8 @@
     "deleteDialogSubmit": "Account permanent verwijderen",
     "deleteDialogMismatch": "Het e-mailadres komt niet overeen met uw account.",
     "deleteDialogError": "Account verwijderen mislukt. Probeer het opnieuw.",
+    "deleteBlockedOwner": "Je bent eigenaar van een organisatie. Neem contact op met ons supportteam om je account te verwijderen.",
+    "deleteBlockedMember": "Je behoort tot een team. Neem contact op met je teameigenaar om eerst verwijderd te worden.",
     "pronounsHeHim": "Hij/Hem",
     "pronounsSheHer": "Zij/Haar",
     "pronounsTheyThem": "Hen/Hun",
@@ -276,7 +280,9 @@
     "deleteOrg": "Delete organization",
     "deleteOrgConfirmTitle": "Delete organization?",
     "deleteOrgConfirmBody": "This will permanently delete the organization, cancel the team subscription, and revert all members to free personal plans. This action cannot be undone.",
+    "spotsUsed": "{used} / {total} plaatsen",
     "dangerZone": "Danger zone",
+    "deleteOrgBlockedSubscription": "You have an active team subscription. Please cancel it first or contact our support team to delete the organization.",
     "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
     "goToSubscription": "View team plans"
   },
