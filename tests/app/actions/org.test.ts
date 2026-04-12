@@ -55,7 +55,22 @@ vi.mock("@/application/use-cases/org/DeleteOrg", () => ({
   },
 }));
 
+const mockGetCurrentUserExecute = vi.fn();
+vi.mock("@/application/use-cases/auth/GetCurrentUser", () => ({
+  GetCurrentUser: function GetCurrentUser() {
+    return { execute: mockGetCurrentUserExecute };
+  },
+}));
+
+const mockListOrgMembersExecute = vi.fn();
+vi.mock("@/application/use-cases/org-member/ListOrgMembers", () => ({
+  ListOrgMembers: function ListOrgMembers() {
+    return { execute: mockListOrgMembersExecute };
+  },
+}));
+
 vi.mock("@/infrastructure/registry", () => ({
+  authGateway: {},
   orgGateway: {},
   orgMemberGateway: {},
   invitationGateway: {},
@@ -232,7 +247,11 @@ describe("org server actions", () => {
   });
 
   describe("deleteOrg", () => {
-    it("deletes org and redirects to dashboard", async () => {
+    it("deletes org and redirects to dashboard when user is owner", async () => {
+      mockGetCurrentUserExecute.mockResolvedValue({ id: "user_owner" });
+      mockListOrgMembersExecute.mockResolvedValue([
+        { user: { id: "user_owner" }, role: "owner" },
+      ]);
       mockDeleteOrgExecute.mockResolvedValue(undefined);
 
       const formData = new FormData();
@@ -241,6 +260,20 @@ describe("org server actions", () => {
       await expect(deleteOrg(formData)).rejects.toThrow("NEXT_REDIRECT");
       expect(mockDeleteOrgExecute).toHaveBeenCalledWith("org_1");
       expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
+    });
+
+    it("returns early when user is not owner", async () => {
+      mockGetCurrentUserExecute.mockResolvedValue({ id: "user_member" });
+      mockListOrgMembersExecute.mockResolvedValue([
+        { user: { id: "user_owner" }, role: "owner" },
+        { user: { id: "user_member" }, role: "member" },
+      ]);
+
+      const formData = new FormData();
+      formData.set("orgId", "org_1");
+
+      await deleteOrg(formData);
+      expect(mockDeleteOrgExecute).not.toHaveBeenCalled();
     });
 
     it("returns early when orgId is missing", async () => {

@@ -3,10 +3,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import { ListInvitations } from "@/application/use-cases/invitation/ListInvitations";
+import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
 import {
   orgGateway,
   orgMemberGateway,
   invitationGateway,
+  subscriptionGateway,
 } from "@/infrastructure/registry";
 import { getCurrentUser } from "../../_data/getCurrentUser";
 import { OrgMemberList } from "@/presentation/components/organisms/OrgMemberList";
@@ -16,7 +18,7 @@ import { InviteByEmailForm } from "./_components/InviteByEmailForm";
 import { InvitationList } from "./_components/InvitationList";
 import { LeaveOrgButton } from "./_components/LeaveOrgButton";
 import { TransferOwnershipForm } from "./_components/TransferOwnershipForm";
-import { DeleteOrgButton } from "./_components/DeleteOrgButton";
+import { OrgDangerZone } from "./_components/OrgDangerZone";
 
 interface OrgDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -36,10 +38,14 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
 
   if (!org) notFound();
 
-  const [members, invitations] = await Promise.all([
+  const [members, invitations, subscription] = await Promise.all([
     new ListOrgMembers(orgMemberGateway).execute(org.id),
     new ListInvitations(invitationGateway).execute(org.id).catch(() => []),
+    new GetSubscription(subscriptionGateway).execute().catch(() => null),
   ]);
+
+  const isTeamSubscription = subscription?.plan.context === "team";
+  const totalSpots = isTeamSubscription ? subscription.quantity : null;
 
   const me = members.find((m) => m.user.id === user.id);
   const isOwner = me?.role === "owner";
@@ -102,9 +108,16 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
       </div>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          {t("members")}
-        </h2>
+        <div className="mb-4 flex items-baseline gap-2">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t("members")}
+          </h2>
+          {totalSpots !== null && (
+            <span className="text-sm text-gray-500">
+              {t("spotsUsed", { used: members.length, total: totalSpots })}
+            </span>
+          )}
+        </div>
         <OrgMemberList
           members={memberRows}
           columns={{
@@ -167,24 +180,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
         </section>
       )}
 
-      {isOwner && (
-        <section className="rounded-lg border border-red-200 bg-red-50 p-6 shadow-sm">
-          <h2 className="mb-2 text-lg font-semibold text-red-900">
-            {t("dangerZone")}
-          </h2>
-          <p className="mb-4 text-sm text-red-700">
-            {t("deleteOrgConfirmBody")}
-          </p>
-          <DeleteOrgButton
-            orgId={org.id}
-            label={t("deleteOrg")}
-            confirmTitle={t("deleteOrgConfirmTitle")}
-            confirmBody={t("deleteOrgConfirmBody")}
-            confirmAction={tCommon("delete")}
-            confirmDismiss={tCommon("cancel")}
-          />
-        </section>
-      )}
+      {isOwner && <OrgDangerZone />}
     </div>
   );
 }

@@ -2,13 +2,16 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { GetCurrentUser } from "@/application/use-cases/auth/GetCurrentUser";
 import { CreateInvitation } from "@/application/use-cases/invitation/CreateInvitation";
 import { CancelInvitation } from "@/application/use-cases/invitation/CancelInvitation";
+import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import { RemoveOrgMember } from "@/application/use-cases/org-member/RemoveOrgMember";
 import { LeaveOrg } from "@/application/use-cases/org-member/LeaveOrg";
 import { TransferOwnership } from "@/application/use-cases/org-member/TransferOwnership";
 import { DeleteOrg } from "@/application/use-cases/org/DeleteOrg";
 import {
+  authGateway,
   invitationGateway,
   orgGateway,
   orgMemberGateway,
@@ -128,6 +131,14 @@ export async function deleteOrg(formData: FormData) {
   }
 
   try {
+    const user = await new GetCurrentUser(authGateway).execute();
+    const members = await new ListOrgMembers(orgMemberGateway).execute(orgId);
+    const me = members.find((m) => m.user.id === user.id);
+    if (me?.role !== "owner") {
+      console.error("Only the owner can delete the organization");
+      return;
+    }
+
     await new DeleteOrg(orgGateway).execute(orgId);
   } catch (err) {
     console.error("Failed to delete organization", err);
