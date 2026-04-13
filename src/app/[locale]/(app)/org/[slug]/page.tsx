@@ -102,10 +102,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">{org.name}</h1>
-        <p className="text-sm text-gray-500">{org.slug}</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">{org.name}</h1>
 
       <section>
         <div className="mb-4 flex items-baseline gap-2">
@@ -173,7 +170,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
             label={t("transferOwnership")}
             selectLabel={t("selectNewOwner")}
             confirmTitle={t("transferOwnershipConfirmTitle")}
-            confirmBody={t("transferOwnershipConfirmBody")}
+            confirmBody={t("transferOwnershipConfirmBody", { name: "{name}" })}
             confirmAction={tCommon("confirm")}
             confirmDismiss={tCommon("cancel")}
           />

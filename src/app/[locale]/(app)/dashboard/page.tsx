@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
-import { orgGateway } from "@/infrastructure/registry";
+import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
+import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
+import {
+  orgGateway,
+  orgMemberGateway,
+  subscriptionGateway,
+} from "@/infrastructure/registry";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { OrgCard } from "@/presentation/components/molecules/OrgCard";
 
@@ -19,11 +25,27 @@ const ACTIONS = [
 ] as const;
 
 export default async function DashboardPage() {
-  const [t, user] = await Promise.all([
+  const [t, tOrg, user] = await Promise.all([
     getTranslations("dashboard"),
+    getTranslations("org"),
     getCurrentUser(),
   ]);
-  const orgs = await new ListUserOrgs(orgGateway).execute(user.id);
+  const [orgs, subscription] = await Promise.all([
+    new ListUserOrgs(orgGateway).execute(user.id),
+    new GetSubscription(subscriptionGateway).execute().catch(() => null),
+  ]);
+
+  const totalSpots =
+    subscription?.plan.context === "team" ? subscription.quantity : null;
+
+  const memberCounts = await Promise.all(
+    orgs.map((org) =>
+      new ListOrgMembers(orgMemberGateway)
+        .execute(org.id)
+        .then((m) => m.length)
+        .catch(() => 0),
+    ),
+  );
 
   return (
     <div className="space-y-8">
@@ -57,10 +79,24 @@ export default async function DashboardPage() {
 
       {orgs.length > 0 && (
         <section>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            {tOrg("title")}
+          </h2>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {orgs.map((org) => (
+            {orgs.map((org, i) => (
               <li key={org.id}>
-                <OrgCard slug={org.slug} name={org.name} />
+                <OrgCard
+                  slug={org.slug}
+                  name={org.name}
+                  spotsLabel={
+                    totalSpots !== null
+                      ? tOrg("spotsUsed", {
+                          used: memberCounts[i],
+                          total: totalSpots,
+                        })
+                      : undefined
+                  }
+                />
               </li>
             ))}
           </ul>
