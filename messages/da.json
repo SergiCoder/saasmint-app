@@ -284,7 +284,14 @@
     "dangerZone": "Danger zone",
     "deleteOrgBlockedSubscription": "You have an active team subscription. Please cancel it first or contact our support team to delete the organization.",
     "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
-    "goToSubscription": "View team plans"
+    "goToSubscription": "View team plans",
+    "addSeat": "Tilføj plads",
+    "removeSeat": "Fjern plads",
+    "updateSeats": "Opdater pladser",
+    "seatsUpdated": "Pladser opdateret",
+    "removeSeatConfirmTitle": "Fjern plads",
+    "removeSeatConfirmBody": "Der udstedes ingen refusion. Din næste fornyelse vil afspejle det reducerede antal pladser.",
+    "removeSeatConfirmAction": "Fjern"
   },
   "common": {
     "loading": "Indlæser...",

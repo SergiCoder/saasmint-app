@@ -283,7 +283,14 @@
     "dangerZone": "Danger zone",
     "deleteOrgBlockedSubscription": "You have an active team subscription. Please cancel it first or contact our support team to delete the organization.",
     "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
-    "goToSubscription": "View team plans"
+    "goToSubscription": "View team plans",
+    "addSeat": "Add seat",
+    "removeSeat": "Remove seat",
+    "updateSeats": "Update seats",
+    "seatsUpdated": "Seats updated successfully",
+    "removeSeatConfirmTitle": "Remove seat",
+    "removeSeatConfirmBody": "No refund will be issued. Your next renewal will reflect the reduced seat count.",
+    "removeSeatConfirmAction": "Remove"
   },
   "invitation": {
     "title": "You've been invited",

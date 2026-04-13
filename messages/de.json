@@ -284,7 +284,14 @@
     "dangerZone": "Danger zone",
     "deleteOrgBlockedSubscription": "You have an active team subscription. Please cancel it first or contact our support team to delete the organization.",
     "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
-    "goToSubscription": "View team plans"
+    "goToSubscription": "View team plans",
+    "addSeat": "Platz hinzufügen",
+    "removeSeat": "Platz entfernen",
+    "updateSeats": "Plätze aktualisieren",
+    "seatsUpdated": "Plätze erfolgreich aktualisiert",
+    "removeSeatConfirmTitle": "Platz entfernen",
+    "removeSeatConfirmBody": "Es erfolgt keine Rückerstattung. Ihre nächste Verlängerung wird die reduzierte Platzanzahl widerspiegeln.",
+    "removeSeatConfirmAction": "Entfernen"
   },
   "common": {
     "loading": "Wird geladen...",

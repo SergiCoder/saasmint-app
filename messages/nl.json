@@ -284,7 +284,14 @@
     "dangerZone": "Danger zone",
     "deleteOrgBlockedSubscription": "You have an active team subscription. Please cancel it first or contact our support team to delete the organization.",
     "noOrgMessage": "You don't have an organization yet. Subscribe to a team plan to create one.",
-    "goToSubscription": "View team plans"
+    "goToSubscription": "View team plans",
+    "addSeat": "Stoel toevoegen",
+    "removeSeat": "Stoel verwijderen",
+    "updateSeats": "Stoelen bijwerken",
+    "seatsUpdated": "Stoelen succesvol bijgewerkt",
+    "removeSeatConfirmTitle": "Stoel verwijderen",
+    "removeSeatConfirmBody": "Er wordt geen restitutie verleend. Uw volgende verlenging zal het verminderde aantal stoelen weerspiegelen.",
+    "removeSeatConfirmAction": "Verwijderen"
   },
   "common": {
     "loading": "Laden...",
