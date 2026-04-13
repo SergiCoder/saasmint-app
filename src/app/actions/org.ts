@@ -7,6 +7,7 @@ import { CreateInvitation } from "@/application/use-cases/invitation/CreateInvit
 import { CancelInvitation } from "@/application/use-cases/invitation/CancelInvitation";
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import { RemoveOrgMember } from "@/application/use-cases/org-member/RemoveOrgMember";
+import { UpdateOrgMemberRole } from "@/application/use-cases/org-member/UpdateOrgMemberRole";
 import { LeaveOrg } from "@/application/use-cases/org-member/LeaveOrg";
 import { TransferOwnership } from "@/application/use-cases/org-member/TransferOwnership";
 import { DeleteOrg } from "@/application/use-cases/org/DeleteOrg";
@@ -81,6 +82,36 @@ export async function removeMember(formData: FormData) {
     await new RemoveOrgMember(orgMemberGateway).execute(orgId, userId);
   } catch (err) {
     console.error("Failed to remove member", err);
+    return;
+  }
+  revalidatePath("/org");
+}
+
+const memberRoles = ["admin", "member"] as const;
+type MemberRole = (typeof memberRoles)[number];
+
+export async function updateMemberRole(formData: FormData) {
+  const orgId = formData.get("orgId");
+  const userId = formData.get("userId");
+  const role = formData.get("role");
+
+  if (
+    typeof orgId !== "string" ||
+    typeof userId !== "string" ||
+    typeof role !== "string" ||
+    !(memberRoles as readonly string[]).includes(role)
+  ) {
+    return;
+  }
+
+  try {
+    await new UpdateOrgMemberRole(orgMemberGateway).execute(
+      orgId,
+      userId,
+      role as MemberRole,
+    );
+  } catch (err) {
+    console.error("Failed to update member role", err);
     return;
   }
   revalidatePath("/org");

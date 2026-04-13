@@ -12,9 +12,8 @@ import {
 } from "@/infrastructure/registry";
 import { getCurrentUser } from "../../_data/getCurrentUser";
 import { OrgMemberList } from "@/presentation/components/organisms/OrgMemberList";
-import { Button } from "@/presentation/components/atoms/Button";
-import { removeMember } from "@/app/actions/org";
 import { InviteByEmailForm } from "./_components/InviteByEmailForm";
+import { MemberActions } from "./_components/MemberActions";
 import { InvitationList } from "./_components/InvitationList";
 import { LeaveOrgButton } from "./_components/LeaveOrgButton";
 import { TransferOwnershipForm } from "./_components/TransferOwnershipForm";
@@ -71,13 +70,20 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
       );
     } else if (canManage && !isMemberOwner && !isSelf) {
       actions = (
-        <form action={removeMember}>
-          <input type="hidden" name="orgId" value={org.id} />
-          <input type="hidden" name="userId" value={m.user.id} />
-          <Button type="submit" variant="danger" size="sm">
-            {t("remove")}
-          </Button>
-        </form>
+        <MemberActions
+          orgId={org.id}
+          userId={m.user.id}
+          currentRole={m.role as "admin" | "member"}
+          labels={{
+            promoteToAdmin: t("promoteToAdmin"),
+            demoteToMember: t("demoteToMember"),
+            remove: t("remove"),
+            removeConfirmTitle: t("removeMemberConfirmTitle"),
+            removeConfirmBody: t("removeMemberConfirmBody"),
+            removeConfirmAction: t("remove"),
+            cancel: tCommon("cancel"),
+          }}
+        />
       );
     }
 
