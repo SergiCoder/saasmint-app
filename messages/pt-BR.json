@@ -13,8 +13,8 @@
     "signOut": "Sair",
     "contactUs": "Fale conosco",
     "profile": "Perfil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Recurso 1",
+    "feature2": "Recurso 2"
   },
   "footer": {
     "privacy": "Privacidade",
@@ -331,12 +331,12 @@
     "intro": "Usamos cookies para melhorar sua experiência. Esta política explica como e por que usamos cookies em nosso site."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Esta é uma página provisória para Feature 1."
+    "title": "Recurso 1",
+    "description": "Esta é uma página provisória para o Recurso 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Esta é uma página provisória para Feature 2."
+    "title": "Recurso 2",
+    "description": "Esta é uma página provisória para o Recurso 2."
   },
   "errorPage": {
     "title": "Algo deu errado",
@@ -352,5 +352,36 @@
     "password": "Senha",
     "accept": "Aceitar convite",
     "decline": "Recusar convite"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Grátis",
+        "description": "Para quem está começando. Inclui análises básicas e suporte da comunidade."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "Para usuários avançados. Análises avançadas, suporte por e-mail prioritário e acesso à API."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Tudo do Basic mais integrações personalizadas, logs de auditoria e suporte dedicado."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Para equipes pequenas. Preço por assento, dashboards compartilhados e análises de equipe."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Para organizações em crescimento. Preço por assento, SSO, logs de auditoria e suporte dedicado."
+      }
+    }
+  },
+  "products": {
+    "50": "50 créditos",
+    "200": "200 créditos",
+    "500": "500 créditos"
   }
 }

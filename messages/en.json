@@ -293,6 +293,37 @@
     "accept": "Accept invitation",
     "decline": "Decline invitation"
   },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Free",
+        "description": "For individuals getting started. Includes basic analytics and community support."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "For power users. Advanced analytics, priority email support, and API access."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Everything in Basic plus custom integrations, audit logs, and dedicated support."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "For small teams. Per-seat pricing, shared dashboards, and team analytics."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "For growing organizations. Per-seat pricing, SSO, audit logs, and dedicated support."
+      }
+    }
+  },
+  "products": {
+    "50": "50 Credits",
+    "200": "200 Credits",
+    "500": "500 Credits"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",

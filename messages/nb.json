@@ -13,8 +13,8 @@
     "signOut": "Logg ut",
     "contactUs": "Kontakt oss",
     "profile": "Profil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Funksjon 1",
+    "feature2": "Funksjon 2"
   },
   "footer": {
     "privacy": "Personvern",
@@ -331,12 +331,12 @@
     "intro": "Vi bruker informasjonskapsler for å forbedre din opplevelse. Disse retningslinjene forklarer hvordan og hvorfor vi bruker informasjonskapsler på vår nettside."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Dette er en plassholderside for Feature 1."
+    "title": "Funksjon 1",
+    "description": "Dette er en plassholderside for Funksjon 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Dette er en plassholderside for Feature 2."
+    "title": "Funksjon 2",
+    "description": "Dette er en plassholderside for Funksjon 2."
   },
   "errorPage": {
     "title": "Noe gikk galt",
@@ -352,5 +352,36 @@
     "password": "Passord",
     "accept": "Godta invitasjon",
     "decline": "Avslå invitasjon"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Gratis",
+        "description": "For enkeltpersoner som starter opp. Inkluderer grunnleggende analyse og fellesskapsstøtte."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "For avanserte brukere. Avansert analyse, prioritert e-poststøtte og API-tilgang."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Alt i Basic pluss tilpassede integrasjoner, revisjonslogger og dedikert støtte."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "For små team. Pris per plass, delte dashbord og teamanalyse."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "For voksende organisasjoner. Pris per plass, SSO, revisjonslogger og dedikert støtte."
+      }
+    }
+  },
+  "products": {
+    "50": "50 kreditter",
+    "200": "200 kreditter",
+    "500": "500 kreditter"
   }
 }

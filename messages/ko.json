@@ -13,8 +13,8 @@
     "signOut": "로그아웃",
     "contactUs": "문의하기",
     "profile": "프로필",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "기능 1",
+    "feature2": "기능 2"
   },
   "footer": {
     "privacy": "개인정보 보호",
@@ -331,12 +331,12 @@
     "intro": "경험을 개선하기 위해 쿠키를 사용합니다. 이 정책은 쿠키를 어떻게 왜 사용하는지 설명합니다."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Feature 1의 자리 표시자 페이지입니다."
+    "title": "기능 1",
+    "description": "기능 1의 자리 표시자 페이지입니다."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Feature 2의 자리 표시자 페이지입니다."
+    "title": "기능 2",
+    "description": "기능 2의 자리 표시자 페이지입니다."
   },
   "errorPage": {
     "title": "문제가 발생했습니다",
@@ -352,5 +352,36 @@
     "password": "비밀번호",
     "accept": "초대 수락",
     "decline": "초대 거절"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "무료",
+        "description": "시작하는 개인을 위한 플랜. 기본 분석 및 커뮤니티 지원 포함."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "파워 유저를 위한 플랜. 고급 분석, 우선 이메일 지원 및 API 액세스."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Basic의 모든 것과 커스텀 통합, 감사 로그, 전담 지원."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "소규모 팀을 위한 플랜. 좌석당 요금, 공유 대시보드 및 팀 분석."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "성장하는 조직을 위한 플랜. 좌석당 요금, SSO, 감사 로그 및 전담 지원."
+      }
+    }
+  },
+  "products": {
+    "50": "50 크레딧",
+    "200": "200 크레딧",
+    "500": "500 크레딧"
   }
 }

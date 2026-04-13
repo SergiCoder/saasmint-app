@@ -13,8 +13,8 @@
     "signOut": "Terminar sessão",
     "contactUs": "Contacte-nos",
     "profile": "Perfil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Funcionalidade 1",
+    "feature2": "Funcionalidade 2"
   },
   "footer": {
     "privacy": "Privacidade",
@@ -331,12 +331,12 @@
     "intro": "Utilizamos cookies para melhorar a sua experiência. Esta política explica como e por que utilizamos cookies no nosso site."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Esta é uma página provisória para Feature 1."
+    "title": "Funcionalidade 1",
+    "description": "Esta é uma página provisória para a Funcionalidade 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Esta é uma página provisória para Feature 2."
+    "title": "Funcionalidade 2",
+    "description": "Esta é uma página provisória para a Funcionalidade 2."
   },
   "errorPage": {
     "title": "Algo correu mal",
@@ -352,5 +352,36 @@
     "password": "Palavra-passe",
     "accept": "Aceitar convite",
     "decline": "Recusar convite"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Gratuito",
+        "description": "Para quem está a começar. Inclui análises básicas e suporte da comunidade."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "Para utilizadores avançados. Análises avançadas, suporte por e-mail prioritário e acesso à API."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Tudo do Basic mais integrações personalizadas, registos de auditoria e suporte dedicado."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Para equipas pequenas. Preço por lugar, painéis partilhados e análises de equipa."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Para organizações em crescimento. Preço por lugar, SSO, registos de auditoria e suporte dedicado."
+      }
+    }
+  },
+  "products": {
+    "50": "50 créditos",
+    "200": "200 créditos",
+    "500": "500 créditos"
   }
 }

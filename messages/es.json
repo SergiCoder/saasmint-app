@@ -13,8 +13,8 @@
     "signOut": "Cerrar sesión",
     "contactUs": "Contáctanos",
     "profile": "Perfil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Función 1",
+    "feature2": "Función 2"
   },
   "footer": {
     "privacy": "Privacidad",
@@ -331,12 +331,12 @@
     "intro": "Usamos cookies para mejorar tu experiencia. Esta política explica cómo y por qué usamos cookies en nuestro sitio web."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Esta es una página provisional para Feature 1."
+    "title": "Función 1",
+    "description": "Esta es una página provisional para la Función 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Esta es una página provisional para Feature 2."
+    "title": "Función 2",
+    "description": "Esta es una página provisional para la Función 2."
   },
   "errorPage": {
     "title": "Algo ha salido mal",
@@ -352,5 +352,21 @@
     "password": "Contraseña",
     "accept": "Aceptar invitación",
     "decline": "Rechazar invitación"
+  },
+  "plans": {
+    "personal": {
+      "1": { "name": "Gratis", "description": "Para personas que comienzan. Incluye analíticas básicas y soporte comunitario." },
+      "2": { "name": "Basic", "description": "Para usuarios avanzados. Analíticas avanzadas, soporte por correo prioritario y acceso a la API." },
+      "3": { "name": "Pro", "description": "Todo lo de Basic más integraciones personalizadas, registros de auditoría y soporte dedicado." }
+    },
+    "team": {
+      "2": { "name": "Basic", "description": "Para equipos pequeños. Precio por puesto, paneles compartidos y analíticas de equipo." },
+      "3": { "name": "Pro", "description": "Para organizaciones en crecimiento. Precio por puesto, SSO, registros de auditoría y soporte dedicado." }
+    }
+  },
+  "products": {
+    "50": "50 créditos",
+    "200": "200 créditos",
+    "500": "500 créditos"
   }
 }

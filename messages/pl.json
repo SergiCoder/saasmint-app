@@ -13,8 +13,8 @@
     "signOut": "Wyloguj się",
     "contactUs": "Kontakt",
     "profile": "Profil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Funkcja 1",
+    "feature2": "Funkcja 2"
   },
   "footer": {
     "privacy": "Prywatność",
@@ -331,12 +331,12 @@
     "intro": "Używamy plików cookie, aby poprawić Twoje doświadczenie. Ta polityka wyjaśnia, jak i dlaczego używamy plików cookie na naszej stronie."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "To jest strona zastępcza dla Feature 1."
+    "title": "Funkcja 1",
+    "description": "To jest strona zastępcza dla Funkcji 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "To jest strona zastępcza dla Feature 2."
+    "title": "Funkcja 2",
+    "description": "To jest strona zastępcza dla Funkcji 2."
   },
   "errorPage": {
     "title": "Coś poszło nie tak",
@@ -352,5 +352,36 @@
     "password": "Hasło",
     "accept": "Zaakceptuj zaproszenie",
     "decline": "Odrzuć zaproszenie"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Darmowy",
+        "description": "Dla osób rozpoczynających. Zawiera podstawowe analizy i wsparcie społeczności."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "Dla zaawansowanych użytkowników. Zaawansowane analizy, priorytetowe wsparcie e-mail i dostęp do API."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Wszystko z Basic plus niestandardowe integracje, logi audytu i dedykowane wsparcie."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Dla małych zespołów. Cena za miejsce, wspólne dashboardy i analizy zespołowe."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Dla rozwijających się organizacji. Cena za miejsce, SSO, logi audytu i dedykowane wsparcie."
+      }
+    }
+  },
+  "products": {
+    "50": "50 kredytów",
+    "200": "200 kredytów",
+    "500": "500 kredytów"
   }
 }

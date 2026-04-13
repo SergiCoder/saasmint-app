@@ -13,8 +13,8 @@
     "signOut": "登出",
     "contactUs": "聯絡我們",
     "profile": "個人資料",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "功能 1",
+    "feature2": "功能 2"
   },
   "footer": {
     "privacy": "隱私權",
@@ -331,12 +331,12 @@
     "intro": "我們使用 Cookie 來改善您的體驗。本政策說明了我們如何以及為何在網站上使用 Cookie。"
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "這是Feature 1的佔位頁面。"
+    "title": "功能 1",
+    "description": "這是功能 1的佔位頁面。"
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "這是Feature 2的佔位頁面。"
+    "title": "功能 2",
+    "description": "這是功能 2的佔位頁面。"
   },
   "errorPage": {
     "title": "出現了一些問題",
@@ -352,5 +352,36 @@
     "password": "密碼",
     "accept": "接受邀請",
     "decline": "拒絕邀請"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "免費",
+        "description": "適合剛起步的個人。包含基礎分析和社群支援。"
+      },
+      "2": {
+        "name": "Basic",
+        "description": "適合進階使用者。進階分析、優先電子郵件支援和 API 存取。"
+      },
+      "3": {
+        "name": "Pro",
+        "description": "包含 Basic 的所有功能，加上自訂整合、稽核日誌和專屬支援。"
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "適合小型團隊。按席位定價、共享儀表板和團隊分析。"
+      },
+      "3": {
+        "name": "Pro",
+        "description": "適合成長中的組織。按席位定價、SSO、稽核日誌和專屬支援。"
+      }
+    }
+  },
+  "products": {
+    "50": "50 點數",
+    "200": "200 點數",
+    "500": "500 點數"
   }
 }

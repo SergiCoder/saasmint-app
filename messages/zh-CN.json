@@ -13,8 +13,8 @@
     "signOut": "退出",
     "contactUs": "联系我们",
     "profile": "个人资料",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "功能 1",
+    "feature2": "功能 2"
   },
   "footer": {
     "privacy": "隐私",
@@ -331,12 +331,12 @@
     "intro": "我们使用 Cookie 来改善您的体验。本政策说明了我们如何以及为何在网站上使用 Cookie。"
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "这是Feature 1的占位页面。"
+    "title": "功能 1",
+    "description": "这是功能 1的占位页面。"
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "这是Feature 2的占位页面。"
+    "title": "功能 2",
+    "description": "这是功能 2的占位页面。"
   },
   "errorPage": {
     "title": "出现了一些问题",
@@ -352,5 +352,36 @@
     "password": "密码",
     "accept": "接受邀请",
     "decline": "拒绝邀请"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "免费",
+        "description": "适合入门个人用户。包含基础分析和社区支持。"
+      },
+      "2": {
+        "name": "Basic",
+        "description": "适合高级用户。高级分析、优先邮件支持和 API 访问。"
+      },
+      "3": {
+        "name": "Pro",
+        "description": "包含 Basic 的所有功能，加上自定义集成、审计日志和专属支持。"
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "适合小型团队。按席位定价、共享仪表盘和团队分析。"
+      },
+      "3": {
+        "name": "Pro",
+        "description": "适合成长中的组织。按席位定价、SSO、审计日志和专属支持。"
+      }
+    }
+  },
+  "products": {
+    "50": "50 积分",
+    "200": "200 积分",
+    "500": "500 积分"
   }
 }

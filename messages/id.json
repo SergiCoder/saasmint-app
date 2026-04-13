@@ -13,8 +13,8 @@
     "signOut": "Keluar",
     "contactUs": "Hubungi kami",
     "profile": "Profil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Fitur 1",
+    "feature2": "Fitur 2"
   },
   "footer": {
     "privacy": "Privasi",
@@ -331,12 +331,12 @@
     "intro": "Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Kebijakan ini menjelaskan bagaimana dan mengapa kami menggunakan cookie di situs web kami."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Ini adalah halaman placeholder untuk Feature 1."
+    "title": "Fitur 1",
+    "description": "Ini adalah halaman placeholder untuk Fitur 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Ini adalah halaman placeholder untuk Feature 2."
+    "title": "Fitur 2",
+    "description": "Ini adalah halaman placeholder untuk Fitur 2."
   },
   "errorPage": {
     "title": "Terjadi kesalahan",
@@ -352,5 +352,36 @@
     "password": "Kata sandi",
     "accept": "Terima undangan",
     "decline": "Tolak undangan"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Gratis",
+        "description": "Untuk individu yang baru memulai. Termasuk analitik dasar dan dukungan komunitas."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "Untuk pengguna tingkat lanjut. Analitik canggih, dukungan email prioritas, dan akses API."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Semua yang ada di Basic ditambah integrasi kustom, log audit, dan dukungan khusus."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Untuk tim kecil. Harga per kursi, dasbor bersama, dan analitik tim."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Untuk organisasi yang berkembang. Harga per kursi, SSO, log audit, dan dukungan khusus."
+      }
+    }
+  },
+  "products": {
+    "50": "50 kredit",
+    "200": "200 kredit",
+    "500": "500 kredit"
   }
 }

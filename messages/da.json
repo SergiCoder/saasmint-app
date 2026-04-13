@@ -13,8 +13,8 @@
     "signOut": "Log ud",
     "contactUs": "Kontakt os",
     "profile": "Profil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Funktion 1",
+    "feature2": "Funktion 2"
   },
   "footer": {
     "privacy": "Privatlivspolitik",
@@ -331,12 +331,12 @@
     "intro": "Vi bruger cookies for at forbedre din oplevelse. Denne politik forklarer, hvordan og hvorfor vi bruger cookies på vores hjemmeside."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Dette er en pladsholderside for Feature 1."
+    "title": "Funktion 1",
+    "description": "Dette er en pladsholderside for Funktion 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Dette er en pladsholderside for Feature 2."
+    "title": "Funktion 2",
+    "description": "Dette er en pladsholderside for Funktion 2."
   },
   "errorPage": {
     "title": "Noget gik galt",
@@ -352,5 +352,36 @@
     "password": "Adgangskode",
     "accept": "Acceptér invitation",
     "decline": "Afvis invitation"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Gratis",
+        "description": "Til enkeltpersoner der starter op. Inkluderer grundlæggende analyse og fællesskabssupport."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "Til power-brugere. Avanceret analyse, prioriteret e-mailsupport og API-adgang."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Alt i Basic plus brugerdefinerede integrationer, revisionslogfiler og dedikeret support."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Til små teams. Pris pr. plads, delte dashboards og teamanalyse."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Til voksende organisationer. Pris pr. plads, SSO, revisionslogfiler og dedikeret support."
+      }
+    }
+  },
+  "products": {
+    "50": "50 kreditter",
+    "200": "200 kreditter",
+    "500": "500 kreditter"
   }
 }

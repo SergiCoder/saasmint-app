@@ -13,8 +13,8 @@
     "signOut": "Esci",
     "contactUs": "Contattaci",
     "profile": "Profilo",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Funzionalità 1",
+    "feature2": "Funzionalità 2"
   },
   "footer": {
     "privacy": "Privacy",
@@ -331,12 +331,12 @@
     "intro": "Utilizziamo i cookie per migliorare la tua esperienza. Questa informativa spiega come e perché utilizziamo i cookie sul nostro sito."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Questa è una pagina segnaposto per Feature 1."
+    "title": "Funzionalità 1",
+    "description": "Questa è una pagina segnaposto per la Funzionalità 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Questa è una pagina segnaposto per Feature 2."
+    "title": "Funzionalità 2",
+    "description": "Questa è una pagina segnaposto per la Funzionalità 2."
   },
   "errorPage": {
     "title": "Qualcosa è andato storto",
@@ -352,5 +352,36 @@
     "password": "Password",
     "accept": "Accetta invito",
     "decline": "Rifiuta invito"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Gratuito",
+        "description": "Per chi inizia. Include analisi di base e supporto della community."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "Per utenti avanzati. Analisi avanzate, supporto e-mail prioritario e accesso API."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Tutto ciò che è in Basic più integrazioni personalizzate, registri di audit e supporto dedicato."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Per piccoli team. Prezzo per posto, dashboard condivise e analisi del team."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Per organizzazioni in crescita. Prezzo per posto, SSO, registri di audit e supporto dedicato."
+      }
+    }
+  },
+  "products": {
+    "50": "50 crediti",
+    "200": "200 crediti",
+    "500": "500 crediti"
   }
 }

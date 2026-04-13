@@ -13,8 +13,8 @@
     "signOut": "Çıkış yap",
     "contactUs": "Bize ulaşın",
     "profile": "Profil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Özellik 1",
+    "feature2": "Özellik 2"
   },
   "footer": {
     "privacy": "Gizlilik",
@@ -331,12 +331,12 @@
     "intro": "Deneyiminizi iyileştirmek için çerezler kullanıyoruz. Bu politika, web sitemizde çerezleri nasıl ve neden kullandığımızı açıklar."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Bu, Feature 1 için bir yer tutucu sayfadır."
+    "title": "Özellik 1",
+    "description": "Bu, Özellik 1 için bir yer tutucu sayfadır."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Bu, Feature 2 için bir yer tutucu sayfadır."
+    "title": "Özellik 2",
+    "description": "Bu, Özellik 2 için bir yer tutucu sayfadır."
   },
   "errorPage": {
     "title": "Bir şeyler ters gitti",
@@ -352,5 +352,36 @@
     "password": "Şifre",
     "accept": "Daveti kabul et",
     "decline": "Daveti reddet"
+  },
+  "plans": {
+    "personal": {
+      "1": {
+        "name": "Ücretsiz",
+        "description": "Yeni başlayanlar için. Temel analitik ve topluluk desteği içerir."
+      },
+      "2": {
+        "name": "Basic",
+        "description": "İleri düzey kullanıcılar için. Gelişmiş analitik, öncelikli e-posta desteği ve API erişimi."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Basic'teki her şeye ek olarak özel entegrasyonlar, denetim günlükleri ve özel destek."
+      }
+    },
+    "team": {
+      "2": {
+        "name": "Basic",
+        "description": "Küçük takımlar için. Kişi başı fiyatlandırma, paylaşılan panolar ve takım analitiği."
+      },
+      "3": {
+        "name": "Pro",
+        "description": "Büyüyen kuruluşlar için. Kişi başı fiyatlandırma, SSO, denetim günlükleri ve özel destek."
+      }
+    }
+  },
+  "products": {
+    "50": "50 kredi",
+    "200": "200 kredi",
+    "500": "500 kredi"
   }
 }

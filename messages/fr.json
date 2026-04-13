@@ -13,8 +13,8 @@
     "signOut": "Se déconnecter",
     "contactUs": "Contactez-nous",
     "profile": "Profil",
-    "feature1": "Feature 1",
-    "feature2": "Feature 2"
+    "feature1": "Fonction 1",
+    "feature2": "Fonction 2"
   },
   "footer": {
     "privacy": "Confidentialité",
@@ -331,12 +331,12 @@
     "intro": "Nous utilisons des cookies pour améliorer votre expérience. Cette politique explique comment et pourquoi nous utilisons des cookies sur notre site."
   },
   "feature1": {
-    "title": "Feature 1",
-    "description": "Ceci est une page provisoire pour Feature 1."
+    "title": "Fonction 1",
+    "description": "Ceci est une page provisoire pour la Fonction 1."
   },
   "feature2": {
-    "title": "Feature 2",
-    "description": "Ceci est une page provisoire pour Feature 2."
+    "title": "Fonction 2",
+    "description": "Ceci est une page provisoire pour la Fonction 2."
   },
   "errorPage": {
     "title": "Une erreur est survenue",
@@ -352,5 +352,21 @@
     "password": "Mot de passe",
     "accept": "Accepter l'invitation",
     "decline": "Décliner l'invitation"
+  },
+  "plans": {
+    "personal": {
+      "1": { "name": "Gratuit", "description": "Pour les particuliers qui débutent. Inclut des analyses de base et le support communautaire." },
+      "2": { "name": "Basic", "description": "Pour les utilisateurs avancés. Analyses avancées, support par e-mail prioritaire et accès API." },
+      "3": { "name": "Pro", "description": "Tout ce qui est dans Basic plus les intégrations personnalisées, les journaux d'audit et le support dédié." }
+    },
+    "team": {
+      "2": { "name": "Basic", "description": "Pour les petites équipes. Tarification par siège, tableaux de bord partagés et analyses d'équipe." },
+      "3": { "name": "Pro", "description": "Pour les organisations en croissance. Tarification par siège, SSO, journaux d'audit et support dédié." }
+    }
+  },
+  "products": {
+    "50": "50 crédits",
+    "200": "200 crédits",
+    "500": "500 crédits"
   }
 }
