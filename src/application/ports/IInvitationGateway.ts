@@ -13,6 +13,9 @@ export interface IInvitationGateway {
   listInvitations(orgId: string): Promise<Invitation[]>;
   cancelInvitation(orgId: string, invitationId: string): Promise<void>;
   getByToken(token: string): Promise<Invitation>;
-  acceptInvitation(token: string): Promise<void>;
+  acceptInvitation(
+    token: string,
+    input: { fullName: string; password: string },
+  ): Promise<{ accessToken: string; refreshToken: string }>;
   declineInvitation(token: string): Promise<void>;
 }

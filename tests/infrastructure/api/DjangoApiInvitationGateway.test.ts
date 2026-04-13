@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockApiFetch = vi.fn();
+const mockPublicApiFetch = vi.fn();
 
 vi.mock("@/infrastructure/api/apiClient", () => ({
   apiFetch: (...args: unknown[]) => mockApiFetch(...args),
+  publicApiFetch: (...args: unknown[]) => mockPublicApiFetch(...args),
 }));
 
 vi.mock("@/infrastructure/api/caseTransform", async () => {
@@ -99,35 +101,49 @@ describe("DjangoApiInvitationGateway", () => {
 
   describe("getByToken", () => {
     it("fetches GET /invitations/:token/ and maps response", async () => {
-      mockApiFetch.mockResolvedValue(rawInvitation);
+      mockPublicApiFetch.mockResolvedValue(rawInvitation);
 
       const result = await gateway.getByToken("abc123");
 
-      expect(mockApiFetch).toHaveBeenCalledWith("/invitations/abc123/");
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/invitations/abc123/");
       expect(result.orgName).toBe("The Bee Lab");
       expect(result.invitedBy.fullName).toBe("Alice");
     });
   });
 
   describe("acceptInvitation", () => {
-    it("sends POST /invitations/:token/accept/", async () => {
-      mockApiFetch.mockResolvedValue(undefined);
-
-      await gateway.acceptInvitation("abc123");
-
-      expect(mockApiFetch).toHaveBeenCalledWith("/invitations/abc123/accept/", {
-        method: "POST",
+    it("sends POST /invitations/:token/accept/ and returns tokens", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "at",
+        refresh_token: "rt",
       });
+
+      const result = await gateway.acceptInvitation("abc123", {
+        fullName: "Bob Smith",
+        password: "secret123",
+      });
+
+      expect(mockPublicApiFetch).toHaveBeenCalledWith(
+        "/invitations/abc123/accept/",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            full_name: "Bob Smith",
+            password: "secret123",
+          }),
+        },
+      );
+      expect(result).toEqual({ accessToken: "at", refreshToken: "rt" });
     });
   });
 
   describe("declineInvitation", () => {
     it("sends POST /invitations/:token/decline/", async () => {
-      mockApiFetch.mockResolvedValue(undefined);
+      mockPublicApiFetch.mockResolvedValue(undefined);
 
       await gateway.declineInvitation("abc123");
 
-      expect(mockApiFetch).toHaveBeenCalledWith(
+      expect(mockPublicApiFetch).toHaveBeenCalledWith(
         "/invitations/abc123/decline/",
         { method: "POST" },
       );

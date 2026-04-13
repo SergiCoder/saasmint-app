@@ -3,7 +3,7 @@ import type {
   IInvitationGateway,
 } from "@/application/ports/IInvitationGateway";
 import type { Invitation } from "@/domain/models/Invitation";
-import { apiFetch } from "./apiClient";
+import { apiFetch, publicApiFetch } from "./apiClient";
 import { keysToCamel } from "./caseTransform";
 
 function mapInvitation(raw: Record<string, unknown>): Invitation {
@@ -45,17 +45,35 @@ export class DjangoApiInvitationGateway implements IInvitationGateway {
   }
 
   async getByToken(token: string): Promise<Invitation> {
-    const raw = await apiFetch<Record<string, unknown>>(
+    const raw = await publicApiFetch<Record<string, unknown>>(
       `/invitations/${token}/`,
     );
     return mapInvitation(raw);
   }
 
-  async acceptInvitation(token: string): Promise<void> {
-    await apiFetch<void>(`/invitations/${token}/accept/`, { method: "POST" });
+  async acceptInvitation(
+    token: string,
+    input: { fullName: string; password: string },
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const data = await publicApiFetch<{
+      access_token: string;
+      refresh_token: string;
+    }>(`/invitations/${token}/accept/`, {
+      method: "POST",
+      body: JSON.stringify({
+        full_name: input.fullName,
+        password: input.password,
+      }),
+    });
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+    };
   }
 
   async declineInvitation(token: string): Promise<void> {
-    await apiFetch<void>(`/invitations/${token}/decline/`, { method: "POST" });
+    await publicApiFetch<void>(`/invitations/${token}/decline/`, {
+      method: "POST",
+    });
   }
 }

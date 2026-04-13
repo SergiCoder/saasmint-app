@@ -26,6 +26,11 @@ vi.mock("@/infrastructure/registry", () => ({
   invitationGateway: {},
 }));
 
+const mockSetAuthCookies = vi.fn();
+vi.mock("@/infrastructure/auth/cookies", () => ({
+  setAuthCookies: (...args: unknown[]) => mockSetAuthCookies(...args),
+}));
+
 let acceptInvitation: typeof import("@/app/actions/invitation").acceptInvitation;
 let declineInvitation: typeof import("@/app/actions/invitation").declineInvitation;
 
@@ -38,21 +43,34 @@ beforeEach(async () => {
 
 describe("invitation server actions", () => {
   describe("acceptInvitation", () => {
-    it("accepts invitation and redirects to /org", async () => {
-      mockAcceptInvitationExecute.mockResolvedValue(undefined);
+    it("accepts invitation, sets cookies, and redirects to /dashboard", async () => {
+      mockAcceptInvitationExecute.mockResolvedValue({
+        accessToken: "at",
+        refreshToken: "rt",
+      });
 
       const formData = new FormData();
       formData.set("token", "abc123");
+      formData.set("fullName", "Bob Smith");
+      formData.set("password", "secret123");
 
-      await expect(acceptInvitation(formData)).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockAcceptInvitationExecute).toHaveBeenCalledWith("abc123");
-      expect(mockRedirect).toHaveBeenCalledWith("/org");
+      await expect(acceptInvitation(null, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockAcceptInvitationExecute).toHaveBeenCalledWith("abc123", {
+        fullName: "Bob Smith",
+        password: "secret123",
+      });
+      expect(mockSetAuthCookies).toHaveBeenCalledWith("at", "rt");
+      expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
     });
 
-    it("returns early when token is missing", async () => {
+    it("returns error when required fields are missing", async () => {
       const formData = new FormData();
+      formData.set("token", "abc123");
 
-      await acceptInvitation(formData);
+      const result = await acceptInvitation(null, formData);
+      expect(result).toEqual({ error: "Missing required fields" });
       expect(mockAcceptInvitationExecute).not.toHaveBeenCalled();
     });
   });

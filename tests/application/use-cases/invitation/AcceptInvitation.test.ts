@@ -10,16 +10,19 @@ function makeGateway(
     listInvitations: vi.fn(),
     cancelInvitation: vi.fn(),
     getByToken: vi.fn(),
-    acceptInvitation: vi.fn().mockResolvedValue(undefined),
+    acceptInvitation: vi
+      .fn()
+      .mockResolvedValue({ accessToken: "at", refreshToken: "rt" }),
     declineInvitation: vi.fn(),
     ...overrides,
   };
 }
 
 describe("AcceptInvitation", () => {
-  it("calls acceptInvitation with correct token", async () => {
+  it("calls acceptInvitation with correct token and input", async () => {
     const gateway = makeGateway();
-    await new AcceptInvitation(gateway).execute("abc123");
-    expect(gateway.acceptInvitation).toHaveBeenCalledWith("abc123");
+    const input = { fullName: "Bob Smith", password: "secret123" };
+    await new AcceptInvitation(gateway).execute("abc123", input);
+    expect(gateway.acceptInvitation).toHaveBeenCalledWith("abc123", input);
   });
 });

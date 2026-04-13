@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { GetInvitationByToken } from "@/application/use-cases/invitation/GetInvitationByToken";
 import { invitationGateway } from "@/infrastructure/registry";
 import { Button } from "@/presentation/components/atoms/Button";
-import { acceptInvitation, declineInvitation } from "@/app/actions/invitation";
+import { declineInvitation } from "@/app/actions/invitation";
+import { AcceptInvitationForm } from "./_components/AcceptInvitationForm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("invitation");
@@ -25,24 +26,22 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
     <div className="mx-auto max-w-md space-y-6 py-12">
       <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 mb-6 text-sm text-gray-600">
           {t("description", { orgName: invitation.orgName })}
         </p>
 
-        <div className="mt-8 flex flex-col gap-3">
-          <form action={acceptInvitation}>
-            <input type="hidden" name="token" value={token} />
-            <Button type="submit" variant="primary" className="w-full">
-              {t("accept")}
-            </Button>
-          </form>
-          <form action={declineInvitation}>
-            <input type="hidden" name="token" value={token} />
-            <Button type="submit" variant="secondary" className="w-full">
-              {t("decline")}
-            </Button>
-          </form>
-        </div>
+        <AcceptInvitationForm token={token} />
+
+        <form action={declineInvitation} className="mt-3">
+          <input type="hidden" name="token" value={token} />
+          <Button
+            type="submit"
+            variant="secondary"
+            className="w-full cursor-pointer"
+          >
+            {t("decline")}
+          </Button>
+        </form>
       </div>
     </div>
   );
