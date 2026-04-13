@@ -15,7 +15,6 @@ import { OrgMemberList } from "@/presentation/components/organisms/OrgMemberList
 import { InviteByEmailForm } from "./_components/InviteByEmailForm";
 import { MemberActions } from "./_components/MemberActions";
 import { InvitationList } from "./_components/InvitationList";
-import { LeaveOrgButton } from "./_components/LeaveOrgButton";
 import { TransferOwnershipForm } from "./_components/TransferOwnershipForm";
 import { OrgDangerZone } from "./_components/OrgDangerZone";
 import { SeatManager } from "./_components/SeatManager";
@@ -57,18 +56,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
     const isMemberOwner = m.role === "owner";
 
     let actions: React.ReactNode = null;
-    if (isSelf && !isMemberOwner) {
-      actions = (
-        <LeaveOrgButton
-          orgId={org.id}
-          label={t("leaveOrg")}
-          confirmTitle={t("leaveOrgConfirmTitle")}
-          confirmBody={t("leaveOrgConfirmBody")}
-          confirmAction={t("leaveOrg")}
-          confirmDismiss={tCommon("cancel")}
-        />
-      );
-    } else if (canManage && !isMemberOwner && !isSelf) {
+    if (canManage && !isMemberOwner && !isSelf) {
       actions = (
         <MemberActions
           orgId={org.id}

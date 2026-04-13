@@ -34,13 +34,6 @@ vi.mock("@/application/use-cases/org-member/RemoveOrgMember", () => ({
   },
 }));
 
-const mockLeaveOrgExecute = vi.fn();
-vi.mock("@/application/use-cases/org-member/LeaveOrg", () => ({
-  LeaveOrg: function LeaveOrg() {
-    return { execute: mockLeaveOrgExecute };
-  },
-}));
-
 const mockTransferOwnershipExecute = vi.fn();
 vi.mock("@/application/use-cases/org-member/TransferOwnership", () => ({
   TransferOwnership: function TransferOwnership() {
@@ -79,7 +72,6 @@ vi.mock("@/infrastructure/registry", () => ({
 let inviteMember: typeof import("@/app/actions/org").inviteMember;
 let cancelInvitation: typeof import("@/app/actions/org").cancelInvitation;
 let removeMember: typeof import("@/app/actions/org").removeMember;
-let leaveOrg: typeof import("@/app/actions/org").leaveOrg;
 let transferOwnership: typeof import("@/app/actions/org").transferOwnership;
 let deleteOrg: typeof import("@/app/actions/org").deleteOrg;
 
@@ -89,7 +81,6 @@ beforeEach(async () => {
   inviteMember = mod.inviteMember;
   cancelInvitation = mod.cancelInvitation;
   removeMember = mod.removeMember;
-  leaveOrg = mod.leaveOrg;
   transferOwnership = mod.transferOwnership;
   deleteOrg = mod.deleteOrg;
 });
@@ -191,26 +182,6 @@ describe("org server actions", () => {
 
       await removeMember(formData);
       expect(mockRemoveOrgMemberExecute).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("leaveOrg", () => {
-    it("leaves org and redirects to dashboard", async () => {
-      mockLeaveOrgExecute.mockResolvedValue(undefined);
-
-      const formData = new FormData();
-      formData.set("orgId", "org_1");
-
-      await expect(leaveOrg(formData)).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockLeaveOrgExecute).toHaveBeenCalledWith("org_1");
-      expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
-    });
-
-    it("returns early when orgId is missing", async () => {
-      const formData = new FormData();
-
-      await leaveOrg(formData);
-      expect(mockLeaveOrgExecute).not.toHaveBeenCalled();
     });
   });
 

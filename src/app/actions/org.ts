@@ -8,7 +8,6 @@ import { CancelInvitation } from "@/application/use-cases/invitation/CancelInvit
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import { RemoveOrgMember } from "@/application/use-cases/org-member/RemoveOrgMember";
 import { UpdateOrgMemberRole } from "@/application/use-cases/org-member/UpdateOrgMemberRole";
-import { LeaveOrg } from "@/application/use-cases/org-member/LeaveOrg";
 import { TransferOwnership } from "@/application/use-cases/org-member/TransferOwnership";
 import { DeleteOrg } from "@/application/use-cases/org/DeleteOrg";
 import {
@@ -115,22 +114,6 @@ export async function updateMemberRole(formData: FormData) {
     return;
   }
   revalidatePath("/org");
-}
-
-export async function leaveOrg(formData: FormData) {
-  const orgId = formData.get("orgId");
-
-  if (typeof orgId !== "string") {
-    return;
-  }
-
-  try {
-    await new LeaveOrg(orgMemberGateway).execute(orgId);
-  } catch (err) {
-    console.error("Failed to leave organization", err);
-    return;
-  }
-  redirect("/dashboard");
 }
 
 export async function transferOwnership(
