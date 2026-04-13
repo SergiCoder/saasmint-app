@@ -84,6 +84,7 @@ export default async function PricingPage() {
           <GetStartedButton
             planPriceId={plan.price.id}
             highlighted={highlighted}
+            context={isTeam ? "team" : undefined}
           >
             {t("select")}
           </GetStartedButton>

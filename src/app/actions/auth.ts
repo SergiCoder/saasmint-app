@@ -64,7 +64,12 @@ export async function signIn(_prevState: unknown, formData: FormData) {
 
   const plan = formData.get("plan");
   if (typeof plan === "string" && plan) {
-    redirect(`/subscription/checkout?plan=${encodeURIComponent(plan)}`);
+    const context = formData.get("context");
+    const checkoutPath =
+      context === "team"
+        ? "/subscription/team-checkout"
+        : "/subscription/checkout";
+    redirect(`${checkoutPath}?plan=${encodeURIComponent(plan)}`);
   }
 
   redirect("/dashboard");
@@ -83,8 +88,14 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: "Full name must be between 3 and 255 characters" };
   }
 
+  const context = formData.get("context");
+  const isTeam = context === "team";
+  const registerEndpoint = isTeam
+    ? "/auth/register/org-owner/"
+    : "/auth/register/";
+
   try {
-    await publicApiFetch<TokenResponse>("/auth/register/", {
+    await publicApiFetch<TokenResponse>(registerEndpoint, {
       method: "POST",
       body: JSON.stringify({
         email: result.email,
@@ -100,15 +111,18 @@ export async function signUp(_prevState: unknown, formData: FormData) {
 
   const plan = formData.get("plan");
   if (typeof plan === "string" && plan) {
-    await setPendingPlan(plan);
+    await setPendingPlan(plan, isTeam);
   }
 
   // Registration returns tokens but user must verify email first.
-  const loginUrl =
-    typeof plan === "string" && plan
-      ? `/login?registered=true&plan=${encodeURIComponent(plan)}`
-      : "/login?registered=true";
-  redirect(loginUrl);
+  const loginParams = new URLSearchParams({ registered: "true" });
+  if (typeof plan === "string" && plan) {
+    loginParams.set("plan", plan);
+  }
+  if (isTeam) {
+    loginParams.set("context", "team");
+  }
+  redirect(`/login?${loginParams.toString()}`);
 }
 
 export async function resetPassword(_prevState: unknown, formData: FormData) {
@@ -208,7 +222,7 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
 
 export async function verifyEmail(
   token: string,
-): Promise<{ error?: string; pendingPlan?: string }> {
+): Promise<{ error?: string; pendingPlan?: string; isTeamPlan?: boolean }> {
   let data: TokenResponse;
   try {
     data = await publicApiFetch<TokenResponse>("/auth/verify-email/", {
@@ -222,8 +236,10 @@ export async function verifyEmail(
   }
 
   await setAuthCookies(data.access_token, data.refresh_token);
-  const pendingPlan = await consumePendingPlan();
-  return pendingPlan ? { pendingPlan } : {};
+  const pending = await consumePendingPlan();
+  return pending
+    ? { pendingPlan: pending.plan, isTeamPlan: pending.isTeam }
+    : {};
 }
 
 export async function signOut() {

@@ -131,6 +131,26 @@ describe("auth server actions", () => {
         "/subscription/checkout?plan=price_pro_monthly",
       );
     });
+
+    it("redirects to team checkout when plan and context=team are supplied", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+      });
+
+      const formData = new FormData();
+      formData.set("email", "user@example.com");
+      formData.set("password", "secret123");
+      formData.set("plan", "price_team_pro");
+      formData.set("context", "team");
+
+      await expect(signIn(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockRedirect).toHaveBeenCalledWith(
+        "/subscription/team-checkout?plan=price_team_pro",
+      );
+    });
   });
 
   describe("signUp", () => {
@@ -196,9 +216,32 @@ describe("auth server actions", () => {
       await expect(signUp(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
       );
-      expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro");
+      expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro", false);
       expect(mockRedirect).toHaveBeenCalledWith(
         "/login?registered=true&plan=price_team_pro",
+      );
+    });
+
+    it("uses org-owner endpoint and team context for team plan signup", async () => {
+      mockPublicApiFetch.mockResolvedValue({});
+
+      const formData = new FormData();
+      formData.set("fullName", "Jane Doe");
+      formData.set("email", "new@example.com");
+      formData.set("password", "secret123");
+      formData.set("plan", "price_team_pro");
+      formData.set("context", "team");
+
+      await expect(signUp(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockPublicApiFetch).toHaveBeenCalledWith(
+        "/auth/register/org-owner/",
+        expect.objectContaining({ method: "POST" }),
+      );
+      expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro", true);
+      expect(mockRedirect).toHaveBeenCalledWith(
+        "/login?registered=true&plan=price_team_pro&context=team",
       );
     });
 
@@ -492,11 +535,34 @@ describe("auth server actions", () => {
         access_token: "tok_verified",
         refresh_token: "ref_verified",
       });
-      mockConsumePendingPlan.mockResolvedValue("price_team_pro");
+      mockConsumePendingPlan.mockResolvedValue({
+        plan: "price_team_pro",
+        isTeam: false,
+      });
 
       const result = await verifyEmail("verify-token-123");
-      expect(result).toEqual({ pendingPlan: "price_team_pro" });
+      expect(result).toEqual({
+        pendingPlan: "price_team_pro",
+        isTeamPlan: false,
+      });
       expect(mockConsumePendingPlan).toHaveBeenCalledOnce();
+    });
+
+    it("returns isTeamPlan=true when team plan cookie was set during signup", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_verified",
+        refresh_token: "ref_verified",
+      });
+      mockConsumePendingPlan.mockResolvedValue({
+        plan: "price_team_pro",
+        isTeam: true,
+      });
+
+      const result = await verifyEmail("verify-token-123");
+      expect(result).toEqual({
+        pendingPlan: "price_team_pro",
+        isTeamPlan: true,
+      });
     });
 
     it("returns friendly error from API detail field", async () => {
