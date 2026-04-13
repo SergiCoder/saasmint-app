@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { AppLayout } from "@/presentation/components/templates/AppLayout";
 import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
-import { subscriptionGateway } from "@/infrastructure/registry";
+import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
+import { subscriptionGateway, orgGateway } from "@/infrastructure/registry";
 import { SignOutButton } from "../_components/SignOutButton";
 import { getCurrentUser } from "./_data/getCurrentUser";
 
@@ -20,19 +21,23 @@ export default async function AppLayoutRoute({
   ]);
 
   const isTeamSubscription = subscription?.plan.context === "team";
+  const userOrgs = await new ListUserOrgs(orgGateway)
+    .execute(user.id)
+    .catch(() => []);
+  const hasOrg = isTeamSubscription || userOrgs.length > 0;
 
   const navLinks = [
     { href: "/dashboard", label: t("dashboard") },
     { href: "/feature1", label: t("feature1") },
     { href: "/feature2", label: t("feature2") },
-    ...(isTeamSubscription ? [{ href: "/org", label: t("org") }] : []),
+    ...(hasOrg ? [{ href: "/org", label: t("org") }] : []),
   ];
 
   const userMenuItems = [
     { href: "/dashboard", label: t("dashboard") },
     { href: "/profile", label: t("profile") },
     { href: "/subscription", label: t("subscription") },
-    ...(isTeamSubscription ? [{ href: "/org", label: t("org") }] : []),
+    ...(hasOrg ? [{ href: "/org", label: t("org") }] : []),
   ];
 
   return (
