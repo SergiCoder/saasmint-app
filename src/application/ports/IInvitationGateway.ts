@@ -12,6 +12,7 @@ export interface IInvitationGateway {
   ): Promise<Invitation>;
   listInvitations(orgId: string): Promise<Invitation[]>;
   cancelInvitation(orgId: string, invitationId: string): Promise<void>;
+  getByToken(token: string): Promise<Invitation>;
   acceptInvitation(token: string): Promise<void>;
   declineInvitation(token: string): Promise<void>;
 }

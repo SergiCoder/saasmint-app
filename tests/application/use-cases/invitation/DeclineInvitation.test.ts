@@ -9,6 +9,7 @@ function makeGateway(
     createInvitation: vi.fn(),
     listInvitations: vi.fn(),
     cancelInvitation: vi.fn(),
+    getByToken: vi.fn(),
     acceptInvitation: vi.fn(),
     declineInvitation: vi.fn().mockResolvedValue(undefined),
     ...overrides,

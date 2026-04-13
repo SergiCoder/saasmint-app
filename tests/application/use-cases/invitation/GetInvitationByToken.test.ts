@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
-import { CreateInvitation } from "@/application/use-cases/invitation/CreateInvitation";
+import { GetInvitationByToken } from "@/application/use-cases/invitation/GetInvitationByToken";
 import type { IInvitationGateway } from "@/application/ports/IInvitationGateway";
 import type { Invitation } from "@/domain/models/Invitation";
 
-const invitation: Invitation = {
+const fakeInvitation: Invitation = {
   id: "inv1",
-  org: "o1",
-  orgName: "Test Org",
+  org: "org-1",
+  orgName: "The Bee Lab",
   email: "bob@example.com",
   role: "member",
   status: "pending",
@@ -19,27 +19,21 @@ function makeGateway(
   overrides?: Partial<IInvitationGateway>,
 ): IInvitationGateway {
   return {
-    createInvitation: vi.fn().mockResolvedValue(invitation),
+    createInvitation: vi.fn(),
     listInvitations: vi.fn(),
     cancelInvitation: vi.fn(),
-    getByToken: vi.fn(),
+    getByToken: vi.fn().mockResolvedValue(fakeInvitation),
     acceptInvitation: vi.fn(),
     declineInvitation: vi.fn(),
     ...overrides,
   };
 }
 
-describe("CreateInvitation", () => {
-  it("calls createInvitation with correct args", async () => {
+describe("GetInvitationByToken", () => {
+  it("calls getByToken with correct token", async () => {
     const gateway = makeGateway();
-    const result = await new CreateInvitation(gateway).execute("o1", {
-      email: "bob@example.com",
-      role: "member",
-    });
-    expect(gateway.createInvitation).toHaveBeenCalledWith("o1", {
-      email: "bob@example.com",
-      role: "member",
-    });
-    expect(result).toEqual(invitation);
+    const result = await new GetInvitationByToken(gateway).execute("abc123");
+    expect(gateway.getByToken).toHaveBeenCalledWith("abc123");
+    expect(result.orgName).toBe("The Bee Lab");
   });
 });

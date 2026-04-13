@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { GetInvitationByToken } from "@/application/use-cases/invitation/GetInvitationByToken";
+import { invitationGateway } from "@/infrastructure/registry";
 import { Button } from "@/presentation/components/atoms/Button";
 import { acceptInvitation, declineInvitation } from "@/app/actions/invitation";
 
@@ -10,17 +12,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 interface InvitationPageProps {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ org?: string }>;
 }
 
-export default async function InvitationPage({
-  params,
-  searchParams,
-}: InvitationPageProps) {
-  const [{ token }, { org: orgName }, t] = await Promise.all([
-    params,
-    searchParams,
+export default async function InvitationPage({ params }: InvitationPageProps) {
+  const { token } = await params;
+  const [t, invitation] = await Promise.all([
     getTranslations("invitation"),
+    new GetInvitationByToken(invitationGateway).execute(token),
   ]);
 
   return (
@@ -28,7 +26,7 @@ export default async function InvitationPage({
       <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">{t("title")}</h1>
         <p className="mt-2 text-sm text-gray-600">
-          {t("description", { orgName: orgName ?? "" })}
+          {t("description", { orgName: invitation.orgName })}
         </p>
 
         <div className="mt-8 flex flex-col gap-3">

@@ -44,6 +44,13 @@ export class DjangoApiInvitationGateway implements IInvitationGateway {
     });
   }
 
+  async getByToken(token: string): Promise<Invitation> {
+    const raw = await apiFetch<Record<string, unknown>>(
+      `/invitations/${token}/`,
+    );
+    return mapInvitation(raw);
+  }
+
   async acceptInvitation(token: string): Promise<void> {
     await apiFetch<void>(`/invitations/${token}/accept/`, { method: "POST" });
   }

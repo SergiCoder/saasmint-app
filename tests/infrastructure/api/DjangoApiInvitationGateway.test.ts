@@ -17,6 +17,7 @@ const { DjangoApiInvitationGateway } =
 const rawInvitation = {
   id: "inv1",
   org: "org-1",
+  org_name: "The Bee Lab",
   email: "bob@example.com",
   role: "member",
   status: "pending",
@@ -93,6 +94,18 @@ describe("DjangoApiInvitationGateway", () => {
       expect(mockApiFetch).toHaveBeenCalledWith("/orgs/o1/invitations/inv1/", {
         method: "DELETE",
       });
+    });
+  });
+
+  describe("getByToken", () => {
+    it("fetches GET /invitations/:token/ and maps response", async () => {
+      mockApiFetch.mockResolvedValue(rawInvitation);
+
+      const result = await gateway.getByToken("abc123");
+
+      expect(mockApiFetch).toHaveBeenCalledWith("/invitations/abc123/");
+      expect(result.orgName).toBe("The Bee Lab");
+      expect(result.invitedBy.fullName).toBe("Alice");
     });
   });
 
