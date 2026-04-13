@@ -29,8 +29,7 @@ export async function acceptInvitation(
     await setAuthCookies(accessToken, refreshToken);
   } catch (err) {
     console.error("Failed to accept invitation", err);
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return { error: message };
+    return { error: "Failed to accept invitation" };
   }
   redirect("/dashboard");
 }

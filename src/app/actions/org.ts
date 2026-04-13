@@ -17,8 +17,8 @@ import {
   orgMemberGateway,
 } from "@/infrastructure/registry";
 
-const invitationRoles = ["admin", "member"] as const;
-type InvitationRole = (typeof invitationRoles)[number];
+const assignableRoles = ["admin", "member"] as const;
+type AssignableRole = (typeof assignableRoles)[number];
 
 export type OrgActionResult = { ok: true } | { ok: false; error: string };
 
@@ -34,7 +34,7 @@ export async function inviteMember(
     typeof orgId !== "string" ||
     typeof email !== "string" ||
     typeof role !== "string" ||
-    !(invitationRoles as readonly string[]).includes(role)
+    !(assignableRoles as readonly string[]).includes(role)
   ) {
     return { ok: false, error: "Invalid input" };
   }
@@ -42,7 +42,7 @@ export async function inviteMember(
   try {
     await new CreateInvitation(invitationGateway).execute(orgId, {
       email,
-      role: role as InvitationRole,
+      role: role as AssignableRole,
     });
   } catch {
     return { ok: false, error: "Failed to send invitation" };
@@ -86,9 +86,6 @@ export async function removeMember(formData: FormData) {
   revalidatePath("/org");
 }
 
-const memberRoles = ["admin", "member"] as const;
-type MemberRole = (typeof memberRoles)[number];
-
 export async function updateMemberRole(formData: FormData) {
   const orgId = formData.get("orgId");
   const userId = formData.get("userId");
@@ -98,7 +95,7 @@ export async function updateMemberRole(formData: FormData) {
     typeof orgId !== "string" ||
     typeof userId !== "string" ||
     typeof role !== "string" ||
-    !(memberRoles as readonly string[]).includes(role)
+    !(assignableRoles as readonly string[]).includes(role)
   ) {
     return;
   }
@@ -107,7 +104,7 @@ export async function updateMemberRole(formData: FormData) {
     await new UpdateOrgMemberRole(orgMemberGateway).execute(
       orgId,
       userId,
-      role as MemberRole,
+      role as AssignableRole,
     );
   } catch (err) {
     console.error("Failed to update member role", err);

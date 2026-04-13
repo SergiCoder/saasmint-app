@@ -10,27 +10,12 @@ import {
   setAuthCookies,
   setPendingPlan,
 } from "@/infrastructure/auth/cookies";
+import { friendlyError } from "@/lib/friendlyError";
 
 interface TokenResponse {
   access_token: string;
   refresh_token: string;
   token_type?: string;
-}
-
-/** Extract a human-readable message from an API error thrown by apiClient. */
-function friendlyError(err: unknown, fallback: string): string {
-  if (!(err instanceof Error)) return fallback;
-  // apiClient throws `Error("API <status>: <body>")` — try to parse the JSON body
-  const match = err.message.match(/^API \d+: (.+)$/s);
-  if (match) {
-    try {
-      const body = JSON.parse(match[1]) as { detail?: string };
-      if (typeof body.detail === "string") return body.detail;
-    } catch {
-      // not JSON — fall through
-    }
-  }
-  return fallback;
 }
 
 function extractCredentials(

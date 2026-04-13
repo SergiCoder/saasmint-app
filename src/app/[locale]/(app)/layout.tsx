@@ -21,10 +21,12 @@ export default async function AppLayoutRoute({
   ]);
 
   const isTeamSubscription = subscription?.plan.context === "team";
-  const userOrgs = await new ListUserOrgs(orgGateway)
-    .execute(user.id)
-    .catch(() => []);
-  const hasOrg = isTeamSubscription || userOrgs.length > 0;
+  const hasOrg = isTeamSubscription
+    ? true
+    : await new ListUserOrgs(orgGateway)
+        .execute(user.id)
+        .then((orgs) => orgs.length > 0)
+        .catch(() => false);
 
   const navLinks = [
     { href: "/dashboard", label: t("dashboard") },
