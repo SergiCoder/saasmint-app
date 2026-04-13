@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl";
 import { updateSeats } from "@/app/actions/billing";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
+import {
+  ConfirmDialog,
+  type ConfirmDialogHandle,
+} from "@/presentation/components/molecules/ConfirmDialog";
 
 const MAX_SEATS = 100;
 
@@ -16,7 +20,7 @@ interface SeatManagerProps {
 export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
   const t = useTranslations("org");
   const tCommon = useTranslations("common");
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [seats, setSeats] = useState(currentSeats);
   const [state, formAction, pending] = useActionState(updateSeats, null);
 
@@ -25,9 +29,14 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
   const hasChanged = seats !== currentSeats;
   const isDecreasing = seats < currentSeats;
 
+  const confirmTitle = t("removeSeatConfirmTitle");
+  const confirmBody = t("removeSeatConfirmBody");
+  const confirmAction = t("removeSeatConfirmAction");
+  const cancelLabel = tCommon("cancel");
+
   const handleSubmit = () => {
     if (isDecreasing) {
-      dialogRef.current?.showModal();
+      confirmRef.current?.open();
     } else {
       const formData = new FormData();
       formData.set("quantity", String(seats));
@@ -36,7 +45,7 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
   };
 
   const confirmDecrease = () => {
-    dialogRef.current?.close();
+    confirmRef.current?.close();
     const formData = new FormData();
     formData.set("quantity", String(seats));
     formAction(formData);
@@ -90,35 +99,16 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
         </Button>
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 p-0 shadow-xl backdrop:bg-black/40"
-      >
-        <div className="w-[min(90vw,28rem)] space-y-4 p-6">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("removeSeatConfirmTitle")}
-          </h2>
-          <p className="text-sm text-gray-600">{t("removeSeatConfirmBody")}</p>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => dialogRef.current?.close()}
-              disabled={pending}
-            >
-              {tCommon("cancel")}
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={confirmDecrease}
-              loading={pending}
-            >
-              {t("removeSeatConfirmAction")}
-            </Button>
-          </div>
-        </div>
-      </dialog>
+      <ConfirmDialog
+        ref={confirmRef}
+        title={confirmTitle}
+        body={confirmBody}
+        confirmLabel={confirmAction}
+        cancelLabel={cancelLabel}
+        variant="danger"
+        loading={pending}
+        onConfirm={confirmDecrease}
+      />
     </>
   );
 }

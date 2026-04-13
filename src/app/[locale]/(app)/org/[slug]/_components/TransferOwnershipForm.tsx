@@ -4,6 +4,10 @@ import { useActionState, useRef, useState } from "react";
 import { transferOwnership } from "@/app/actions/org";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
+import {
+  ConfirmDialog,
+  type ConfirmDialogHandle,
+} from "@/presentation/components/molecules/ConfirmDialog";
 
 interface TransferCandidate {
   id: string;
@@ -31,7 +35,7 @@ export function TransferOwnershipForm({
   confirmAction,
   confirmDismiss,
 }: TransferOwnershipFormProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [state, formAction, pending] = useActionState(transferOwnership, null);
 
@@ -40,9 +44,16 @@ export function TransferOwnershipForm({
 
   const open = () => {
     if (!selectedUserId) return;
-    dialogRef.current?.showModal();
+    confirmRef.current?.open();
   };
-  const close = () => dialogRef.current?.close();
+
+  const confirm = () => {
+    const formData = new FormData();
+    formData.set("orgId", orgId);
+    formData.set("userId", selectedUserId);
+    formAction(formData);
+    confirmRef.current?.close();
+  };
 
   return (
     <>
@@ -83,36 +94,16 @@ export function TransferOwnershipForm({
         </Button>
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 p-0 shadow-xl backdrop:bg-black/40"
-      >
-        <form action={formAction}>
-          <input type="hidden" name="orgId" value={orgId} />
-          <input type="hidden" name="userId" value={selectedUserId} />
-          <div className="w-[min(90vw,28rem)] space-y-4 p-6">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {confirmTitle}
-            </h2>
-            <p className="text-sm text-gray-600">
-              {confirmBody.replace("{name}", selectedName)}
-            </p>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={close}
-                disabled={pending}
-              >
-                {confirmDismiss}
-              </Button>
-              <Button type="submit" variant="danger" loading={pending}>
-                {confirmAction}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </dialog>
+      <ConfirmDialog
+        ref={confirmRef}
+        title={confirmTitle}
+        body={confirmBody.replace("{name}", selectedName)}
+        confirmLabel={confirmAction}
+        cancelLabel={confirmDismiss}
+        variant="danger"
+        loading={pending}
+        onConfirm={confirm}
+      />
     </>
   );
 }
