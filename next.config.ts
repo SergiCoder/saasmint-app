@@ -19,6 +19,7 @@ const apiProtocol: "http" | "https" = apiUrl
 const isDev = process.env.NODE_ENV === "development";
 
 const config: NextConfig = {
+  output: "standalone",
   images: {
     remotePatterns: [
       ...(apiHostname
