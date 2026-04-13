@@ -16,7 +16,7 @@ const plans: Plan[] = [
     name: "Starter",
     description: "For individuals getting started.",
     context: "personal",
-    tier: "basic",
+    tier: 2,
     interval: "month",
     price: {
       id: "pp1",
@@ -30,7 +30,7 @@ const plans: Plan[] = [
     name: "Team",
     description: "For small teams.",
     context: "team",
-    tier: "pro",
+    tier: 3,
     interval: "year",
     price: {
       id: "pp2",

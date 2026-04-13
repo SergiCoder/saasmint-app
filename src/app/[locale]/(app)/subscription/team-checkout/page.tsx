@@ -12,8 +12,9 @@ interface TeamCheckoutPageProps {
 export default async function TeamCheckoutPage({
   searchParams,
 }: TeamCheckoutPageProps) {
-  const [t, locale, user, { plan: planPriceId }] = await Promise.all([
+  const [t, tPlans, locale, user, { plan: planPriceId }] = await Promise.all([
     getTranslations("billing"),
+    getTranslations("plans"),
     getLocale(),
     getCurrentUser(),
     searchParams,
@@ -37,7 +38,7 @@ export default async function TeamCheckoutPage({
       <div className="rounded-xl border border-gray-200 p-6 shadow-sm">
         <TeamCheckoutForm
           planPriceId={plan.price.id}
-          planName={plan.name}
+          planName={tPlans(`${plan.context}.${plan.tier}.name` as never)}
           displayAmount={plan.price.displayAmount}
           currency={plan.price.currency}
           locale={locale}

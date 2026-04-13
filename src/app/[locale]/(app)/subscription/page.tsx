@@ -28,6 +28,7 @@ import {
   splitPlanGroupsByContext,
 } from "@/app/[locale]/_lib/buildPlanCards";
 import type { Plan } from "@/domain/models/Plan";
+import { PLAN_TIER_PRO } from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -40,8 +41,10 @@ interface BillingPageProps {
 }
 
 export default async function BillingPage({ searchParams }: BillingPageProps) {
-  const [t, locale, user, params] = await Promise.all([
+  const [t, tPlans, tProducts, locale, user, params] = await Promise.all([
     getTranslations("billing"),
+    getTranslations("plans"),
+    getTranslations("products"),
     getLocale(),
     getCurrentUser(),
     searchParams,
@@ -71,7 +74,9 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
     : false;
 
   const currentPlan = subscription?.plan;
-  const planName = currentPlan?.name;
+  const planName = currentPlan
+    ? tPlans(`${currentPlan.context}.${currentPlan.tier}.name` as never)
+    : undefined;
   const initialInterval: "month" | "year" =
     currentPlan?.interval === "year" ? "year" : "month";
   const isTeamSubscription = currentPlan?.context === "team";
@@ -101,6 +106,18 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
     !Number.isNaN(periodEndDate.getTime()) &&
     periodEndDate.getUTCFullYear() < 9000;
 
+  const planNames: Record<string, string> = {};
+  const planDescriptions: Record<string, string> = {};
+  for (const plan of plans) {
+    const key = `${plan.context}.${plan.tier}`;
+    if (!planNames[key]) {
+      planNames[key] = tPlans(`${plan.context}.${plan.tier}.name` as never);
+      planDescriptions[key] = tPlans(
+        `${plan.context}.${plan.tier}.description` as never,
+      );
+    }
+  }
+
   const groups = buildPlanCardGroups({
     plans,
     currentPlanId: currentPlan?.id,
@@ -109,6 +126,8 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
       upgrade: t("upgrade"),
       seat: t("seat"),
     },
+    planNames,
+    planDescriptions,
     renderCta: ({
       plan,
       isCurrent,
@@ -127,7 +146,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
       }
       if (!plan.price) return null;
       if (!isUpgrade) return null;
-      const highlighted = plan.tier === "pro";
+      const highlighted = plan.tier === PLAN_TIER_PRO;
       if (isTeam) {
         if (hasOrg) return null;
         return (
@@ -288,6 +307,9 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
       <ProductsGrid
         title={t("products")}
         products={products}
+        productNames={Object.fromEntries(
+          products.map((p) => [p.credits, tProducts(`${p.credits}` as never)]),
+        )}
         creditsLabel={t("credits")}
         locale={locale}
         renderCta={(product) =>

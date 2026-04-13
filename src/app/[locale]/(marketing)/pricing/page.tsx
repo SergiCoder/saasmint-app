@@ -21,6 +21,7 @@ import {
   splitPlanGroupsByContext,
 } from "@/app/[locale]/_lib/buildPlanCards";
 import type { Plan } from "@/domain/models/Plan";
+import { PLAN_TIER_PRO } from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,8 +30,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PricingPage() {
-  const [t, locale, user] = await Promise.all([
+  const [t, tPlans, tProducts, locale, user] = await Promise.all([
     getTranslations("billing"),
+    getTranslations("plans"),
+    getTranslations("products"),
     getLocale(),
     getOptionalUser(),
   ]);
@@ -60,6 +63,18 @@ export default async function PricingPage() {
   const hasOrg = userOrgs.length > 0;
   const currentPlanId = subscription?.plan?.id;
 
+  const planNames: Record<string, string> = {};
+  const planDescriptions: Record<string, string> = {};
+  for (const plan of plans) {
+    const key = `${plan.context}.${plan.tier}`;
+    if (!planNames[key]) {
+      planNames[key] = tPlans(`${plan.context}.${plan.tier}.name` as never);
+      planDescriptions[key] = tPlans(
+        `${plan.context}.${plan.tier}.description` as never,
+      );
+    }
+  }
+
   const groups = buildPlanCardGroups({
     plans,
     currentPlanId,
@@ -68,6 +83,8 @@ export default async function PricingPage() {
       upgrade: t("upgrade"),
       seat: t("seat"),
     },
+    planNames,
+    planDescriptions,
     renderCta: ({
       plan,
       isCurrent,
@@ -78,7 +95,7 @@ export default async function PricingPage() {
       ctaLabel,
     }) => {
       if (!plan.price) return null;
-      const highlighted = plan.tier === "pro";
+      const highlighted = plan.tier === PLAN_TIER_PRO;
       if (!user) {
         return (
           <GetStartedButton
@@ -168,6 +185,9 @@ export default async function PricingPage() {
         className="mt-16"
         title={t("products")}
         products={products}
+        productNames={Object.fromEntries(
+          products.map((p) => [p.credits, tProducts(`${p.credits}` as never)]),
+        )}
         creditsLabel={t("credits")}
         locale={locale}
         renderCta={(product) =>

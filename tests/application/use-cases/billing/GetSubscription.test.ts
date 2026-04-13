@@ -11,7 +11,7 @@ const subscription: Subscription = {
     name: "Pro",
     description: "Pro plan",
     context: "personal",
-    tier: "pro",
+    tier: 3,
     interval: "month",
     price: { id: "pp1", amount: 1900, displayAmount: 19.0, currency: "usd" },
   },
