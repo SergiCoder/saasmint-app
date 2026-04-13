@@ -9,8 +9,7 @@ import {
   ConfirmDialog,
   type ConfirmDialogHandle,
 } from "@/presentation/components/molecules/ConfirmDialog";
-
-const MAX_SEATS = 100;
+import { MAX_SEATS } from "@/domain/models/Subscription";
 
 interface SeatManagerProps {
   currentSeats: number;

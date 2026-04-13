@@ -7,6 +7,7 @@ import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { startCheckout } from "@/app/actions/billing";
 import type { BillingActionResult } from "@/app/actions/billing";
+import { MAX_SEATS } from "@/domain/models/Subscription";
 import { formatCurrency } from "@/lib/formatCurrency";
 
 interface TeamCheckoutFormProps {
@@ -70,7 +71,7 @@ export function TeamCheckoutForm({
             id="seats"
             type="number"
             min={minSeats}
-            max={100}
+            max={MAX_SEATS}
             value={quantity}
             onChange={(e) =>
               setQuantity(

@@ -10,14 +10,13 @@ import { ResumeSubscription } from "@/application/use-cases/billing/ResumeSubscr
 import { StartCheckout } from "@/application/use-cases/billing/StartCheckout";
 import { UpdateSeats } from "@/application/use-cases/billing/UpdateSeats";
 import { BillingError } from "@/domain/errors/BillingError";
+import { MAX_SEATS } from "@/domain/models/Subscription";
 import { authGateway, subscriptionGateway } from "@/infrastructure/registry";
 import { canManageBilling } from "@/app/[locale]/(app)/subscription/_data/canManageBilling";
 import {
   APP_ORIGIN,
   assertTrustedRedirect,
 } from "@/app/[locale]/(app)/subscription/_data/trustedRedirect";
-
-const MAX_CHECKOUT_QUANTITY = 100;
 
 export async function startCheckout(
   _prevState: unknown,
@@ -34,7 +33,7 @@ export async function startCheckout(
   if (typeof quantityRaw === "string" && quantityRaw) {
     const parsed = parseInt(quantityRaw, 10);
     if (Number.isFinite(parsed) && parsed > 0) {
-      quantity = Math.min(parsed, MAX_CHECKOUT_QUANTITY);
+      quantity = Math.min(parsed, MAX_SEATS);
     }
   }
 
@@ -130,8 +129,6 @@ export async function resumeSubscription(): Promise<BillingActionResult> {
   revalidatePath("/[locale]/subscription", "page");
   return { ok: true };
 }
-
-const MAX_SEATS = 100;
 
 export async function updateSeats(
   _prevState: unknown,
