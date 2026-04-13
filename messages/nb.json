@@ -346,9 +346,9 @@
     "errorId": "Feil-ID"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "Du har blitt invitert",
+    "description": "Du har blitt invitert til å bli med i {orgName}. Godta for å bli med eller avslå for å ignorere.",
+    "accept": "Godta invitasjon",
+    "decline": "Avslå invitasjon"
   }
 }

@@ -287,7 +287,7 @@
   },
   "invitation": {
     "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
+    "description": "You've been invited to join {orgName}. Accept to join or decline to ignore.",
     "accept": "Accept invitation",
     "decline": "Decline invitation"
   },

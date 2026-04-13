@@ -346,9 +346,9 @@
     "errorId": "Fel-ID"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "Du har blivit inbjuden",
+    "description": "Du har blivit inbjuden att gå med i {orgName}. Acceptera för att gå med eller avböj för att ignorera.",
+    "accept": "Acceptera inbjudan",
+    "decline": "Avböj inbjudan"
   }
 }

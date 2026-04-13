@@ -346,9 +346,9 @@
     "errorId": "معرّف الخطأ"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "لقد تمت دعوتك",
+    "description": "لقد تمت دعوتك للانضمام إلى {orgName}. اقبل للانضمام أو ارفض للتجاهل.",
+    "accept": "قبول الدعوة",
+    "decline": "رفض الدعوة"
   }
 }

@@ -346,9 +346,9 @@
     "errorId": "Fehler-ID"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "Du wurdest eingeladen",
+    "description": "Du wurdest eingeladen, {orgName} beizutreten. Akzeptiere, um beizutreten, oder lehne ab, um zu ignorieren.",
+    "accept": "Einladung annehmen",
+    "decline": "Einladung ablehnen"
   }
 }

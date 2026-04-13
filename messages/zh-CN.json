@@ -346,9 +346,9 @@
     "errorId": "错误 ID"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "您收到了邀请",
+    "description": "您已被邀请加入 {orgName}。接受以加入，或拒绝以忽略。",
+    "accept": "接受邀请",
+    "decline": "拒绝邀请"
   }
 }

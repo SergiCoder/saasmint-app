@@ -346,9 +346,9 @@
     "errorId": "ID ошибки"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "Вас пригласили",
+    "description": "Вас пригласили присоединиться к {orgName}. Примите, чтобы присоединиться, или отклоните, чтобы проигнорировать.",
+    "accept": "Принять приглашение",
+    "decline": "Отклонить приглашение"
   }
 }

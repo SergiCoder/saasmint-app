@@ -346,9 +346,9 @@
     "errorId": "エラー ID"
   },
   "invitation": {
-    "title": "You've been invited",
-    "description": "You've been invited to join an organization. Accept to join or decline to ignore.",
-    "accept": "Accept invitation",
-    "decline": "Decline invitation"
+    "title": "招待されました",
+    "description": "{orgName} への参加に招待されました。参加するには承諾、無視するには辞退してください。",
+    "accept": "招待を承諾",
+    "decline": "招待を辞退"
   }
 }
