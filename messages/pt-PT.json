@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Foi convidado",
     "description": "Foi convidado a juntar-se a {orgName}. Aceite para se juntar ou recuse para ignorar.",
+    "fullName": "Nome completo",
+    "password": "Palavra-passe",
     "accept": "Aceitar convite",
     "decline": "Recusar convite"
   }

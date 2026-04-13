@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Sei stato invitato",
     "description": "Sei stato invitato a unirti a {orgName}. Accetta per unirti o rifiuta per ignorare.",
+    "fullName": "Nome completo",
+    "password": "Password",
     "accept": "Accetta invito",
     "decline": "Rifiuta invito"
   }

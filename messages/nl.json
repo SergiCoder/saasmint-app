@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Je bent uitgenodigd",
     "description": "Je bent uitgenodigd om lid te worden van {orgName}. Accepteer om lid te worden of weiger om te negeren.",
+    "fullName": "Volledige naam",
+    "password": "Wachtwoord",
     "accept": "Uitnodiging accepteren",
     "decline": "Uitnodiging weigeren"
   }

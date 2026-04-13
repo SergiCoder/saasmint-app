@@ -288,6 +288,8 @@
   "invitation": {
     "title": "You've been invited",
     "description": "You've been invited to join {orgName}. Accept to join or decline to ignore.",
+    "fullName": "Full name",
+    "password": "Password",
     "accept": "Accept invitation",
     "decline": "Decline invitation"
   },

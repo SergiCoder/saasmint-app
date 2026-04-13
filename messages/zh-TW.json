@@ -348,6 +348,8 @@
   "invitation": {
     "title": "您收到了邀請",
     "description": "您已被邀請加入 {orgName}。接受以加入，或拒絕以忽略。",
+    "fullName": "全名",
+    "password": "密碼",
     "accept": "接受邀請",
     "decline": "拒絕邀請"
   }

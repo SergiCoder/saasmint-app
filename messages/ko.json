@@ -348,6 +348,8 @@
   "invitation": {
     "title": "초대를 받았습니다",
     "description": "{orgName}에 참여하도록 초대되었습니다. 수락하여 참여하거나 거절하여 무시하세요.",
+    "fullName": "전체 이름",
+    "password": "비밀번호",
     "accept": "초대 수락",
     "decline": "초대 거절"
   }

@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Otrzymałeś zaproszenie",
     "description": "Otrzymałeś zaproszenie do dołączenia do {orgName}. Zaakceptuj, aby dołączyć, lub odrzuć, aby zignorować.",
+    "fullName": "Imię i nazwisko",
+    "password": "Hasło",
     "accept": "Zaakceptuj zaproszenie",
     "decline": "Odrzuć zaproszenie"
   }

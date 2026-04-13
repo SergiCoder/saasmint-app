@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Davet edildiniz",
     "description": "{orgName} organizasyonuna katılmaya davet edildiniz. Katılmak için kabul edin veya yoksaymak için reddedin.",
+    "fullName": "Ad soyad",
+    "password": "Şifre",
     "accept": "Daveti kabul et",
     "decline": "Daveti reddet"
   }

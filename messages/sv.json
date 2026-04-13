@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Du har blivit inbjuden",
     "description": "Du har blivit inbjuden att gå med i {orgName}. Acceptera för att gå med eller avböj för att ignorera.",
+    "fullName": "Fullständigt namn",
+    "password": "Lösenord",
     "accept": "Acceptera inbjudan",
     "decline": "Avböj inbjudan"
   }

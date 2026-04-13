@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Du er blevet inviteret",
     "description": "Du er blevet inviteret til at blive medlem af {orgName}. Acceptér for at deltage eller afvis for at ignorere.",
+    "fullName": "Fulde navn",
+    "password": "Adgangskode",
     "accept": "Acceptér invitation",
     "decline": "Afvis invitation"
   }

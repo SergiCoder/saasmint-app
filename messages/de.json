@@ -348,6 +348,8 @@
   "invitation": {
     "title": "Du wurdest eingeladen",
     "description": "Du wurdest eingeladen, {orgName} beizutreten. Akzeptiere, um beizutreten, oder lehne ab, um zu ignorieren.",
+    "fullName": "Vollständiger Name",
+    "password": "Passwort",
     "accept": "Einladung annehmen",
     "decline": "Einladung ablehnen"
   }
