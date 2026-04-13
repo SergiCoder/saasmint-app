@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useImperativeHandle, forwardRef } from "react";
+import { useState, useImperativeHandle, forwardRef } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/presentation/components/atoms/Button";
 
 export interface ConfirmDialogProps {
@@ -35,33 +36,31 @@ export const ConfirmDialog = forwardRef<
   },
   ref,
 ) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    open: () => dialogRef.current?.showModal(),
-    close: () => dialogRef.current?.close(),
+    open: () => setOpen(true),
+    close: () => {
+      setOpen(false);
+      onClose?.();
+    },
   }));
 
-  return (
-    <dialog
-      ref={dialogRef}
-      onClose={onClose}
-      className="rounded-lg border border-gray-200 p-0 shadow-xl backdrop:bg-black/40"
-      style={{
-        margin: "auto",
-        maxWidth: "none",
-        maxHeight: "none",
-        width: "auto",
-      }}
-    >
-      <div className="w-[28rem] max-w-[90vw] space-y-4 p-6">
+  if (!open) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="mx-4 w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-xl">
         <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-        <p className="text-sm text-gray-600">{body}</p>
-        <div className="flex justify-end gap-2 pt-2">
+        <p className="mt-2 text-sm text-gray-600">{body}</p>
+        <div className="mt-4 flex justify-end gap-2">
           <Button
             type="button"
             variant="secondary"
-            onClick={() => dialogRef.current?.close()}
+            onClick={() => {
+              setOpen(false);
+              onClose?.();
+            }}
             disabled={loading}
           >
             {cancelLabel}
@@ -76,6 +75,7 @@ export const ConfirmDialog = forwardRef<
           </Button>
         </div>
       </div>
-    </dialog>
+    </div>,
+    document.body,
   );
 });
