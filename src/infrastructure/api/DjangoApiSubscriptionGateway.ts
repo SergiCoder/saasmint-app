@@ -60,4 +60,11 @@ export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
       body: JSON.stringify({ cancel_at_period_end: false }),
     });
   }
+
+  async updateSeats(quantity: number): Promise<void> {
+    await apiFetch<void>("/billing/subscription/", {
+      method: "PATCH",
+      body: JSON.stringify({ quantity }),
+    });
+  }
 }

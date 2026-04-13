@@ -199,4 +199,17 @@ describe("DjangoApiSubscriptionGateway", () => {
       });
     });
   });
+
+  describe("updateSeats", () => {
+    it("sends PATCH /billing/subscription/ with quantity", async () => {
+      mockApiFetch.mockResolvedValue(undefined);
+
+      await gateway.updateSeats(5);
+
+      expect(mockApiFetch).toHaveBeenCalledWith("/billing/subscription/", {
+        method: "PATCH",
+        body: JSON.stringify({ quantity: 5 }),
+      });
+    });
+  });
 });

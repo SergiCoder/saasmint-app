@@ -32,6 +32,7 @@ function makeGateway(
     createBillingPortalSession: vi.fn(),
     cancelSubscription: vi.fn(),
     resumeSubscription: vi.fn(),
+    updateSeats: vi.fn(),
     ...overrides,
   };
 }

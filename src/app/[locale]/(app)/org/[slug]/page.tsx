@@ -19,6 +19,7 @@ import { InvitationList } from "./_components/InvitationList";
 import { LeaveOrgButton } from "./_components/LeaveOrgButton";
 import { TransferOwnershipForm } from "./_components/TransferOwnershipForm";
 import { OrgDangerZone } from "./_components/OrgDangerZone";
+import { SeatManager } from "./_components/SeatManager";
 
 interface OrgDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -105,14 +106,19 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
       <h1 className="text-2xl font-bold text-gray-900">{org.name}</h1>
 
       <section>
-        <div className="mb-4 flex items-baseline gap-2">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("members")}
-          </h2>
-          {totalSpots !== null && (
-            <span className="text-sm text-gray-500">
-              {t("spotsUsed", { used: members.length, total: totalSpots })}
-            </span>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-lg font-semibold text-gray-900">
+              {t("members")}
+            </h2>
+            {totalSpots !== null && (
+              <span className="text-sm text-gray-500">
+                {t("spotsUsed", { used: members.length, total: totalSpots })}
+              </span>
+            )}
+          </div>
+          {isOwner && isTeamSubscription && totalSpots !== null && (
+            <SeatManager currentSeats={totalSpots} usedSeats={members.length} />
           )}
         </div>
         <OrgMemberList

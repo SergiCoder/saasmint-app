@@ -22,4 +22,6 @@ export interface ISubscriptionGateway {
   cancelSubscription(): Promise<void>;
   /** Undo a pending cancellation so the subscription renews normally. */
   resumeSubscription(): Promise<void>;
+  /** Update the seat count on a team subscription. */
+  updateSeats(quantity: number): Promise<void>;
 }

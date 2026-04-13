@@ -8,6 +8,7 @@ import { GetSubscription } from "@/application/use-cases/billing/GetSubscription
 import { OpenBillingPortal } from "@/application/use-cases/billing/OpenBillingPortal";
 import { ResumeSubscription } from "@/application/use-cases/billing/ResumeSubscription";
 import { StartCheckout } from "@/application/use-cases/billing/StartCheckout";
+import { UpdateSeats } from "@/application/use-cases/billing/UpdateSeats";
 import { BillingError } from "@/domain/errors/BillingError";
 import { authGateway, subscriptionGateway } from "@/infrastructure/registry";
 import { canManageBilling } from "@/app/[locale]/(app)/subscription/_data/canManageBilling";
@@ -127,5 +128,33 @@ export async function resumeSubscription(): Promise<BillingActionResult> {
     return { ok: false, error: toErrorMessage(err) };
   }
   revalidatePath("/[locale]/subscription", "page");
+  return { ok: true };
+}
+
+const MAX_SEATS = 100;
+
+export async function updateSeats(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<BillingActionResult> {
+  const quantityRaw = formData.get("quantity");
+
+  if (typeof quantityRaw !== "string") {
+    return { ok: false, error: "Invalid input" };
+  }
+
+  const quantity = parseInt(quantityRaw, 10);
+  if (!Number.isFinite(quantity) || quantity < 1 || quantity > MAX_SEATS) {
+    return { ok: false, error: "Invalid seat count" };
+  }
+
+  try {
+    await assertCanManageBilling();
+    await new UpdateSeats(subscriptionGateway).execute(quantity);
+  } catch (err) {
+    console.error("Failed to update seats", err);
+    return { ok: false, error: toErrorMessage(err) };
+  }
+  revalidatePath("/[locale]/org", "layout");
   return { ok: true };
 }
