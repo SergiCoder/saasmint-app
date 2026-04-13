@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { updateSeats } from "@/app/actions/billing";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
@@ -22,7 +22,8 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
   const tCommon = useTranslations("common");
   const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [seats, setSeats] = useState(currentSeats);
-  const [state, formAction, pending] = useActionState(updateSeats, null);
+  const [state, formAction] = useActionState(updateSeats, null);
+  const [isPending, startTransition] = useTransition();
 
   const canDecrease = seats > usedSeats;
   const canIncrease = seats < MAX_SEATS;
@@ -34,21 +35,25 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
   const confirmAction = t("removeSeatConfirmAction");
   const cancelLabel = tCommon("cancel");
 
+  const submitSeats = () => {
+    const formData = new FormData();
+    formData.set("quantity", String(seats));
+    startTransition(() => {
+      formAction(formData);
+    });
+  };
+
   const handleSubmit = () => {
     if (isDecreasing) {
       confirmRef.current?.open();
     } else {
-      const formData = new FormData();
-      formData.set("quantity", String(seats));
-      formAction(formData);
+      submitSeats();
     }
   };
 
   const confirmDecrease = () => {
     confirmRef.current?.close();
-    const formData = new FormData();
-    formData.set("quantity", String(seats));
-    formAction(formData);
+    submitSeats();
   };
 
   return (
@@ -68,7 +73,7 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
           <button
             type="button"
             onClick={() => setSeats((s) => s - 1)}
-            disabled={!canDecrease || pending}
+            disabled={!canDecrease || isPending}
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t("removeSeat")}
           >
@@ -80,7 +85,7 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
           <button
             type="button"
             onClick={() => setSeats((s) => s + 1)}
-            disabled={!canIncrease || pending}
+            disabled={!canIncrease || isPending}
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t("addSeat")}
           >
@@ -92,7 +97,7 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
           variant="primary"
           size="sm"
           onClick={handleSubmit}
-          loading={pending}
+          loading={isPending}
           disabled={!hasChanged}
         >
           {t("updateSeats")}
@@ -106,7 +111,7 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
         confirmLabel={confirmAction}
         cancelLabel={cancelLabel}
         variant="danger"
-        loading={pending}
+        loading={isPending}
         onConfirm={confirmDecrease}
       />
     </>

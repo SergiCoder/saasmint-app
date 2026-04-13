@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { transferOwnership } from "@/app/actions/org";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
@@ -37,7 +37,8 @@ export function TransferOwnershipForm({
 }: TransferOwnershipFormProps) {
   const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [selectedUserId, setSelectedUserId] = useState("");
-  const [state, formAction, pending] = useActionState(transferOwnership, null);
+  const [state, formAction] = useActionState(transferOwnership, null);
+  const [isPending, startTransition] = useTransition();
 
   const selectedName =
     candidates.find((c) => c.id === selectedUserId)?.fullName ?? "";
@@ -51,7 +52,9 @@ export function TransferOwnershipForm({
     const formData = new FormData();
     formData.set("orgId", orgId);
     formData.set("userId", selectedUserId);
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
     confirmRef.current?.close();
   };
 
@@ -101,7 +104,7 @@ export function TransferOwnershipForm({
         confirmLabel={confirmAction}
         cancelLabel={confirmDismiss}
         variant="danger"
-        loading={pending}
+        loading={isPending}
         onConfirm={confirm}
       />
     </>
