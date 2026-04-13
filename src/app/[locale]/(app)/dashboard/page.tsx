@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
-import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
-import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
-import {
-  orgGateway,
-  orgMemberGateway,
-  subscriptionGateway,
-} from "@/infrastructure/registry";
+import { orgMemberGateway } from "@/infrastructure/registry";
 import { getCurrentUser } from "../_data/getCurrentUser";
+import { getSubscription } from "../_data/getSubscription";
+import { getUserOrgs } from "../_data/getUserOrgs";
 import { OrgCard } from "@/presentation/components/molecules/OrgCard";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -31,8 +27,8 @@ export default async function DashboardPage() {
     getCurrentUser(),
   ]);
   const [orgs, subscription] = await Promise.all([
-    new ListUserOrgs(orgGateway).execute(user.id),
-    new GetSubscription(subscriptionGateway).execute().catch(() => null),
+    getUserOrgs(user.id),
+    getSubscription(),
   ]);
 
   const totalSpots =

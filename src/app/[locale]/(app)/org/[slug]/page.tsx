@@ -1,16 +1,11 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import { ListInvitations } from "@/application/use-cases/invitation/ListInvitations";
-import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
-import {
-  orgGateway,
-  orgMemberGateway,
-  invitationGateway,
-  subscriptionGateway,
-} from "@/infrastructure/registry";
+import { orgMemberGateway, invitationGateway } from "@/infrastructure/registry";
 import { getCurrentUser } from "../../_data/getCurrentUser";
+import { getSubscription } from "../../_data/getSubscription";
+import { getUserOrgs } from "../../_data/getUserOrgs";
 import { OrgMemberList } from "@/presentation/components/organisms/OrgMemberList";
 import { InviteByEmailForm } from "./_components/InviteByEmailForm";
 import { MemberActions } from "./_components/MemberActions";
@@ -32,7 +27,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
     getLocale(),
     getCurrentUser(),
   ]);
-  const orgs = await new ListUserOrgs(orgGateway).execute(user.id);
+  const orgs = await getUserOrgs(user.id);
   const org = orgs.find((o) => o.slug === slug);
 
   if (!org) notFound();
@@ -40,7 +35,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
   const [members, invitations, subscription] = await Promise.all([
     new ListOrgMembers(orgMemberGateway).execute(org.id),
     new ListInvitations(invitationGateway).execute(org.id).catch(() => []),
-    new GetSubscription(subscriptionGateway).execute().catch(() => null),
+    getSubscription(),
   ]);
 
   const isTeamSubscription = subscription?.plan.context === "team";

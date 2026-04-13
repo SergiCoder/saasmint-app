@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
 import { ListPlans } from "@/application/use-cases/billing/ListPlans";
 import { ListProducts } from "@/application/use-cases/billing/ListProducts";
-import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import {
-  subscriptionGateway,
   planGateway,
   productGateway,
-  orgGateway,
   orgMemberGateway,
 } from "@/infrastructure/registry";
 import { getCurrentUser } from "../_data/getCurrentUser";
+import { getSubscription } from "../_data/getSubscription";
+import { getUserOrgs } from "../_data/getUserOrgs";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { SubscriptionCard } from "@/presentation/components/organisms/SubscriptionCard";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
@@ -53,7 +51,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
   const currency = user.preferredCurrency;
 
   const [subscription, plans, products, userOrgs] = await Promise.all([
-    new GetSubscription(subscriptionGateway).execute(currency),
+    getSubscription(currency),
     new ListPlans(planGateway).execute(currency).catch((err): Plan[] => {
       console.error("Failed to fetch plans", err);
       return [];
@@ -64,7 +62,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
         console.error("Failed to fetch products", err);
         return [];
       }),
-    new ListUserOrgs(orgGateway).execute(user.id).catch(() => []),
+    getUserOrgs(user.id),
   ]);
 
   const hasOrg = userOrgs.length > 0;

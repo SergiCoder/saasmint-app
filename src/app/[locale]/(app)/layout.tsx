@@ -1,10 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { AppLayout } from "@/presentation/components/templates/AppLayout";
-import { GetSubscription } from "@/application/use-cases/billing/GetSubscription";
-import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
-import { subscriptionGateway, orgGateway } from "@/infrastructure/registry";
 import { SignOutButton } from "../_components/SignOutButton";
 import { getCurrentUser } from "./_data/getCurrentUser";
+import { getSubscription } from "./_data/getSubscription";
+import { getUserOrgs } from "./_data/getUserOrgs";
 
 interface AppLayoutRouteProps {
   children: React.ReactNode;
@@ -17,16 +16,13 @@ export default async function AppLayoutRoute({
     getTranslations("nav"),
     getTranslations("common"),
     getCurrentUser(),
-    new GetSubscription(subscriptionGateway).execute().catch(() => null),
+    getSubscription(),
   ]);
 
   const isTeamSubscription = subscription?.plan.context === "team";
   const hasOrg = isTeamSubscription
     ? true
-    : await new ListUserOrgs(orgGateway)
-        .execute(user.id)
-        .then((orgs) => orgs.length > 0)
-        .catch(() => false);
+    : await getUserOrgs(user.id).then((orgs) => orgs.length > 0);
 
   const navLinks = [
     { href: "/dashboard", label: t("dashboard") },

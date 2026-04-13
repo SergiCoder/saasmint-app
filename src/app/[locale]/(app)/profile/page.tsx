@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { GetPhonePrefixes } from "@/application/use-cases/reference/GetPhonePrefixes";
 import { GetUserProfile } from "@/application/use-cases/user/GetUserProfile";
-import { ListUserOrgs } from "@/application/use-cases/org/ListUserOrgs";
 import { ListOrgMembers } from "@/application/use-cases/org-member/ListOrgMembers";
 import {
   referenceGateway,
   userGateway,
-  orgGateway,
   orgMemberGateway,
 } from "@/infrastructure/registry";
+import { getUserOrgs } from "../_data/getUserOrgs";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { ChangePasswordForm } from "./_components/ChangePasswordForm";
 import { DangerZone } from "./_components/DangerZone";
@@ -28,7 +27,7 @@ export default async function ProfilePage() {
   const [user, phonePrefixes, userOrgs] = await Promise.all([
     new GetUserProfile(userGateway).execute(currentUser.id),
     new GetPhonePrefixes(referenceGateway).execute(),
-    new ListUserOrgs(orgGateway).execute(currentUser.id).catch(() => []),
+    getUserOrgs(currentUser.id),
   ]);
 
   let deleteRestriction: "owner" | "member" | undefined;
