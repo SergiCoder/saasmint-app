@@ -28,6 +28,6 @@ export class DjangoApiPlanGateway implements IPlanGateway {
         `/billing/plans/${query}`,
       );
     }
-    return raw.map(keysToCamelWithPrice<Plan>);
+    return raw.map((r) => keysToCamelWithPrice<Plan>(r, currency));
   }
 }

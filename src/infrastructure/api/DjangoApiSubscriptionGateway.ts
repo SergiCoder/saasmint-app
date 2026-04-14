@@ -22,6 +22,7 @@ export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
       if (raw.plan && typeof raw.plan === "object") {
         sub.plan = keysToCamelWithPrice<Subscription["plan"]>(
           raw.plan as Record<string, unknown>,
+          currency,
         );
       }
       return sub;

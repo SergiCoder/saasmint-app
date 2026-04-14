@@ -123,6 +123,17 @@ describe("keysToCamelWithPrice", () => {
     });
   });
 
+  it("uses fallbackCurrency when currency is missing", () => {
+    const input = {
+      id: "p1",
+      price: { id: "pp1", amount: 1700 },
+    };
+    expect(keysToCamelWithPrice(input, "eur")).toEqual({
+      id: "p1",
+      price: { id: "pp1", amount: 1700, displayAmount: 17, currency: "eur" },
+    });
+  });
+
   it("leaves top-level keys converted when price is absent", () => {
     const input = { plan_name: "Free", some_field: "val" };
     expect(keysToCamelWithPrice(input)).toEqual({

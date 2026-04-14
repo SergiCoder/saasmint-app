@@ -52,7 +52,10 @@ export function flattenPhone(raw: Record<string, unknown>, user: object): void {
  * `price` object is present, convert its keys as well.  Covers Plan, Product,
  * and Subscription responses that embed a price sub-object.
  */
-export function keysToCamelWithPrice<T>(raw: Record<string, unknown>): T {
+export function keysToCamelWithPrice<T>(
+  raw: Record<string, unknown>,
+  fallbackCurrency = "usd",
+): T {
   const result = keysToCamel<T>(raw);
   if (raw.price && typeof raw.price === "object") {
     const camelPrice = keysToCamel<Record<string, unknown>>(
@@ -63,7 +66,7 @@ export function keysToCamelWithPrice<T>(raw: Record<string, unknown>): T {
       camelPrice.displayAmount = (camelPrice.amount as number) / 100;
     }
     if (camelPrice.currency === undefined) {
-      camelPrice.currency = "usd";
+      camelPrice.currency = fallbackCurrency;
     }
     (result as Record<string, unknown>).price = camelPrice;
   }
