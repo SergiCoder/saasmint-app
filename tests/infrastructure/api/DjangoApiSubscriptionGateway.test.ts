@@ -55,7 +55,12 @@ describe("DjangoApiSubscriptionGateway", () => {
           context: "personal",
           tier: 3,
           interval: "month",
-          price: { id: "pp1", amount: 1900 },
+          price: {
+            id: "pp1",
+            amount: 1900,
+            displayAmount: 19,
+            currency: "usd",
+          },
         },
         quantity: 1,
         discountPercent: null,

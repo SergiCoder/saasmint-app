@@ -55,9 +55,17 @@ export function flattenPhone(raw: Record<string, unknown>, user: object): void {
 export function keysToCamelWithPrice<T>(raw: Record<string, unknown>): T {
   const result = keysToCamel<T>(raw);
   if (raw.price && typeof raw.price === "object") {
-    (result as Record<string, unknown>).price = keysToCamel(
+    const camelPrice = keysToCamel<Record<string, unknown>>(
       raw.price as Record<string, unknown>,
     );
+    // The API may omit displayAmount and currency — derive them from amount.
+    if (camelPrice.displayAmount === undefined && camelPrice.amount != null) {
+      camelPrice.displayAmount = (camelPrice.amount as number) / 100;
+    }
+    if (camelPrice.currency === undefined) {
+      camelPrice.currency = "usd";
+    }
+    (result as Record<string, unknown>).price = camelPrice;
   }
   return result;
 }
