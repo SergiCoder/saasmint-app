@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { AppLayout } from "@/presentation/components/templates/AppLayout";
 import { SignOutButton } from "../_components/SignOutButton";
+import { LocaleRedirect } from "./_components/LocaleRedirect";
 import { getCurrentUser } from "./_data/getCurrentUser";
 import { getSubscription } from "./_data/getSubscription";
 import { getUserOrgs } from "./_data/getUserOrgs";
@@ -39,19 +40,22 @@ export default async function AppLayoutRoute({
   ];
 
   return (
-    <AppLayout
-      appName="SaaSmint"
-      navLinks={navLinks}
-      user={{
-        fullName: user.fullName ?? user.email,
-        pronouns: user.pronouns,
-        avatarUrl: user.avatarUrl,
-      }}
-      userMenuItems={userMenuItems}
-      userMenuSignOut={<SignOutButton label={t("signOut")} />}
-      toggleNavLabel={tCommon("toggleNav")}
-    >
-      {children}
-    </AppLayout>
+    <>
+      <LocaleRedirect preferredLocale={user.preferredLocale} />
+      <AppLayout
+        appName="SaaSmint"
+        navLinks={navLinks}
+        user={{
+          fullName: user.fullName ?? user.email,
+          pronouns: user.pronouns,
+          avatarUrl: user.avatarUrl,
+        }}
+        userMenuItems={userMenuItems}
+        userMenuSignOut={<SignOutButton label={t("signOut")} />}
+        toggleNavLabel={tCommon("toggleNav")}
+      >
+        {children}
+      </AppLayout>
+    </>
   );
 }
