@@ -20,6 +20,10 @@ const isDev = process.env.NODE_ENV === "development";
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+  // Legacy belt-and-braces alongside CSP frame-ancestors; older browsers
+  // (pre-Chromium Edge, old Safari) honour X-Frame-Options but not
+  // frame-ancestors, so we emit both to prevent clickjacking.
+  { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {

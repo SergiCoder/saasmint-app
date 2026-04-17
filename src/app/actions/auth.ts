@@ -291,6 +291,9 @@ export async function startOAuth(
   }
 
   const safeNext = validateNext(nextPath, APP_URL);
+  // Login-fixation gate: HttpOnly flag cookie, not a nonce. Accepts a
+  // seconds-wide race (victim mid-flow when they click attacker's link);
+  // tradeoff debated and accepted — see project_oauth_callback_redesign memory.
   await setOAuthFlowCookies(safeNext);
 
   const planFromNext = new URL(safeNext, APP_URL).searchParams.get("plan");
