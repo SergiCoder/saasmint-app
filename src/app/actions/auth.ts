@@ -285,7 +285,6 @@ const OAUTH_PROVIDERS: readonly OAuthProvider[] = [
 export async function startOAuth(
   provider: OAuthProvider,
   nextPath: string | undefined,
-  isTeam: boolean,
 ): Promise<StartOAuthResult> {
   if (!OAUTH_PROVIDERS.includes(provider)) {
     throw new Error("Invalid OAuth provider");
@@ -293,6 +292,11 @@ export async function startOAuth(
 
   const safeNext = validateNext(nextPath, APP_URL);
   await setOAuthFlowCookies(safeNext);
+
+  const planFromNext = new URL(safeNext, APP_URL).searchParams.get("plan");
+  const isTeam =
+    isValidPlanSlug(planFromNext) &&
+    (await resolvePlanContext(planFromNext)) === "team";
 
   const url = new URL(`${API_URL}/api/v1/auth/oauth/${provider}/`);
   if (isTeam) {

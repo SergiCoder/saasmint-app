@@ -681,40 +681,50 @@ describe("auth server actions", () => {
 
   describe("startOAuth", () => {
     it("writes validated next to flow cookies and returns Django authorize URL", async () => {
-      const result = await startOAuth("google", "/dashboard", false);
+      const result = await startOAuth("google", "/dashboard");
 
       expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith("/dashboard");
       expect(result.redirectUrl).toMatch(/\/api\/v1\/auth\/oauth\/google\/$/);
     });
 
-    it("appends account_type=org_owner for team context", async () => {
+    it("appends account_type=org_owner when plan in next resolves to a team plan", async () => {
       const result = await startOAuth(
         "github",
-        "/subscription/team-checkout?plan=x",
-        true,
+        "/subscription/team-checkout?plan=price_team_pro",
       );
 
       expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith(
-        "/subscription/team-checkout?plan=x",
+        "/subscription/team-checkout?plan=price_team_pro",
       );
       expect(new URL(result.redirectUrl).searchParams.get("account_type")).toBe(
         "org_owner",
       );
     });
 
+    it("does not append account_type when plan resolves to a personal plan", async () => {
+      const result = await startOAuth(
+        "github",
+        "/subscription/checkout?plan=price_pro_monthly",
+      );
+
+      expect(new URL(result.redirectUrl).searchParams.get("account_type")).toBe(
+        null,
+      );
+    });
+
     it("writes fallback /dashboard when next is untrusted", async () => {
-      await startOAuth("google", "https://evil.com", false);
+      await startOAuth("google", "https://evil.com");
       expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith("/dashboard");
     });
 
     it("writes fallback /dashboard when next is a non-allowlisted path", async () => {
-      await startOAuth("google", "/admin/users", false);
+      await startOAuth("google", "/admin/users");
       expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith("/dashboard");
     });
 
     it("rejects unknown providers", async () => {
       await expect(
-        startOAuth("linkedin" as never, "/dashboard", false),
+        startOAuth("linkedin" as never, "/dashboard"),
       ).rejects.toThrow("Invalid OAuth provider");
       expect(mockSetOAuthFlowCookies).not.toHaveBeenCalled();
     });

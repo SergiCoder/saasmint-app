@@ -53,7 +53,7 @@ export function OAuthButtons({ plan, context }: OAuthButtonsProps = {}) {
       : "/dashboard";
 
     try {
-      const { redirectUrl } = await startOAuth(provider, nextPath, isTeam);
+      const { redirectUrl } = await startOAuth(provider, nextPath);
       window.location.assign(redirectUrl);
     } catch {
       setLoadingProvider(null);
