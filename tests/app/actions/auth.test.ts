@@ -38,8 +38,16 @@ vi.mock("@/application/use-cases/auth/SignOut", () => ({
   },
 }));
 
+const mockListPlansExecute = vi.fn();
+vi.mock("@/application/use-cases/billing/ListPlans", () => ({
+  ListPlans: function ListPlans() {
+    return { execute: mockListPlansExecute };
+  },
+}));
+
 vi.mock("@/infrastructure/registry", () => ({
   authGateway: {},
+  planGateway: {},
 }));
 
 // Force fresh module for each test
@@ -53,8 +61,24 @@ let verifyEmail: typeof import("@/app/actions/auth").verifyEmail;
 let startOAuth: typeof import("@/app/actions/auth").startOAuth;
 let exchangeOAuthCode: typeof import("@/app/actions/auth").exchangeOAuthCode;
 
+function mockPlans(): void {
+  mockListPlansExecute.mockResolvedValue([
+    {
+      id: "plan_pro",
+      context: "personal",
+      price: { id: "price_pro_monthly" },
+    },
+    {
+      id: "plan_team_pro",
+      context: "team",
+      price: { id: "price_team_pro" },
+    },
+  ]);
+}
+
 beforeEach(async () => {
   vi.clearAllMocks();
+  mockPlans();
   const mod = await import("@/app/actions/auth");
   signIn = mod.signIn;
   signUp = mod.signUp;
@@ -141,7 +165,7 @@ describe("auth server actions", () => {
       );
     });
 
-    it("redirects to team checkout when plan and context=team are supplied", async () => {
+    it("redirects to team checkout when plan resolves to a team plan", async () => {
       mockPublicApiFetch.mockResolvedValue({
         access_token: "tok_abc",
         refresh_token: "ref_abc",
@@ -151,13 +175,32 @@ describe("auth server actions", () => {
       formData.set("email", "user@example.com");
       formData.set("password", "secret123");
       formData.set("plan", "price_team_pro");
-      formData.set("context", "team");
 
       await expect(signIn(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
       );
       expect(mockRedirect).toHaveBeenCalledWith(
         "/subscription/team-checkout?plan=price_team_pro",
+      );
+    });
+
+    it("ignores hidden context=team when plan resolves to a personal plan", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+      });
+
+      const formData = new FormData();
+      formData.set("email", "user@example.com");
+      formData.set("password", "secret123");
+      formData.set("plan", "price_pro_monthly");
+      formData.set("context", "team");
+
+      await expect(signIn(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockRedirect).toHaveBeenCalledWith(
+        "/subscription/checkout?plan=price_pro_monthly",
       );
     });
   });
@@ -220,18 +263,21 @@ describe("auth server actions", () => {
       formData.set("fullName", "Jane Doe");
       formData.set("email", "new@example.com");
       formData.set("password", "secret123");
-      formData.set("plan", "price_team_pro");
+      formData.set("plan", "price_pro_monthly");
 
       await expect(signUp(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
       );
-      expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro", false);
+      expect(mockSetPendingPlan).toHaveBeenCalledWith(
+        "price_pro_monthly",
+        false,
+      );
       expect(mockRedirect).toHaveBeenCalledWith(
-        "/login?registered=true&plan=price_team_pro",
+        "/login?registered=true&plan=price_pro_monthly",
       );
     });
 
-    it("uses org-owner endpoint and team context for team plan signup", async () => {
+    it("uses org-owner endpoint when plan resolves to a team plan", async () => {
       mockPublicApiFetch.mockResolvedValue({});
 
       const formData = new FormData();
@@ -239,7 +285,6 @@ describe("auth server actions", () => {
       formData.set("email", "new@example.com");
       formData.set("password", "secret123");
       formData.set("plan", "price_team_pro");
-      formData.set("context", "team");
 
       await expect(signUp(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
@@ -251,6 +296,29 @@ describe("auth server actions", () => {
       expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro", true);
       expect(mockRedirect).toHaveBeenCalledWith(
         "/login?registered=true&plan=price_team_pro&context=team",
+      );
+    });
+
+    it("ignores hidden context=team when plan resolves to a personal plan", async () => {
+      mockPublicApiFetch.mockResolvedValue({});
+
+      const formData = new FormData();
+      formData.set("fullName", "Jane Doe");
+      formData.set("email", "new@example.com");
+      formData.set("password", "secret123");
+      formData.set("plan", "price_pro_monthly");
+      formData.set("context", "team");
+
+      await expect(signUp(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockPublicApiFetch).toHaveBeenCalledWith(
+        "/auth/register/",
+        expect.objectContaining({ method: "POST" }),
+      );
+      expect(mockSetPendingPlan).toHaveBeenCalledWith(
+        "price_pro_monthly",
+        false,
       );
     });
 

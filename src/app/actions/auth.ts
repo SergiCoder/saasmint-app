@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { apiFetch, publicApiFetch } from "@/infrastructure/api/apiClient";
 import { SignOut } from "@/application/use-cases/auth/SignOut";
-import { authGateway } from "@/infrastructure/registry";
+import { ListPlans } from "@/application/use-cases/billing/ListPlans";
+import { authGateway, planGateway } from "@/infrastructure/registry";
 import {
   clearAuthCookies,
   consumeOAuthFlowCookies,
@@ -42,6 +43,25 @@ function isValidPlanSlug(value: unknown): value is string {
   return typeof value === "string" && PLAN_SLUG_RE.test(value);
 }
 
+/**
+ * Look up the plan by price id and return its context, or undefined when the
+ * id is unknown. Treats the plan catalog — not untrusted form fields — as the
+ * source of truth for whether a signup/signin flow is team-scoped.
+ */
+async function resolvePlanContext(
+  priceId: string,
+): Promise<"personal" | "team" | undefined> {
+  try {
+    const plans = await new ListPlans(planGateway).execute();
+    for (const plan of plans) {
+      if (plan.price?.id === priceId) return plan.context;
+    }
+  } catch {
+    // fall through
+  }
+  return undefined;
+}
+
 function extractCredentials(
   formData: FormData,
 ): { email: string; password: string } | { error: string } {
@@ -73,7 +93,7 @@ export async function signIn(_prevState: unknown, formData: FormData) {
 
   const plan = formData.get("plan");
   if (isValidPlanSlug(plan)) {
-    const context = formData.get("context");
+    const context = await resolvePlanContext(plan);
     const checkoutPath =
       context === "team"
         ? "/subscription/team-checkout"
@@ -97,8 +117,11 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: "Full name must be between 3 and 255 characters" };
   }
 
-  const context = formData.get("context");
-  const isTeam = context === "team";
+  const planField = formData.get("plan");
+  const validPlan = isValidPlanSlug(planField) ? planField : undefined;
+  const isTeam = validPlan
+    ? (await resolvePlanContext(validPlan)) === "team"
+    : false;
   const registerEndpoint = isTeam
     ? "/auth/register/org-owner/"
     : "/auth/register/";
@@ -118,8 +141,6 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     };
   }
 
-  const plan = formData.get("plan");
-  const validPlan = isValidPlanSlug(plan) ? plan : undefined;
   if (validPlan) {
     await setPendingPlan(validPlan, isTeam);
   }
