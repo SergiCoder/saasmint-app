@@ -6,11 +6,7 @@ import type {
 import type { Subscription } from "@/domain/models/Subscription";
 import { ApiError } from "@/domain/errors/ApiError";
 import { apiFetch, apiFetchVoid } from "./apiClient";
-import {
-  keysToCamel,
-  keysToCamelWithPrice,
-  keysToSnake,
-} from "./caseTransform";
+import { applyPriceDefaults, keysToCamel, keysToSnake } from "./caseTransform";
 import { SubscriptionSchema } from "./schemas";
 
 export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
@@ -21,11 +17,8 @@ export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
         `/billing/subscriptions/me/${query}`,
       );
       const camel = keysToCamel(raw) as Record<string, unknown>;
-      if (raw.plan && typeof raw.plan === "object") {
-        camel.plan = keysToCamelWithPrice(
-          raw.plan as Record<string, unknown>,
-          currency,
-        );
+      if (camel.plan && typeof camel.plan === "object") {
+        applyPriceDefaults(camel.plan as Record<string, unknown>, currency);
       }
       return SubscriptionSchema.parse(camel);
     } catch (err) {

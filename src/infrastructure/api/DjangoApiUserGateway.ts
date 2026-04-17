@@ -4,14 +4,8 @@ import type {
 } from "@/application/ports/IUserGateway";
 import type { User } from "@/domain/models/User";
 import { apiFetch } from "./apiClient";
-import { flattenPhone, keysToCamel, keysToSnake } from "./caseTransform";
-import { UserSchema } from "./schemas";
-
-function parseUser(raw: Record<string, unknown>): User {
-  const camel = keysToCamel(raw) as Record<string, unknown>;
-  flattenPhone(raw, camel);
-  return UserSchema.parse(camel);
-}
+import { keysToSnake } from "./caseTransform";
+import { parseUser } from "./parsers";
 
 export class DjangoApiUserGateway implements IUserGateway {
   async getProfile(_userId: string): Promise<User> {
@@ -24,7 +18,7 @@ export class DjangoApiUserGateway implements IUserGateway {
     input: UpdateProfileInput,
   ): Promise<User> {
     const { phonePrefix, phone, ...rest } = input;
-    const payload: Record<string, unknown> = keysToSnake(rest);
+    const payload = keysToSnake(rest) as Record<string, unknown>;
 
     if ("phonePrefix" in input || "phone" in input) {
       payload.phone =

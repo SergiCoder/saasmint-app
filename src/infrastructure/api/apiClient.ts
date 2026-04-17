@@ -1,8 +1,10 @@
 import { cache } from "react";
 import { ApiError } from "@/domain/errors/ApiError";
 import { AuthError } from "@/domain/errors/AuthError";
+import { NetworkError } from "@/domain/errors/NetworkError";
 import { getAccessToken } from "@/infrastructure/auth/cookies";
 import { env } from "@/lib/env";
+import { isRecord } from "@/lib/typeGuards";
 
 const API_URL = env.NEXT_PUBLIC_API_URL;
 
@@ -18,16 +20,10 @@ async function _getAuthToken(): Promise<string> {
 
 function isNetworkError(err: unknown): boolean {
   if (!(err instanceof TypeError)) return false;
-  const cause = "cause" in err ? (err as { cause: unknown }).cause : undefined;
-  if (
-    cause &&
-    typeof cause === "object" &&
-    "code" in cause &&
-    typeof (cause as { code: unknown }).code === "string"
-  ) {
-    const code = (cause as { code: string }).code;
+  const cause = err.cause;
+  if (isRecord(cause) && typeof cause.code === "string") {
     return ["ECONNREFUSED", "ENOTFOUND", "ETIMEDOUT", "ECONNRESET"].includes(
-      code,
+      cause.code,
     );
   }
   // Node 18+ fetch: "fetch failed" with a cause; older runtimes: "Failed to fetch" / "NetworkError"
@@ -68,7 +64,10 @@ async function raw(
     });
   } catch (err) {
     if (isNetworkError(err)) {
-      throw new Error("Unable to reach the server. Please try again later.");
+      throw new NetworkError(
+        "Unable to reach the server. Please try again later.",
+        { cause: err },
+      );
     }
     throw err;
   }
@@ -78,9 +77,8 @@ async function raw(
     const body = parseBody(text);
     if (authToken && res.status === 401) {
       let code = "BACKEND_REJECTED";
-      if (body && typeof body === "object" && "code" in body) {
-        const c = (body as { code: unknown }).code;
-        if (typeof c === "string") code = c;
+      if (isRecord(body) && typeof body.code === "string") {
+        code = body.code;
       }
       throw new AuthError("API 401", code);
     }

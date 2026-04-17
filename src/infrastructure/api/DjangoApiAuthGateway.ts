@@ -4,18 +4,11 @@ import type {
 } from "@/application/ports/IAuthGateway";
 import type { User } from "@/domain/models/User";
 import { apiFetch, apiFetchVoid } from "./apiClient";
-import { flattenPhone, keysToCamel } from "./caseTransform";
-import { UserSchema } from "./schemas";
+import { parseUser } from "./parsers";
 import {
   clearAuthCookies,
   getRefreshToken,
 } from "@/infrastructure/auth/cookies";
-
-function parseUser(raw: Record<string, unknown>): User {
-  const camel = keysToCamel(raw) as Record<string, unknown>;
-  flattenPhone(raw, camel);
-  return UserSchema.parse(camel);
-}
 
 export class DjangoApiAuthGateway implements IAuthGateway {
   async getCurrentUser(): Promise<User> {

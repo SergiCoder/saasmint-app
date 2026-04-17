@@ -1,3 +1,5 @@
+import { isRecord } from "@/lib/typeGuards";
+
 export function toSnakeCase(key: string): string {
   return key.replace(/[A-Z]/g, (ch) => `_${ch.toLowerCase()}`);
 }
@@ -6,10 +8,17 @@ export function toCamelCase(key: string): string {
   return key.replace(/_([a-z])/g, (_, ch: string) => ch.toUpperCase());
 }
 
-export function keysToSnake<T extends object>(obj: T): Record<string, unknown> {
+/**
+ * Recursively convert all object keys to snake_case. Arrays are mapped;
+ * plain objects walked; non-plain objects (Date, Map, etc.) left untouched.
+ * Inverse of `keysToCamel`.
+ */
+export function keysToSnake(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(keysToSnake);
+  if (!isRecord(value)) return value;
   const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    out[toSnakeCase(k)] = v;
+  for (const [k, v] of Object.entries(value)) {
+    out[toSnakeCase(k)] = keysToSnake(v);
   }
   return out;
 }
@@ -22,11 +31,9 @@ export function keysToSnake<T extends object>(obj: T): Record<string, unknown> {
  */
 export function keysToCamel(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(keysToCamel);
-  if (value === null || typeof value !== "object") return value;
-  // Preserve non-plain objects (Date, Map, etc.) untouched
-  if (Object.getPrototypeOf(value) !== Object.prototype) return value;
+  if (!isRecord(value)) return value;
   const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+  for (const [k, v] of Object.entries(value)) {
     out[toCamelCase(k)] = keysToCamel(v);
   }
   return out;
@@ -56,27 +63,38 @@ export function flattenPhone(
 }
 
 /**
- * Convert a raw API object's keys to camelCase and, when a nested `price`
- * object is present, fill in `displayAmount` and `currency` defaults when
- * the API omits them. Covers Plan, Product, and Subscription responses.
+ * Fill in `displayAmount` and `currency` defaults on an already-camelised
+ * object whose `price` subfield may omit them. Mutates in place. Used after
+ * `keysToCamel` has already walked the tree.
+ */
+export function applyPriceDefaults(
+  camel: Record<string, unknown>,
+  fallbackCurrency = "usd",
+): void {
+  const price = camel.price;
+  if (!price || typeof price !== "object") return;
+  const camelPrice = price as Record<string, unknown>;
+  if (
+    camelPrice.displayAmount === undefined &&
+    typeof camelPrice.amount === "number"
+  ) {
+    camelPrice.displayAmount = camelPrice.amount / 100;
+  }
+  if (camelPrice.currency === undefined) {
+    camelPrice.currency = fallbackCurrency;
+  }
+}
+
+/**
+ * Convert a raw API object's keys to camelCase and fill in `price` defaults
+ * (`displayAmount`, `currency`) when the API omits them. Covers Plan,
+ * Product, and top-level Subscription responses.
  */
 export function keysToCamelWithPrice(
   raw: Record<string, unknown>,
   fallbackCurrency = "usd",
 ): Record<string, unknown> {
   const result = keysToCamel(raw) as Record<string, unknown>;
-  const price = result.price;
-  if (price && typeof price === "object") {
-    const camelPrice = price as Record<string, unknown>;
-    if (
-      camelPrice.displayAmount === undefined &&
-      typeof camelPrice.amount === "number"
-    ) {
-      camelPrice.displayAmount = camelPrice.amount / 100;
-    }
-    if (camelPrice.currency === undefined) {
-      camelPrice.currency = fallbackCurrency;
-    }
-  }
+  applyPriceDefaults(result, fallbackCurrency);
   return result;
 }

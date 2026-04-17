@@ -1,3 +1,4 @@
+import { isRecord } from "@/lib/typeGuards";
 import { DomainError } from "./DomainError";
 
 export class ApiError extends DomainError {
@@ -19,9 +20,8 @@ export class ApiError extends DomainError {
       const parts = body.filter((v): v is string => typeof v === "string");
       return parts.length > 0 ? parts.join(" ") : null;
     }
-    if (body && typeof body === "object" && "detail" in body) {
-      const d = (body as { detail: unknown }).detail;
-      if (typeof d === "string") return d;
+    if (isRecord(body) && typeof body.detail === "string") {
+      return body.detail;
     }
     return null;
   }
