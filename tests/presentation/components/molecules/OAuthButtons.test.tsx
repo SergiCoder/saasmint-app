@@ -11,7 +11,6 @@ vi.mock("next-intl", () => ({
     };
     return map[key] ?? key;
   },
-  useLocale: () => "en",
 }));
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;

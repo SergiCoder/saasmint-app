@@ -29,7 +29,7 @@ interface OAuthExchangeResponse {
   expires_in?: number;
 }
 
-type OAuthProvider = "google" | "github" | "microsoft";
+export type OAuthProvider = "google" | "github" | "microsoft";
 
 export type StartOAuthResult = { redirectUrl: string };
 

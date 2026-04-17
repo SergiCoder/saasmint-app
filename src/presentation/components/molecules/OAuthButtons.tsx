@@ -7,11 +7,7 @@ import { Divider } from "@/presentation/components/atoms/Divider";
 import { GoogleIcon } from "@/presentation/components/atoms/GoogleIcon";
 import { GitHubIcon } from "@/presentation/components/atoms/GitHubIcon";
 import { MicrosoftIcon } from "@/presentation/components/atoms/MicrosoftIcon";
-import { startOAuth } from "@/app/actions/auth";
-
-type OAuthProvider = "google" | "github" | "microsoft";
-
-const PLAN_SLUG_RE = /^[A-Za-z0-9_-]{1,64}$/;
+import { startOAuth, type OAuthProvider } from "@/app/actions/auth";
 
 const providers = [
   {
@@ -45,11 +41,12 @@ export function OAuthButtons({ plan, context }: OAuthButtonsProps = {}) {
   async function handleOAuth(provider: OAuthProvider) {
     setLoadingProvider(provider);
     const isTeam = context === "team";
-    const safePlan = plan && PLAN_SLUG_RE.test(plan) ? plan : undefined;
-    const nextPath = safePlan
+    // The server action re-validates the plan slug and `next` path via
+    // validateNext / isValidPlanSlug, so no client-side sanitation is needed.
+    const nextPath = plan
       ? `${
           isTeam ? "/subscription/team-checkout" : "/subscription/checkout"
-        }?plan=${encodeURIComponent(safePlan)}`
+        }?plan=${encodeURIComponent(plan)}`
       : "/dashboard";
 
     try {
