@@ -1,8 +1,10 @@
 import { cache } from "react";
+import { ApiError } from "@/domain/errors/ApiError";
 import { AuthError } from "@/domain/errors/AuthError";
 import { getAccessToken } from "@/infrastructure/auth/cookies";
+import { env } from "@/lib/env";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+const API_URL = env.NEXT_PUBLIC_API_URL;
 
 // Wrapped with React.cache so that multiple apiFetch() calls within a single
 // server render share one cookie read instead of repeating it per request.
@@ -16,21 +18,35 @@ async function _getAuthToken(): Promise<string> {
 
 function isNetworkError(err: unknown): boolean {
   if (!(err instanceof TypeError)) return false;
-  const cause = (err as TypeError & { cause?: { code?: string } }).cause;
-  if (cause && typeof cause.code === "string") {
+  const cause = "cause" in err ? (err as { cause: unknown }).cause : undefined;
+  if (
+    cause &&
+    typeof cause === "object" &&
+    "code" in cause &&
+    typeof (cause as { code: unknown }).code === "string"
+  ) {
+    const code = (cause as { code: string }).code;
     return ["ECONNREFUSED", "ENOTFOUND", "ETIMEDOUT", "ECONNRESET"].includes(
-      cause.code,
+      code,
     );
   }
   // Node 18+ fetch: "fetch failed" with a cause; older runtimes: "Failed to fetch" / "NetworkError"
   return /\bfetch failed\b|Failed to fetch|NetworkError/i.test(err.message);
 }
 
-async function request<T>(
+function parseBody(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+async function raw(
   path: string,
   options: RequestInit,
   authToken: string | null,
-): Promise<T> {
+): Promise<Response> {
   const headers = new Headers();
   if (authToken) {
     headers.set("Authorization", `Bearer ${authToken}`);
@@ -59,21 +75,19 @@ async function request<T>(
 
   if (!res.ok) {
     const text = await res.text();
+    const body = parseBody(text);
     if (authToken && res.status === 401) {
       let code = "BACKEND_REJECTED";
-      try {
-        const body = JSON.parse(text) as { code?: string };
-        if (typeof body.code === "string") code = body.code;
-      } catch {
-        // non-JSON body — use generic code
+      if (body && typeof body === "object" && "code" in body) {
+        const c = (body as { code: unknown }).code;
+        if (typeof c === "string") code = c;
       }
-      throw new AuthError(`API 401: ${text}`, code);
+      throw new AuthError("API 401", code);
     }
-    throw new Error(`API ${res.status}: ${text}`);
+    throw new ApiError(res.status, body);
   }
 
-  if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
+  return res;
 }
 
 export async function apiFetch<T>(
@@ -81,12 +95,44 @@ export async function apiFetch<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const token = await getAuthToken();
-  return request<T>(path, options, token);
+  const res = await raw(path, options, token);
+  return (await res.json()) as T;
+}
+
+/**
+ * Fetch that sends the access token when present but silently falls through
+ * to an unauthenticated request when no token exists. Use for endpoints that
+ * personalize the response for logged-in users but work anonymously too
+ * (e.g. plans list, where pricing adjusts to the user's preferred currency).
+ */
+export async function apiFetchOptional<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const token = await getAccessToken();
+  const res = await raw(path, options, token ?? null);
+  return (await res.json()) as T;
+}
+
+export async function apiFetchVoid(
+  path: string,
+  options: RequestInit = {},
+): Promise<void> {
+  const token = await getAuthToken();
+  await raw(path, options, token);
 }
 
 export async function publicApiFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  return request<T>(path, options, null);
+  const res = await raw(path, options, null);
+  return (await res.json()) as T;
+}
+
+export async function publicApiFetchVoid(
+  path: string,
+  options: RequestInit = {},
+): Promise<void> {
+  await raw(path, options, null);
 }

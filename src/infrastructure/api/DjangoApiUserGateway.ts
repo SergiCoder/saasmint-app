@@ -5,13 +5,18 @@ import type {
 import type { User } from "@/domain/models/User";
 import { apiFetch } from "./apiClient";
 import { flattenPhone, keysToCamel, keysToSnake } from "./caseTransform";
+import { UserSchema } from "./schemas";
+
+function parseUser(raw: Record<string, unknown>): User {
+  const camel = keysToCamel(raw) as Record<string, unknown>;
+  flattenPhone(raw, camel);
+  return UserSchema.parse(camel);
+}
 
 export class DjangoApiUserGateway implements IUserGateway {
   async getProfile(_userId: string): Promise<User> {
     const raw = await apiFetch<Record<string, unknown>>("/account/");
-    const user = keysToCamel<User>(raw);
-    flattenPhone(raw, user);
-    return user;
+    return parseUser(raw);
   }
 
   async updateProfile(
@@ -30,8 +35,6 @@ export class DjangoApiUserGateway implements IUserGateway {
       method: "PATCH",
       body: JSON.stringify(payload),
     });
-    const user = keysToCamel<User>(raw);
-    flattenPhone(raw, user);
-    return user;
+    return parseUser(raw);
   }
 }

@@ -14,61 +14,69 @@ export function keysToSnake<T extends object>(obj: T): Record<string, unknown> {
   return out;
 }
 
-export function keysToCamel<T>(obj: Record<string, unknown>): T {
+/**
+ * Recursively convert all object keys to camelCase. Arrays are mapped; plain
+ * objects walked; everything else returned as-is. Parse the result with a
+ * schema (Zod) to get a typed value — the returned type is deliberately
+ * `unknown` because this function does not validate shape.
+ */
+export function keysToCamel(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(keysToCamel);
+  if (value === null || typeof value !== "object") return value;
+  // Preserve non-plain objects (Date, Map, etc.) untouched
+  if (Object.getPrototypeOf(value) !== Object.prototype) return value;
   const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    out[toCamelCase(k)] = v;
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    out[toCamelCase(k)] = keysToCamel(v);
   }
-  return out as T;
+  return out;
 }
 
-/**
- * Convert a raw API object's top-level keys to camelCase and, when a nested
- * `price` object is present, convert its keys as well.  Covers Plan, Product,
- * and Subscription responses that embed a price sub-object.
- */
 /**
  * Flatten a nested `phone: { prefix, number }` API object into flat
  * `phonePrefix` / `phone` fields on the target user object.
  */
-export function flattenPhone(raw: Record<string, unknown>, user: object): void {
-  const phoneData = raw.phone as
-    | { prefix: string; number: string }
-    | null
-    | undefined;
-
-  const target = user as Record<string, unknown>;
-  if (phoneData && typeof phoneData === "object") {
-    target.phonePrefix = phoneData.prefix;
-    target.phone = phoneData.number;
+export function flattenPhone(
+  raw: Record<string, unknown>,
+  user: Record<string, unknown>,
+): void {
+  const phoneData = raw.phone;
+  if (
+    phoneData &&
+    typeof phoneData === "object" &&
+    "prefix" in phoneData &&
+    "number" in phoneData
+  ) {
+    user.phonePrefix = (phoneData as { prefix: unknown }).prefix;
+    user.phone = (phoneData as { number: unknown }).number;
   } else {
-    target.phonePrefix = null;
-    target.phone = null;
+    user.phonePrefix = null;
+    user.phone = null;
   }
 }
 
 /**
- * Convert a raw API object's top-level keys to camelCase and, when a nested
- * `price` object is present, convert its keys as well.  Covers Plan, Product,
- * and Subscription responses that embed a price sub-object.
+ * Convert a raw API object's keys to camelCase and, when a nested `price`
+ * object is present, fill in `displayAmount` and `currency` defaults when
+ * the API omits them. Covers Plan, Product, and Subscription responses.
  */
-export function keysToCamelWithPrice<T>(
+export function keysToCamelWithPrice(
   raw: Record<string, unknown>,
   fallbackCurrency = "usd",
-): T {
-  const result = keysToCamel<T>(raw);
-  if (raw.price && typeof raw.price === "object") {
-    const camelPrice = keysToCamel<Record<string, unknown>>(
-      raw.price as Record<string, unknown>,
-    );
-    // The API may omit displayAmount and currency — derive them from amount.
-    if (camelPrice.displayAmount === undefined && camelPrice.amount != null) {
-      camelPrice.displayAmount = (camelPrice.amount as number) / 100;
+): Record<string, unknown> {
+  const result = keysToCamel(raw) as Record<string, unknown>;
+  const price = result.price;
+  if (price && typeof price === "object") {
+    const camelPrice = price as Record<string, unknown>;
+    if (
+      camelPrice.displayAmount === undefined &&
+      typeof camelPrice.amount === "number"
+    ) {
+      camelPrice.displayAmount = camelPrice.amount / 100;
     }
     if (camelPrice.currency === undefined) {
       camelPrice.currency = fallbackCurrency;
     }
-    (result as Record<string, unknown>).price = camelPrice;
   }
   return result;
 }

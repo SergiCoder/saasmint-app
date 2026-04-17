@@ -3,25 +3,30 @@ import type {
   IAuthGateway,
 } from "@/application/ports/IAuthGateway";
 import type { User } from "@/domain/models/User";
-import { apiFetch } from "./apiClient";
+import { apiFetch, apiFetchVoid } from "./apiClient";
 import { flattenPhone, keysToCamel } from "./caseTransform";
+import { UserSchema } from "./schemas";
 import {
   clearAuthCookies,
   getRefreshToken,
 } from "@/infrastructure/auth/cookies";
 
+function parseUser(raw: Record<string, unknown>): User {
+  const camel = keysToCamel(raw) as Record<string, unknown>;
+  flattenPhone(raw, camel);
+  return UserSchema.parse(camel);
+}
+
 export class DjangoApiAuthGateway implements IAuthGateway {
   async getCurrentUser(): Promise<User> {
     const raw = await apiFetch<Record<string, unknown>>("/account/");
-    const user = keysToCamel<User>(raw);
-    flattenPhone(raw, user);
-    return user;
+    return parseUser(raw);
   }
 
   async signOut(): Promise<void> {
     const refreshToken = await getRefreshToken();
     if (refreshToken) {
-      await apiFetch("/auth/logout/", {
+      await apiFetchVoid("/auth/logout/", {
         method: "POST",
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
@@ -45,8 +50,6 @@ export class DjangoApiAuthGateway implements IAuthGateway {
       "/account/cancel-deletion/",
       { method: "POST" },
     );
-    const user = keysToCamel<User>(raw);
-    flattenPhone(raw, user);
-    return user;
+    return parseUser(raw);
   }
 }
