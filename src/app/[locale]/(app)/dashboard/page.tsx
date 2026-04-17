@@ -90,7 +90,7 @@ export default async function DashboardPage() {
                   spotsLabel={
                     totalSpots !== null
                       ? tOrg("spotsUsed", {
-                          used: memberCounts[i],
+                          used: memberCounts[i] ?? 0,
                           total: totalSpots,
                         })
                       : undefined
