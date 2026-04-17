@@ -11,6 +11,8 @@ import { startOAuth } from "@/app/actions/auth";
 
 type OAuthProvider = "google" | "github" | "microsoft";
 
+const PLAN_SLUG_RE = /^[A-Za-z0-9_-]{1,64}$/;
+
 const providers = [
   {
     id: "google" as OAuthProvider,
@@ -43,10 +45,11 @@ export function OAuthButtons({ plan, context }: OAuthButtonsProps = {}) {
   async function handleOAuth(provider: OAuthProvider) {
     setLoadingProvider(provider);
     const isTeam = context === "team";
-    const nextPath = plan
+    const safePlan = plan && PLAN_SLUG_RE.test(plan) ? plan : undefined;
+    const nextPath = safePlan
       ? `${
           isTeam ? "/subscription/team-checkout" : "/subscription/checkout"
-        }?plan=${encodeURIComponent(plan)}`
+        }?plan=${encodeURIComponent(safePlan)}`
       : "/dashboard";
 
     try {

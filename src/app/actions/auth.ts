@@ -36,6 +36,12 @@ export type ExchangeOAuthResult =
   | { ok: true; next: string }
   | { ok: false; error: "oauth_no_flow" | "oauth_error" };
 
+const PLAN_SLUG_RE = /^[A-Za-z0-9_-]{1,64}$/;
+
+function isValidPlanSlug(value: unknown): value is string {
+  return typeof value === "string" && PLAN_SLUG_RE.test(value);
+}
+
 function extractCredentials(
   formData: FormData,
 ): { email: string; password: string } | { error: string } {
@@ -66,7 +72,7 @@ export async function signIn(_prevState: unknown, formData: FormData) {
   await setAuthCookies(data.access_token, data.refresh_token);
 
   const plan = formData.get("plan");
-  if (typeof plan === "string" && plan) {
+  if (isValidPlanSlug(plan)) {
     const context = formData.get("context");
     const checkoutPath =
       context === "team"
@@ -113,14 +119,15 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   }
 
   const plan = formData.get("plan");
-  if (typeof plan === "string" && plan) {
-    await setPendingPlan(plan, isTeam);
+  const validPlan = isValidPlanSlug(plan) ? plan : undefined;
+  if (validPlan) {
+    await setPendingPlan(validPlan, isTeam);
   }
 
   // Registration returns tokens but user must verify email first.
   const loginParams = new URLSearchParams({ registered: "true" });
-  if (typeof plan === "string" && plan) {
-    loginParams.set("plan", plan);
+  if (validPlan) {
+    loginParams.set("plan", validPlan);
   }
   if (isTeam) {
     loginParams.set("context", "team");
