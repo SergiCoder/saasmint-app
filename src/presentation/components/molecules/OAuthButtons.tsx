@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Button } from "@/presentation/components/atoms/Button";
 import { Divider } from "@/presentation/components/atoms/Divider";
 import { GoogleIcon } from "@/presentation/components/atoms/GoogleIcon";
 import { GitHubIcon } from "@/presentation/components/atoms/GitHubIcon";
 import { MicrosoftIcon } from "@/presentation/components/atoms/MicrosoftIcon";
+import { startOAuth } from "@/app/actions/auth";
 
 type OAuthProvider = "google" | "github" | "microsoft";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const providers = [
   {
@@ -37,34 +36,25 @@ interface OAuthButtonsProps {
 
 export function OAuthButtons({ plan, context }: OAuthButtonsProps = {}) {
   const t = useTranslations("auth.oauth");
-  const locale = useLocale();
   const [loadingProvider, setLoadingProvider] = useState<OAuthProvider | null>(
     null,
   );
 
-  function handleOAuth(provider: OAuthProvider) {
+  async function handleOAuth(provider: OAuthProvider) {
     setLoadingProvider(provider);
     const isTeam = context === "team";
-    const callbackUrl = new URL(
-      `${window.location.origin}/${locale}/auth/callback`,
-    );
-    if (plan) {
-      const checkoutPath = isTeam
-        ? "/subscription/team-checkout"
-        : "/subscription/checkout";
-      callbackUrl.searchParams.set(
-        "next",
-        `${checkoutPath}?plan=${encodeURIComponent(plan)}`,
-      );
-    }
+    const nextPath = plan
+      ? `${
+          isTeam ? "/subscription/team-checkout" : "/subscription/checkout"
+        }?plan=${encodeURIComponent(plan)}`
+      : "/dashboard";
 
-    const oauthUrl = new URL(`${API_URL}/api/v1/auth/oauth/${provider}/`);
-    oauthUrl.searchParams.set("redirect_uri", callbackUrl.toString());
-    if (isTeam) {
-      oauthUrl.searchParams.set("account_type", "org_owner");
+    try {
+      const { redirectUrl } = await startOAuth(provider, nextPath, isTeam);
+      window.location.assign(redirectUrl);
+    } catch {
+      setLoadingProvider(null);
     }
-
-    window.location.assign(oauthUrl.toString());
   }
 
   return (

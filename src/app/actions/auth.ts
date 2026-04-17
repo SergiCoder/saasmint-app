@@ -6,17 +6,35 @@ import { SignOut } from "@/application/use-cases/auth/SignOut";
 import { authGateway } from "@/infrastructure/registry";
 import {
   clearAuthCookies,
+  consumeOAuthFlowCookies,
   consumePendingPlan,
   setAuthCookies,
+  setOAuthFlowCookies,
   setPendingPlan,
 } from "@/infrastructure/auth/cookies";
 import { friendlyError } from "@/lib/friendlyError";
+import { validateNext } from "@/lib/oauthNext";
 
 interface TokenResponse {
   access_token: string;
   refresh_token: string;
   token_type?: string;
 }
+
+interface OAuthExchangeResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type?: string;
+  expires_in?: number;
+}
+
+type OAuthProvider = "google" | "github" | "microsoft";
+
+export type StartOAuthResult = { redirectUrl: string };
+
+export type ExchangeOAuthResult =
+  | { ok: true; next: string }
+  | { ok: false; error: "oauth_no_flow" | "oauth_error" };
 
 function extractCredentials(
   formData: FormData,
@@ -225,6 +243,60 @@ export async function verifyEmail(
   return pending
     ? { pendingPlan: pending.plan, isTeamPlan: pending.isTeam }
     : {};
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
+
+const OAUTH_PROVIDERS: readonly OAuthProvider[] = [
+  "google",
+  "github",
+  "microsoft",
+];
+
+export async function startOAuth(
+  provider: OAuthProvider,
+  nextPath: string | undefined,
+  isTeam: boolean,
+): Promise<StartOAuthResult> {
+  if (!OAUTH_PROVIDERS.includes(provider)) {
+    throw new Error("Invalid OAuth provider");
+  }
+
+  const safeNext = validateNext(nextPath, APP_URL);
+  await setOAuthFlowCookies(safeNext);
+
+  const url = new URL(`${API_URL}/api/v1/auth/oauth/${provider}/`);
+  if (isTeam) {
+    url.searchParams.set("account_type", "org_owner");
+  }
+  return { redirectUrl: url.toString() };
+}
+
+export async function exchangeOAuthCode(
+  code: string,
+): Promise<ExchangeOAuthResult> {
+  if (typeof code !== "string" || !code) {
+    return { ok: false, error: "oauth_no_flow" };
+  }
+
+  const { inProgress, next } = await consumeOAuthFlowCookies();
+  if (!inProgress) {
+    return { ok: false, error: "oauth_no_flow" };
+  }
+
+  let data: OAuthExchangeResponse;
+  try {
+    data = await publicApiFetch<OAuthExchangeResponse>(
+      "/auth/oauth/exchange/",
+      { method: "POST", body: JSON.stringify({ code }) },
+    );
+  } catch {
+    return { ok: false, error: "oauth_error" };
+  }
+
+  await setAuthCookies(data.access_token, data.refresh_token, data.expires_in);
+  return { ok: true, next: validateNext(next, APP_URL) };
 }
 
 export async function signOut() {

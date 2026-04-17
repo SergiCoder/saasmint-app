@@ -19,11 +19,16 @@ const mockSetAuthCookies = vi.fn();
 const mockClearAuthCookies = vi.fn();
 const mockSetPendingPlan = vi.fn();
 const mockConsumePendingPlan = vi.fn();
+const mockSetOAuthFlowCookies = vi.fn();
+const mockConsumeOAuthFlowCookies = vi.fn();
 vi.mock("@/infrastructure/auth/cookies", () => ({
   setAuthCookies: (...args: unknown[]) => mockSetAuthCookies(...args),
   clearAuthCookies: (...args: unknown[]) => mockClearAuthCookies(...args),
   setPendingPlan: (...args: unknown[]) => mockSetPendingPlan(...args),
   consumePendingPlan: (...args: unknown[]) => mockConsumePendingPlan(...args),
+  setOAuthFlowCookies: (...args: unknown[]) => mockSetOAuthFlowCookies(...args),
+  consumeOAuthFlowCookies: (...args: unknown[]) =>
+    mockConsumeOAuthFlowCookies(...args),
 }));
 
 const mockSignOutExecute = vi.fn();
@@ -45,6 +50,8 @@ let resetPassword: typeof import("@/app/actions/auth").resetPassword;
 let resetPasswordWithToken: typeof import("@/app/actions/auth").resetPasswordWithToken;
 let changePassword: typeof import("@/app/actions/auth").changePassword;
 let verifyEmail: typeof import("@/app/actions/auth").verifyEmail;
+let startOAuth: typeof import("@/app/actions/auth").startOAuth;
+let exchangeOAuthCode: typeof import("@/app/actions/auth").exchangeOAuthCode;
 
 beforeEach(async () => {
   vi.clearAllMocks();
@@ -56,6 +63,8 @@ beforeEach(async () => {
   resetPasswordWithToken = mod.resetPasswordWithToken;
   changePassword = mod.changePassword;
   verifyEmail = mod.verifyEmail;
+  startOAuth = mod.startOAuth;
+  exchangeOAuthCode = mod.exchangeOAuthCode;
 });
 
 describe("auth server actions", () => {
@@ -599,6 +608,136 @@ describe("auth server actions", () => {
       await expect(signOut()).rejects.toThrow("NEXT_REDIRECT");
       expect(mockClearAuthCookies).toHaveBeenCalledOnce();
       expect(mockRedirect).toHaveBeenCalledWith("/login");
+    });
+  });
+
+  describe("startOAuth", () => {
+    it("writes validated next to flow cookies and returns Django authorize URL", async () => {
+      const result = await startOAuth("google", "/dashboard", false);
+
+      expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith("/dashboard");
+      expect(result.redirectUrl).toMatch(/\/api\/v1\/auth\/oauth\/google\/$/);
+    });
+
+    it("appends account_type=org_owner for team context", async () => {
+      const result = await startOAuth(
+        "github",
+        "/subscription/team-checkout?plan=x",
+        true,
+      );
+
+      expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith(
+        "/subscription/team-checkout?plan=x",
+      );
+      expect(new URL(result.redirectUrl).searchParams.get("account_type")).toBe(
+        "org_owner",
+      );
+    });
+
+    it("writes fallback /dashboard when next is untrusted", async () => {
+      await startOAuth("google", "https://evil.com", false);
+      expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith("/dashboard");
+    });
+
+    it("writes fallback /dashboard when next is a non-allowlisted path", async () => {
+      await startOAuth("google", "/admin/users", false);
+      expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith("/dashboard");
+    });
+
+    it("rejects unknown providers", async () => {
+      await expect(
+        startOAuth("linkedin" as never, "/dashboard", false),
+      ).rejects.toThrow("Invalid OAuth provider");
+      expect(mockSetOAuthFlowCookies).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("exchangeOAuthCode", () => {
+    it("returns oauth_no_flow when code is empty", async () => {
+      const result = await exchangeOAuthCode("");
+      expect(result).toEqual({ ok: false, error: "oauth_no_flow" });
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
+    });
+
+    it("returns oauth_no_flow when gate cookie is missing", async () => {
+      mockConsumeOAuthFlowCookies.mockResolvedValue({
+        inProgress: false,
+        next: undefined,
+      });
+
+      const result = await exchangeOAuthCode("code_abc");
+      expect(result).toEqual({ ok: false, error: "oauth_no_flow" });
+      expect(mockPublicApiFetch).not.toHaveBeenCalled();
+    });
+
+    it("exchanges code and sets cookies with expires_in on success", async () => {
+      mockConsumeOAuthFlowCookies.mockResolvedValue({
+        inProgress: true,
+        next: "/dashboard",
+      });
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_oauth",
+        refresh_token: "ref_oauth",
+        expires_in: 900,
+      });
+
+      const result = await exchangeOAuthCode("code_abc");
+
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/oauth/exchange/", {
+        method: "POST",
+        body: JSON.stringify({ code: "code_abc" }),
+      });
+      expect(mockSetAuthCookies).toHaveBeenCalledWith(
+        "tok_oauth",
+        "ref_oauth",
+        900,
+      );
+      expect(result).toEqual({ ok: true, next: "/dashboard" });
+    });
+
+    it("passes undefined expires_in when backend omits it", async () => {
+      mockConsumeOAuthFlowCookies.mockResolvedValue({
+        inProgress: true,
+        next: "/dashboard",
+      });
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_oauth",
+        refresh_token: "ref_oauth",
+      });
+
+      await exchangeOAuthCode("code_abc");
+      expect(mockSetAuthCookies).toHaveBeenCalledWith(
+        "tok_oauth",
+        "ref_oauth",
+        undefined,
+      );
+    });
+
+    it("returns oauth_error when exchange fails", async () => {
+      mockConsumeOAuthFlowCookies.mockResolvedValue({
+        inProgress: true,
+        next: "/dashboard",
+      });
+      mockPublicApiFetch.mockRejectedValue(new Error("API 401: bad code"));
+
+      const result = await exchangeOAuthCode("code_abc");
+      expect(result).toEqual({ ok: false, error: "oauth_error" });
+      expect(mockSetAuthCookies).not.toHaveBeenCalled();
+    });
+
+    it("re-validates cookie-stored next at read time (defense in depth)", async () => {
+      mockConsumeOAuthFlowCookies.mockResolvedValue({
+        inProgress: true,
+        next: "https://evil.com",
+      });
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_oauth",
+        refresh_token: "ref_oauth",
+        expires_in: 900,
+      });
+
+      const result = await exchangeOAuthCode("code_abc");
+      expect(result).toEqual({ ok: true, next: "/dashboard" });
     });
   });
 });
