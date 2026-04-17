@@ -13,7 +13,7 @@ export const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 7;
 export const accessTokenCookieOptions = {
   httpOnly: true,
   secure: true,
-  sameSite: "lax" as const,
+  sameSite: "strict" as const,
   maxAge: ACCESS_TOKEN_MAX_AGE,
   path: "/",
 };
@@ -22,7 +22,7 @@ export const accessTokenCookieOptions = {
 export const refreshTokenCookieOptions = {
   httpOnly: true,
   secure: true,
-  sameSite: "lax" as const,
+  sameSite: "strict" as const,
   maxAge: REFRESH_TOKEN_MAX_AGE,
   path: "/",
 };

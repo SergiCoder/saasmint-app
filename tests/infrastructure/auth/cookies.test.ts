@@ -36,7 +36,7 @@ describe("setAuthCookies", () => {
       "access_abc",
       expect.objectContaining({
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "strict",
         path: "/",
       }),
     );
@@ -45,7 +45,7 @@ describe("setAuthCookies", () => {
       "refresh_xyz",
       expect.objectContaining({
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "strict",
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
       }),

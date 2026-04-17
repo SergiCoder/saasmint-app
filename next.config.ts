@@ -18,6 +18,24 @@ const apiProtocol: "http" | "https" = apiUrl
 
 const isDev = process.env.NODE_ENV === "development";
 
+const securityHeaders = [
+  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=()",
+  },
+  ...(isDev
+    ? []
+    : [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
+      ]),
+];
+
 const config: NextConfig = {
   output: "standalone",
   images: {
@@ -29,6 +47,9 @@ const config: NextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
     ...(isDev && { dangerouslyAllowLocalIP: true }),
+  },
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders }];
   },
 };
 
