@@ -1,20 +1,22 @@
-import { z } from "zod";
-
-const schema = z.object({
-  NEXT_PUBLIC_API_URL: z.string().url(),
-  NEXT_PUBLIC_APP_URL: z.string().url(),
-});
-
-const parsed = schema.safeParse({
-  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-});
-
-if (!parsed.success) {
-  const issues = parsed.error.issues
-    .map((i) => `${i.path.join(".")}: ${i.message}`)
-    .join("; ");
-  throw new Error(`Invalid environment variables: ${issues}`);
+/**
+ * Boot-time environment validator. Intentionally zod-free so this module
+ * can be imported from Edge middleware (`src/proxy.ts`) without pulling
+ * zod into the per-request middleware bundle.
+ */
+function requireUrl(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  try {
+    new URL(value);
+  } catch {
+    throw new Error(`Invalid URL in environment variable ${name}: ${value}`);
+  }
+  return value;
 }
 
-export const env = parsed.data;
+export const env = {
+  NEXT_PUBLIC_API_URL: requireUrl("NEXT_PUBLIC_API_URL"),
+  NEXT_PUBLIC_APP_URL: requireUrl("NEXT_PUBLIC_APP_URL"),
+} as const;
