@@ -43,7 +43,11 @@ export default async function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <ProfileForm user={user} phonePrefixes={phonePrefixes} />
+        <ProfileForm
+          user={user}
+          phonePrefixes={phonePrefixes}
+          timezones={Intl.supportedValuesOf("timeZone")}
+        />
       </section>
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">
