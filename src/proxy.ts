@@ -9,6 +9,7 @@ import {
   refreshTokenCookieOptions,
 } from "@/infrastructure/auth/cookies";
 import { env } from "@/lib/env";
+import { PATHNAME_HEADER } from "@/lib/pathname";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -41,6 +42,41 @@ function isTokenExpired(token: string): boolean {
   } catch {
     return true;
   }
+}
+
+/**
+ * Wraps a NextResponse so downstream server components can read the current
+ * pathname via `headers().get(PATHNAME_HEADER)`. We rebuild the response via
+ * NextResponse.next/rewrite with modified request headers — setting response
+ * headers alone does not propagate to server components.
+ */
+function withPathnameHeader(
+  request: NextRequest,
+  intlResponse: NextResponse,
+): NextResponse {
+  // Redirects never reach a server component render; return as-is.
+  if (intlResponse.headers.get("location")) return intlResponse;
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(PATHNAME_HEADER, request.nextUrl.pathname);
+
+  const rewriteUrl = intlResponse.headers.get("x-middleware-rewrite");
+  const response = rewriteUrl
+    ? NextResponse.rewrite(rewriteUrl, {
+        request: { headers: requestHeaders },
+      })
+    : NextResponse.next({ request: { headers: requestHeaders } });
+
+  intlResponse.cookies.getAll().forEach((cookie) => {
+    response.cookies.set(cookie);
+  });
+  intlResponse.headers.forEach((value, key) => {
+    const k = key.toLowerCase();
+    if (k === "x-middleware-rewrite" || k === "x-middleware-next") return;
+    if (!response.headers.has(key)) response.headers.set(key, value);
+  });
+
+  return response;
 }
 
 export async function proxy(request: NextRequest) {
@@ -95,7 +131,7 @@ export async function proxy(request: NextRequest) {
           data.refresh_token,
           refreshTokenCookieOptions,
         );
-        return intlResponse;
+        return withPathnameHeader(request, intlResponse);
       }
     } catch {
       // Refresh failed — fall through
@@ -107,7 +143,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
-  return intlMiddleware(request);
+  return withPathnameHeader(request, intlMiddleware(request));
 }
 
 export const config = {
