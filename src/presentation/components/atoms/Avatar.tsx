@@ -30,8 +30,6 @@ export function Avatar({ src, alt, size = "md", className = "" }: AvatarProps) {
         alt={alt}
         width={pixelSizes[size]}
         height={pixelSizes[size]}
-        sizes="48px"
-        unoptimized
         className={`inline-block rounded-full object-cover ${sizes[size]} ${className}`}
       />
     );
