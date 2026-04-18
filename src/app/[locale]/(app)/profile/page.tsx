@@ -10,6 +10,9 @@ import { ChangePasswordForm } from "./_components/ChangePasswordForm";
 import { DangerZone } from "./_components/DangerZone";
 import { ProfileForm } from "./_components/ProfileForm";
 
+// Static data — compute once at module load, not per request.
+const TIMEZONES = Intl.supportedValuesOf("timeZone");
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("profile");
   return { title: t("title") };
@@ -46,7 +49,7 @@ export default async function ProfilePage() {
         <ProfileForm
           user={user}
           phonePrefixes={phonePrefixes}
-          timezones={Intl.supportedValuesOf("timeZone")}
+          timezones={TIMEZONES}
         />
       </section>
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

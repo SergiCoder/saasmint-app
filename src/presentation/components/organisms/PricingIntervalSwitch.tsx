@@ -31,7 +31,9 @@ export function PricingIntervalSwitch({
   monthlyGrid,
   yearlyGrid,
 }: PricingIntervalSwitchProps) {
-  const [interval, setInterval] = useState<"month" | "year">(defaultInterval);
+  const [selectedInterval, setSelectedInterval] = useState<"month" | "year">(
+    defaultInterval,
+  );
 
   return (
     <>
@@ -46,18 +48,18 @@ export function PricingIntervalSwitch({
             <button
               type="button"
               role="tab"
-              aria-selected={interval === "month"}
-              onClick={() => setInterval("month")}
-              className={toggleClass(interval === "month")}
+              aria-selected={selectedInterval === "month"}
+              onClick={() => setSelectedInterval("month")}
+              className={toggleClass(selectedInterval === "month")}
             >
               {monthlyLabel}
             </button>
             <button
               type="button"
               role="tab"
-              aria-selected={interval === "year"}
-              onClick={() => setInterval("year")}
-              className={toggleClass(interval === "year")}
+              aria-selected={selectedInterval === "year"}
+              onClick={() => setSelectedInterval("year")}
+              className={toggleClass(selectedInterval === "year")}
             >
               {yearlyLabel}
             </button>
@@ -66,8 +68,8 @@ export function PricingIntervalSwitch({
         </div>
       </div>
 
-      <div className={interval === "month" ? "" : "hidden"}>{monthlyGrid}</div>
-      <div className={interval === "year" ? "" : "hidden"}>{yearlyGrid}</div>
+      <div className={selectedInterval === "month" ? "" : "hidden"}>{monthlyGrid}</div>
+      <div className={selectedInterval === "year" ? "" : "hidden"}>{yearlyGrid}</div>
     </>
   );
 }
