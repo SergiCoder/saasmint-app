@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { routing } from "@/lib/i18n/routing";
+import { stripLocalePrefix } from "@/lib/i18n/routing";
 
 export const PATHNAME_HEADER = "x-pathname";
 
@@ -19,11 +19,5 @@ export async function getPathname(): Promise<string> {
  * against locale-independent routes such as nav links.
  */
 export async function getPathnameWithoutLocale(): Promise<string> {
-  const pathname = await getPathname();
-  const localePrefix = [...routing.locales]
-    .sort((a, b) => b.length - a.length)
-    .find((l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
-  if (!localePrefix) return pathname;
-  const stripped = pathname.slice(localePrefix.length + 1);
-  return stripped === "" ? "/" : stripped;
+  return stripLocalePrefix(await getPathname());
 }

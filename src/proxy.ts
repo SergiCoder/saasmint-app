@@ -1,5 +1,5 @@
 import createMiddleware from "next-intl/middleware";
-import { routing } from "@/lib/i18n/routing";
+import { routing, stripLocalePrefix } from "@/lib/i18n/routing";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
@@ -82,12 +82,7 @@ function withPathnameHeader(
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const localePrefix = [...routing.locales]
-    .sort((a: string, b: string) => b.length - a.length)
-    .find((l: string) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
-  const pathnameWithoutLocale = localePrefix
-    ? pathname.slice(localePrefix.length + 1)
-    : pathname;
+  const pathnameWithoutLocale = stripLocalePrefix(pathname);
 
   const isProtected = PROTECTED_PREFIXES.some((p) =>
     pathnameWithoutLocale.startsWith(p),
