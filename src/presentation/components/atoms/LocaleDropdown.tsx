@@ -50,9 +50,10 @@ export function LocaleDropdown() {
     setOpen(false);
     router.replace(pathname, { locale: next });
     // Fire-and-forget: saving the preference should not block the visual
-    // locale swap. Swallow rejections to avoid an unhandled promise crash
-    // if the user is offline or the server action 5xxs.
-    void updatePreferredLocale(next).catch((err) => {
+    // locale swap. The action itself already swallows server errors, so
+    // this catch only guards against transport failures (offline, aborted
+    // RSC request) that would otherwise surface as an unhandled rejection.
+    updatePreferredLocale(next).catch((err) => {
       console.error("Failed to save preferred locale", err);
     });
   }

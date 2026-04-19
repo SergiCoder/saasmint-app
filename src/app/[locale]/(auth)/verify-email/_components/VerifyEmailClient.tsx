@@ -25,11 +25,8 @@ export function VerifyEmailClient({ token }: VerifyEmailClientProps) {
     if (firedRef.current) return;
     firedRef.current = true;
 
-    let ignore = false;
-
     verifyEmail(token)
       .then((result) => {
-        if (ignore) return;
         if (result?.error) {
           setError(result.error);
         } else if (result?.pendingPlan) {
@@ -43,13 +40,7 @@ export function VerifyEmailClient({ token }: VerifyEmailClientProps) {
           router.push("/dashboard");
         }
       })
-      .catch(() => {
-        if (!ignore) setError(t("error"));
-      });
-
-    return () => {
-      ignore = true;
-    };
+      .catch(() => setError(t("error")));
   }, [token, router, t]);
 
   if (error) {
