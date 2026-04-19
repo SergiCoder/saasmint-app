@@ -8,6 +8,7 @@ import type { Org } from "@/domain/models/Org";
 const mockTranslate = vi.fn((key: string) => key);
 vi.mock("next-intl/server", () => ({
   getTranslations: vi.fn(() => Promise.resolve(mockTranslate)),
+  setRequestLocale: vi.fn(),
 }));
 
 const mockRedirect = vi.fn((path: string) => {
@@ -90,7 +91,9 @@ describe("OrgListPage", () => {
   it("redirects to /subscription when the user has no orgs", async () => {
     mockGetUserOrgs.mockResolvedValue([]);
 
-    await expect(OrgListPage()).rejects.toThrow("NEXT_REDIRECT");
+    await expect(
+      OrgListPage({ params: Promise.resolve({ locale: "en" }) }),
+    ).rejects.toThrow("NEXT_REDIRECT");
 
     expect(mockRedirect).toHaveBeenCalledWith("/subscription");
   });
@@ -100,7 +103,9 @@ describe("OrgListPage", () => {
       makeOrg({ id: "o1", slug: "acme", name: "Acme Corp" }),
     ]);
 
-    await expect(OrgListPage()).rejects.toThrow("NEXT_REDIRECT");
+    await expect(
+      OrgListPage({ params: Promise.resolve({ locale: "en" }) }),
+    ).rejects.toThrow("NEXT_REDIRECT");
 
     expect(mockRedirect).toHaveBeenCalledWith("/org/acme");
   });
@@ -112,7 +117,9 @@ describe("OrgListPage", () => {
       makeOrg({ id: "o3", slug: "initech", name: "Initech" }),
     ]);
 
-    const jsx = await OrgListPage();
+    const jsx = await OrgListPage({
+      params: Promise.resolve({ locale: "en" }),
+    });
     render(jsx);
 
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -131,7 +138,7 @@ describe("OrgListPage", () => {
       makeOrg({ id: "o2", slug: "globex" }),
     ]);
 
-    await OrgListPage();
+    await OrgListPage({ params: Promise.resolve({ locale: "en" }) });
 
     expect(mockGetUserOrgs).toHaveBeenCalledWith("user-42");
   });
