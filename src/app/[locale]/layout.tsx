@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { isLocale, routing } from "@/lib/i18n/routing";
+import { isLocale, routing, RTL_LOCALES } from "@/lib/i18n/routing";
+import { inter } from "@/lib/fonts";
 import { env } from "@/lib/env";
 import "../globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const RTL_LOCALES = new Set(["ar"]);
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Inter } from "next/font/google";
+import { inter } from "@/lib/fonts";
 import "./globals.css";
 
 // Fallback for requests that never entered a `[locale]` segment (e.g. a path
@@ -7,13 +7,6 @@ import "./globals.css";
 // Renders its own <html>/<body> because the root layout now lives at
 // `[locale]/layout.tsx`. Strings are hardcoded in English because next-intl's
 // request context is not available here.
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export default function RootNotFound() {
   return (
