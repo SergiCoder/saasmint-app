@@ -25,8 +25,10 @@ export default async function SignupPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("auth.register");
-  const { plan, context } = await searchParams;
+  const [t, { plan, context }] = await Promise.all([
+    getTranslations("auth.register"),
+    searchParams,
+  ]);
   const isTeam = context === "team";
   const loginParams = new URLSearchParams();
   if (plan) loginParams.set("plan", plan);

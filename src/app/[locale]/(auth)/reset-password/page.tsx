@@ -24,8 +24,10 @@ export default async function ResetPasswordPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("auth.resetPassword");
-  const { token } = await searchParams;
+  const [t, { token }] = await Promise.all([
+    getTranslations("auth.resetPassword"),
+    searchParams,
+  ]);
 
   return (
     <AuthLayout appName="SaaSmint" title={t("title")}>

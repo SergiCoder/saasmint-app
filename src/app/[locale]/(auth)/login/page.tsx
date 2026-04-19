@@ -41,8 +41,10 @@ export default async function LoginPage({ params, searchParams }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("auth.login");
-  const { error, registered, deleted, plan, context } = await searchParams;
+  const [t, { error, registered, deleted, plan, context }] = await Promise.all([
+    getTranslations("auth.login"),
+    searchParams,
+  ]);
   const isTeam = context === "team";
 
   const errorKey = error ? ERROR_KEYS[error] : undefined;

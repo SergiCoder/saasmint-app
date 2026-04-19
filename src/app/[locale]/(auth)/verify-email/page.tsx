@@ -18,8 +18,10 @@ export default async function VerifyEmailPage({ params, searchParams }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("auth.verifyEmail");
-  const { token } = await searchParams;
+  const [t, { token }] = await Promise.all([
+    getTranslations("auth.verifyEmail"),
+    searchParams,
+  ]);
 
   return (
     <AuthLayout appName="SaaSmint" title={t("title")}>
