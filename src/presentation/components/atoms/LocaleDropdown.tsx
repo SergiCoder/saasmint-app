@@ -49,7 +49,12 @@ export function LocaleDropdown() {
   function switchLocale(next: Locale) {
     setOpen(false);
     router.replace(pathname, { locale: next });
-    updatePreferredLocale(next);
+    // Fire-and-forget: saving the preference should not block the visual
+    // locale swap. Swallow rejections to avoid an unhandled promise crash
+    // if the user is offline or the server action 5xxs.
+    void updatePreferredLocale(next).catch((err) => {
+      console.error("Failed to save preferred locale", err);
+    });
   }
 
   return (

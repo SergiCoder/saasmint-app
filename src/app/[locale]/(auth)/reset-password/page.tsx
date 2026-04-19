@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/navigation";
 import { AuthLayout } from "@/presentation/components/templates/AuthLayout";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { resetPasswordWithToken } from "@/app/actions/auth";
