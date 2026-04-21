@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { ErrorView } from "./ErrorView";
-import { ErrorRetryButton } from "@/presentation/components/atoms/ErrorRetryButton";
+import { Button } from "@/presentation/components/atoms/Button";
 
 export interface RouteErrorBoundaryProps {
   error: Error & { digest?: string };
@@ -33,7 +33,11 @@ export function RouteErrorBoundary({
       homeHref={homeHref}
       errorIdLabel={t("errorId")}
       errorId={error.digest}
-      retrySlot={<ErrorRetryButton onReset={reset} label={t("retry")} />}
+      retrySlot={
+        <Button variant="primary" onClick={reset}>
+          {t("retry")}
+        </Button>
+      }
     />
   );
 }

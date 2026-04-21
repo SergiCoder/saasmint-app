@@ -23,6 +23,10 @@ import {
   buildProductTranslations,
   splitPlanGroupsByContext,
 } from "@/app/[locale]/_lib/buildPlanCards";
+import {
+  parseIntervalParam,
+  SUBSCRIPTION_INTERVAL_HREFS,
+} from "@/app/[locale]/_lib/pricingInterval";
 import { translatePlanName } from "@/lib/i18n/planTranslation";
 import type { Plan } from "@/domain/models/Plan";
 import { PLAN_TIER_PRO } from "@/domain/models/Plan";
@@ -89,12 +93,8 @@ export default async function BillingPage({
     : undefined;
   // URL ?interval=... wins; otherwise default to the user's current plan
   // interval so the relevant tab is pre-selected on first visit.
-  const defaultInterval: "month" | "year" =
-    currentPlan?.interval === "year" ? "year" : "month";
-  const selectedInterval: "month" | "year" =
-    query.interval === "year" || query.interval === "month"
-      ? query.interval
-      : defaultInterval;
+  const defaultInterval = currentPlan?.interval === "year" ? "year" : "month";
+  const selectedInterval = parseIntervalParam(query.interval, defaultInterval);
   const isTeamSubscription = currentPlan?.context === "team";
 
   // For team subscriptions, fetch org owner info.
@@ -292,8 +292,7 @@ export default async function BillingPage({
                   : undefined
               }
               selectedInterval={selectedInterval}
-              monthlyHref="/subscription?interval=month"
-              yearlyHref="/subscription?interval=year"
+              {...SUBSCRIPTION_INTERVAL_HREFS}
             />
           )}
           {teamGroups.length > 0 && (
@@ -308,8 +307,7 @@ export default async function BillingPage({
                   : undefined
               }
               selectedInterval={selectedInterval}
-              monthlyHref="/subscription?interval=month"
-              yearlyHref="/subscription?interval=year"
+              {...SUBSCRIPTION_INTERVAL_HREFS}
             />
           )}
         </>

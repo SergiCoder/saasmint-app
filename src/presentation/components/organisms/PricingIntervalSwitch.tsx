@@ -43,6 +43,13 @@ export function PricingIntervalSwitch({
       <div className="space-y-4 text-center">
         {header}
         <div className="flex flex-wrap items-center justify-center gap-3">
+          {/*
+            prefetch={false}: toggling is same-path different-search-param,
+            and the server render fans out to 6+ Django calls on the
+            authed subscription page. Default prefetch would refetch the
+            opposite-interval grid on hover/visibility even when the user
+            never toggles, erasing most of the single-grid payload win.
+          */}
           <div
             role="tablist"
             aria-label={ariaLabel}
@@ -54,6 +61,7 @@ export function PricingIntervalSwitch({
               href={monthlyHref}
               replace
               scroll={false}
+              prefetch={false}
               className={toggleClass(selectedInterval === "month")}
             >
               {monthlyLabel}
@@ -64,6 +72,7 @@ export function PricingIntervalSwitch({
               href={yearlyHref}
               replace
               scroll={false}
+              prefetch={false}
               className={toggleClass(selectedInterval === "year")}
             >
               {yearlyLabel}

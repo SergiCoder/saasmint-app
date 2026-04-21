@@ -35,7 +35,3 @@ export const LOCALES: readonly LocaleEntry[] = routing.locales.map((code) => ({
   code,
   label: LABELS[code],
 }));
-
-export function getLocaleLabel(code: Locale): string {
-  return LABELS[code];
-}

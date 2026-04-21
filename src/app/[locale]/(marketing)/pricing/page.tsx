@@ -22,6 +22,10 @@ import {
   buildProductTranslations,
   splitPlanGroupsByContext,
 } from "@/app/[locale]/_lib/buildPlanCards";
+import {
+  parseIntervalParam,
+  PRICING_INTERVAL_HREFS,
+} from "@/app/[locale]/_lib/pricingInterval";
 import type { Plan } from "@/domain/models/Plan";
 import { PLAN_TIER_PRO } from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
@@ -49,8 +53,7 @@ export default async function PricingPage({ params, searchParams }: Props) {
     searchParams,
   ]);
 
-  const selectedInterval: "month" | "year" =
-    query.interval === "year" ? "year" : "month";
+  const selectedInterval = parseIntervalParam(query.interval);
 
   const currency = user?.preferredCurrency;
 
@@ -169,8 +172,7 @@ export default async function PricingPage({ params, searchParams }: Props) {
                 : undefined
             }
             selectedInterval={selectedInterval}
-            monthlyHref="/pricing?interval=month"
-            yearlyHref="/pricing?interval=year"
+            {...PRICING_INTERVAL_HREFS}
           />
         )}
         {teamGroups.length > 0 && (
@@ -185,8 +187,7 @@ export default async function PricingPage({ params, searchParams }: Props) {
                 : undefined
             }
             selectedInterval={selectedInterval}
-            monthlyHref="/pricing?interval=month"
-            yearlyHref="/pricing?interval=year"
+            {...PRICING_INTERVAL_HREFS}
           />
         )}
       </div>
