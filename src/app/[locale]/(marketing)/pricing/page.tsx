@@ -28,6 +28,7 @@ import type { Product } from "@/domain/models/Product";
 
 interface Props {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ interval?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -36,16 +37,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("pricingTitle") };
 }
 
-export default async function PricingPage({ params }: Props) {
+export default async function PricingPage({ params, searchParams }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tPlans, tProducts, user] = await Promise.all([
+  const [t, tPlans, tProducts, user, query] = await Promise.all([
     getTranslations("billing"),
     getTranslations("plans"),
     getTranslations("products"),
     getOptionalUser(),
+    searchParams,
   ]);
+
+  const selectedInterval: "month" | "year" =
+    query.interval === "year" ? "year" : "month";
 
   const currency = user?.preferredCurrency;
 
@@ -72,9 +77,7 @@ export default async function PricingPage({ params }: Props) {
   const hasOrg = userOrgs.length > 0;
   const currentPlanId = subscription?.plan?.id;
 
-  const { planNames, planDescriptions } = buildPlanTranslations(plans, (key) =>
-    tPlans(key as never),
-  );
+  const { planNames, planDescriptions } = buildPlanTranslations(plans, tPlans);
 
   const groups = buildPlanCardGroups({
     plans,
@@ -165,6 +168,9 @@ export default async function PricingPage({ params }: Props) {
                 ? t("savingsBadge", { pct: personalSavingsPct })
                 : undefined
             }
+            selectedInterval={selectedInterval}
+            monthlyHref="/pricing?interval=month"
+            yearlyHref="/pricing?interval=year"
           />
         )}
         {teamGroups.length > 0 && (
@@ -178,6 +184,9 @@ export default async function PricingPage({ params }: Props) {
                 ? t("savingsBadge", { pct: teamSavingsPct })
                 : undefined
             }
+            selectedInterval={selectedInterval}
+            monthlyHref="/pricing?interval=month"
+            yearlyHref="/pricing?interval=year"
           />
         )}
       </div>
@@ -186,9 +195,7 @@ export default async function PricingPage({ params }: Props) {
         className="mt-16"
         title={t("products")}
         products={products}
-        productNames={buildProductTranslations(products, (key) =>
-          tProducts(key as never),
-        )}
+        productNames={buildProductTranslations(products, tProducts)}
         creditsLabel={t("credits")}
         locale={locale}
         renderCta={(product) =>

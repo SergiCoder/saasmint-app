@@ -23,13 +23,18 @@ import {
   buildProductTranslations,
   splitPlanGroupsByContext,
 } from "@/app/[locale]/_lib/buildPlanCards";
+import { translatePlanName } from "@/lib/i18n/planTranslation";
 import type { Plan } from "@/domain/models/Plan";
 import { PLAN_TIER_PRO } from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
 
 interface BillingPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ status?: string; error?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    error?: string;
+    interval?: string;
+  }>;
 }
 
 export async function generateMetadata({
@@ -80,10 +85,16 @@ export default async function BillingPage({
 
   const currentPlan = subscription?.plan;
   const planName = currentPlan
-    ? tPlans(`${currentPlan.context}.${currentPlan.tier}.name` as never)
+    ? translatePlanName(tPlans, currentPlan)
     : undefined;
-  const initialInterval: "month" | "year" =
+  // URL ?interval=... wins; otherwise default to the user's current plan
+  // interval so the relevant tab is pre-selected on first visit.
+  const defaultInterval: "month" | "year" =
     currentPlan?.interval === "year" ? "year" : "month";
+  const selectedInterval: "month" | "year" =
+    query.interval === "year" || query.interval === "month"
+      ? query.interval
+      : defaultInterval;
   const isTeamSubscription = currentPlan?.context === "team";
 
   // For team subscriptions, fetch org owner info.
@@ -112,9 +123,7 @@ export default async function BillingPage({
     !Number.isNaN(periodEndDate.getTime()) &&
     periodEndDate.getUTCFullYear() < 9000;
 
-  const { planNames, planDescriptions } = buildPlanTranslations(plans, (key) =>
-    tPlans(key as never),
-  );
+  const { planNames, planDescriptions } = buildPlanTranslations(plans, tPlans);
 
   const groups = buildPlanCardGroups({
     plans,
@@ -282,7 +291,9 @@ export default async function BillingPage({
                   ? t("savingsBadge", { pct: personalSavingsPct })
                   : undefined
               }
-              defaultInterval={initialInterval}
+              selectedInterval={selectedInterval}
+              monthlyHref="/subscription?interval=month"
+              yearlyHref="/subscription?interval=year"
             />
           )}
           {teamGroups.length > 0 && (
@@ -296,7 +307,9 @@ export default async function BillingPage({
                   ? t("savingsBadge", { pct: teamSavingsPct })
                   : undefined
               }
-              defaultInterval={initialInterval}
+              selectedInterval={selectedInterval}
+              monthlyHref="/subscription?interval=month"
+              yearlyHref="/subscription?interval=year"
             />
           )}
         </>
@@ -305,9 +318,7 @@ export default async function BillingPage({
       <ProductsGrid
         title={t("products")}
         products={products}
-        productNames={buildProductTranslations(products, (key) =>
-          tProducts(key as never),
-        )}
+        productNames={buildProductTranslations(products, tProducts)}
         creditsLabel={t("credits")}
         locale={locale}
         renderCta={(product) =>
