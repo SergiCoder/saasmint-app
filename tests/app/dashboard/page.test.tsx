@@ -5,13 +5,32 @@ import type { Org } from "@/domain/models/Org";
 
 // --- Mocks ---------------------------------------------------------------
 
-const mockTranslate = vi.fn((key: string, params?: Record<string, unknown>) => {
-  if (params && "name" in params) return `${key}::${params.name}`;
-  return key;
-});
+/**
+ * Mirror the global i18n translator stub from tests/setup.ts so server
+ * components rendered here see the same "key + interpolated {param}"
+ * behaviour — tests can then assert on interpolated values directly
+ * without coupling to any particular stub format.
+ */
+function translate(key: string, params?: Record<string, unknown>): string {
+  if (!params) return key;
+  const entries = Object.entries(params);
+  if (entries.length === 0) return key;
+  let out = key;
+  const leftover: string[] = [];
+  for (const [name, value] of entries) {
+    const placeholder = `{${name}}`;
+    const str = String(value);
+    if (out.includes(placeholder)) {
+      out = out.replaceAll(placeholder, str);
+    } else {
+      leftover.push(str);
+    }
+  }
+  return leftover.length > 0 ? `${out} ${leftover.join(" ")}` : out;
+}
 
 vi.mock("next-intl/server", () => ({
-  getTranslations: vi.fn(() => Promise.resolve(mockTranslate)),
+  getTranslations: vi.fn(() => Promise.resolve(translate)),
   setRequestLocale: vi.fn(),
 }));
 
@@ -101,12 +120,14 @@ describe("DashboardPage", () => {
     mockListUserOrgsExecute.mockResolvedValue([]);
   });
 
-  it("renders welcome message with user full name", async () => {
+  it("renders welcome heading with user full name", async () => {
     mockGetCurrentUser.mockResolvedValue(makeUser({ fullName: "Jane Doe" }));
 
     await renderPage();
 
-    expect(screen.getByText("welcome::Jane Doe")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Jane Doe",
+    );
   });
 
   it("falls back to email when fullName is empty", async () => {
@@ -116,7 +137,9 @@ describe("DashboardPage", () => {
 
     await renderPage();
 
-    expect(screen.getByText("welcome::jane@example.com")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "jane@example.com",
+    );
   });
 
   it("renders subtitle", async () => {
