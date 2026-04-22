@@ -39,19 +39,40 @@ function makeToken(exp: number): string {
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+interface MockRequest extends NextRequest {
+  readonly cookieSetSpy: ReturnType<typeof vi.fn>;
+}
+
 function createMockRequest(
   url: string,
-  cookies: { name: string; value: string }[] = [],
-): NextRequest {
+  initial: { name: string; value: string }[] = [],
+): MockRequest {
   const parsedUrl = new URL(url, APP_URL);
-  return {
+  // Mutable cookie jar so the proxy's `request.cookies.set(...)` calls
+  // actually propagate to downstream `.get(...)`/`.getAll(...)` callers.
+  // Tests inspect the cookieSetSpy to verify the refresh flow forwards
+  // fresh tokens to server-component readers.
+  const jar = new Map<string, string>(initial.map((c) => [c.name, c.value]));
+  const cookieSetSpy = vi.fn((name: string, value: string) => {
+    jar.set(name, value);
+  });
+  const req = {
     nextUrl: parsedUrl,
     url: parsedUrl.toString(),
     cookies: {
-      getAll: () => cookies,
-      get: (name: string) => cookies.find((c) => c.name === name),
+      getAll: () =>
+        Array.from(jar.entries()).map(([name, value]) => ({ name, value })),
+      get: (name: string) =>
+        jar.has(name) ? { name, value: jar.get(name)! } : undefined,
+      set: cookieSetSpy,
     },
-  } as unknown as NextRequest;
+    headers: new Headers(),
+  } as unknown as MockRequest;
+  Object.defineProperty(req, "cookieSetSpy", {
+    value: cookieSetSpy,
+    enumerable: false,
+  });
+  return req;
 }
 
 beforeEach(() => {
@@ -102,15 +123,20 @@ describe("proxy", () => {
       expect(response.headers.get("location")).toContain("/en/login");
     });
 
-    it("allows through when access_token is valid", async () => {
+    it("forwards to intl middleware when access_token is valid (no redirect, no refresh, pathname header set)", async () => {
       const futureExp = Math.floor(Date.now() / 1000) + 600; // 10 min from now
       const request = createMockRequest(`${APP_URL}/en/dashboard`, [
         { name: "access_token", value: makeToken(futureExp) },
       ]);
       const response = await proxy(request);
 
-      const location = response.headers.get("location");
-      expect(location).toBeNull();
+      expect(response.headers.get("location")).toBeNull();
+      expect(mockIntlMiddleware).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).not.toHaveBeenCalled();
+      // Downstream server components must receive the current pathname.
+      expect(response.headers.get("x-middleware-request-x-pathname")).toBe(
+        "/en/dashboard",
+      );
     });
 
     it("preserves locale when redirecting to login", async () => {
@@ -131,15 +157,16 @@ describe("proxy", () => {
       expect(response.headers.get("location")).toContain("/en/login");
     });
 
-    it("attempts token refresh when access_token is expired", async () => {
+    it("attempts token refresh when access_token is expired and writes the new tokens to both the response (Set-Cookie) and the forwarded request", async () => {
       const pastExp = Math.floor(Date.now() / 1000) - 60;
       const futureExp = Math.floor(Date.now() / 1000) + 900;
+      const newAccess = makeToken(futureExp);
 
       fetchSpy.mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
-            access_token: makeToken(futureExp),
+            access_token: newAccess,
             refresh_token: "new-refresh-tok",
             expires_in: 900,
           }),
@@ -158,9 +185,28 @@ describe("proxy", () => {
           body: JSON.stringify({ refresh_token: "old-refresh-tok" }),
         }),
       );
-      // Should not redirect to login
-      const location = response.headers.get("location");
-      expect(location).toBeNull();
+
+      // No redirect to login — the refresh succeeded.
+      expect(response.headers.get("location")).toBeNull();
+
+      // The browser must receive both cookies on Set-Cookie so the session
+      // persists to the next navigation.
+      const responseCookies = response.cookies.getAll();
+      const access = responseCookies.find((c) => c.name === "access_token");
+      const refresh = responseCookies.find((c) => c.name === "refresh_token");
+      expect(access?.value).toBe(newAccess);
+      expect(refresh?.value).toBe("new-refresh-tok");
+
+      // And server components on THIS render must read the fresh tokens,
+      // not the stale ones — the proxy forwards them via request.cookies.set.
+      expect(request.cookieSetSpy).toHaveBeenCalledWith(
+        "access_token",
+        newAccess,
+      );
+      expect(request.cookieSetSpy).toHaveBeenCalledWith(
+        "refresh_token",
+        "new-refresh-tok",
+      );
     });
 
     it("redirects to login when token refresh fails", async () => {
