@@ -2,8 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { apiFetch, publicApiFetch } from "@/infrastructure/api/apiClient";
-import { SignOut } from "@/application/use-cases/auth/SignOut";
-import { ListPlans } from "@/application/use-cases/billing/ListPlans";
 import { authGateway, planGateway } from "@/infrastructure/registry";
 import {
   clearAuthCookies,
@@ -14,13 +12,19 @@ import {
   setPendingPlan,
 } from "@/infrastructure/auth/cookies";
 import { env } from "@/lib/env";
-import { friendlyError } from "@/lib/friendlyError";
 import { validateNext } from "@/lib/oauthNext";
 import {
   getOAuthRedirectUrl,
   isOAuthProvider,
   type OAuthProvider,
 } from "@/infrastructure/auth/oauth";
+import {
+  ok,
+  fail,
+  toActionError,
+  type ActionResult,
+} from "@/lib/actions/ActionResult";
+import { getString } from "@/lib/actions/parseFormData";
 
 interface TokenResponse {
   access_token: string;
@@ -56,7 +60,7 @@ async function resolvePlanContext(
   priceId: string,
 ): Promise<"personal" | "team" | undefined> {
   try {
-    const plans = await new ListPlans(planGateway).execute();
+    const plans = await planGateway.listPlans();
     for (const plan of plans) {
       if (plan.price?.id === priceId) return plan.context;
     }
@@ -66,31 +70,32 @@ async function resolvePlanContext(
   return undefined;
 }
 
-function extractCredentials(
-  formData: FormData,
-): { email: string; password: string } | { error: string } {
-  const email = formData.get("email");
-  const password = formData.get("password");
-
-  if (typeof email !== "string" || typeof password !== "string") {
-    return { error: "Email and password are required" };
-  }
-
-  return { email, password };
+interface Credentials {
+  email: string;
+  password: string;
 }
 
-export async function signIn(_prevState: unknown, formData: FormData) {
-  const result = extractCredentials(formData);
-  if ("error" in result) return result;
+function readCredentials(formData: FormData): Credentials | null {
+  const email = getString(formData, "email");
+  const password = getString(formData, "password");
+  return email && password ? { email, password } : null;
+}
+
+export async function signIn(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<ActionResult> {
+  const credentials = readCredentials(formData);
+  if (!credentials) return fail("email_and_password_required");
 
   let data: TokenResponse;
   try {
     data = await publicApiFetch<TokenResponse>("/auth/login/", {
       method: "POST",
-      body: JSON.stringify(result),
+      body: JSON.stringify(credentials),
     });
   } catch (err) {
-    return { error: friendlyError(err, "Login failed. Please try again.") };
+    return toActionError(err);
   }
 
   await setAuthCookies(data.access_token, data.refresh_token);
@@ -108,17 +113,16 @@ export async function signIn(_prevState: unknown, formData: FormData) {
   redirect("/dashboard");
 }
 
-export async function signUp(_prevState: unknown, formData: FormData) {
-  const result = extractCredentials(formData);
-  if ("error" in result) return result;
+export async function signUp(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<ActionResult> {
+  const credentials = readCredentials(formData);
+  if (!credentials) return fail("email_and_password_required");
 
-  const fullName = formData.get("fullName");
-  if (
-    typeof fullName !== "string" ||
-    fullName.length < 3 ||
-    fullName.length > 255
-  ) {
-    return { error: "Full name must be between 3 and 255 characters" };
+  const fullName = getString(formData, "fullName");
+  if (!fullName || fullName.length < 3 || fullName.length > 255) {
+    return fail("full_name_invalid");
   }
 
   const planField = formData.get("plan");
@@ -134,15 +138,13 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     await publicApiFetch<TokenResponse>(registerEndpoint, {
       method: "POST",
       body: JSON.stringify({
-        email: result.email,
-        password: result.password,
+        email: credentials.email,
+        password: credentials.password,
         full_name: fullName,
       }),
     });
   } catch (err) {
-    return {
-      error: friendlyError(err, "Registration failed. Please try again."),
-    };
+    return toActionError(err);
   }
 
   if (validPlan) {
@@ -160,12 +162,12 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   redirect(`/login?${loginParams.toString()}`);
 }
 
-export async function resetPassword(_prevState: unknown, formData: FormData) {
-  const email = formData.get("email");
-
-  if (typeof email !== "string") {
-    return { error: "Email is required" };
-  }
+export async function resetPassword(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<ActionResult> {
+  const email = getString(formData, "email");
+  if (!email) return fail("email_required");
 
   // Fire-and-forget: always return success to avoid leaking whether the email exists.
   try {
@@ -177,30 +179,20 @@ export async function resetPassword(_prevState: unknown, formData: FormData) {
     // Swallow errors — never reveal whether the email exists
   }
 
-  return { success: true };
+  return ok();
 }
 
 export async function resetPasswordWithToken(
   _prevState: unknown,
   formData: FormData,
-) {
-  const password = formData.get("password");
-  const confirmPassword = formData.get("confirmPassword");
-  const token = formData.get("token");
+): Promise<ActionResult> {
+  const password = getString(formData, "password");
+  const confirmPassword = getString(formData, "confirmPassword");
+  const token = getString(formData, "token");
 
-  if (typeof token !== "string" || !token) {
-    return {
-      error: "Invalid or expired reset link. Please request a new one.",
-    };
-  }
-
-  if (typeof password !== "string" || password.length < 8) {
-    return { error: "Password must be at least 8 characters" };
-  }
-
-  if (password !== confirmPassword) {
-    return { error: "Passwords do not match" };
-  }
+  if (!token) return fail("invalid_reset_link");
+  if (!password || password.length < 8) return fail("password_too_short");
+  if (password !== confirmPassword) return fail("passwords_do_not_match");
 
   let data: TokenResponse;
   try {
@@ -209,32 +201,24 @@ export async function resetPasswordWithToken(
       body: JSON.stringify({ token, password }),
     });
   } catch {
-    return {
-      error:
-        "This reset link is invalid or has expired. Please request a new one.",
-    };
+    return fail("invalid_reset_link");
   }
 
   await setAuthCookies(data.access_token, data.refresh_token);
-  return { success: true };
+  return ok();
 }
 
-export async function changePassword(_prevState: unknown, formData: FormData) {
-  const currentPassword = formData.get("currentPassword");
-  const password = formData.get("password");
-  const confirmPassword = formData.get("confirmPassword");
+export async function changePassword(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<ActionResult> {
+  const currentPassword = getString(formData, "currentPassword");
+  const password = getString(formData, "password");
+  const confirmPassword = getString(formData, "confirmPassword");
 
-  if (typeof currentPassword !== "string" || !currentPassword) {
-    return { error: "Current password is required" };
-  }
-
-  if (typeof password !== "string" || password.length < 8) {
-    return { error: "Password must be at least 8 characters" };
-  }
-
-  if (password !== confirmPassword) {
-    return { error: "Passwords do not match" };
-  }
+  if (!currentPassword) return fail("current_password_required");
+  if (!password || password.length < 8) return fail("password_too_short");
+  if (password !== confirmPassword) return fail("passwords_do_not_match");
 
   let data: TokenResponse;
   try {
@@ -246,18 +230,16 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
       }),
     });
   } catch (err) {
-    return {
-      error: friendlyError(err, "Failed to change password. Please try again."),
-    };
+    return toActionError(err);
   }
 
   await setAuthCookies(data.access_token, data.refresh_token);
-  return { success: true };
+  return ok();
 }
 
 export async function verifyEmail(
   token: string,
-): Promise<{ error?: string; pendingPlan?: string; isTeamPlan?: boolean }> {
+): Promise<ActionResult<{ pendingPlan?: string; isTeamPlan?: boolean }>> {
   let data: TokenResponse;
   try {
     data = await publicApiFetch<TokenResponse>("/auth/verify-email/", {
@@ -265,16 +247,14 @@ export async function verifyEmail(
       body: JSON.stringify({ token }),
     });
   } catch (err) {
-    return {
-      error: friendlyError(err, "Verification failed. Please try again."),
-    };
+    return toActionError(err);
   }
 
   await setAuthCookies(data.access_token, data.refresh_token);
   const pending = await consumePendingPlan();
-  return pending
-    ? { pendingPlan: pending.plan, isTeamPlan: pending.isTeam }
-    : {};
+  return ok(
+    pending ? { pendingPlan: pending.plan, isTeamPlan: pending.isTeam } : {},
+  );
 }
 
 const APP_URL = env.NEXT_PUBLIC_APP_URL;
@@ -329,7 +309,7 @@ export async function exchangeOAuthCode(
 
 export async function signOut() {
   try {
-    await new SignOut(authGateway).execute();
+    await authGateway.signOut();
   } catch {
     // Session already expired — clear cookies and redirect anyway
     await clearAuthCookies();

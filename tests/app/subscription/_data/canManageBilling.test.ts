@@ -7,10 +7,8 @@ vi.mock("@/app/[locale]/(app)/_data/getUserOrgs", () => ({
   getUserOrgs: (...args: unknown[]) => mockGetUserOrgs(...args),
 }));
 
-vi.mock("@/application/use-cases/org-member/ListOrgMembers", () => ({
-  ListOrgMembers: function ListOrgMembers() {
-    return { execute: mockListOrgMembers };
-  },
+vi.mock("@/app/[locale]/(app)/_data/getOrgMembers", () => ({
+  getOrgMembers: (...args: unknown[]) => mockListOrgMembers(...args),
 }));
 
 vi.mock("@/infrastructure/registry", () => ({
@@ -98,15 +96,12 @@ describe("canManageBilling", () => {
     expect(mockListOrgMembers).not.toHaveBeenCalled();
   });
 
-  it("returns false and logs when the member gateway throws", async () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  it("returns false when getOrgMembers resolves to an empty list", async () => {
+    // getOrgMembers swallows gateway errors internally and returns [].
     mockGetUserOrgs.mockResolvedValueOnce([{ id: "org-1" }]);
-    mockListOrgMembers.mockRejectedValueOnce(new Error("members down"));
+    mockListOrgMembers.mockResolvedValueOnce([]);
 
     const result = await canManageBilling(user, teamSub);
-
     expect(result).toBe(false);
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
   });
 });

@@ -6,9 +6,11 @@ import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
 import { changePassword } from "@/app/actions/auth";
+import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
 
 export function ChangePasswordForm() {
   const t = useTranslations("profile");
+  const translateError = useActionErrorMessage();
   const [state, formAction, pending] = useActionState(changePassword, null);
   const [dirty, setDirty] = useState(false);
 
@@ -18,8 +20,10 @@ export function ChangePasswordForm() {
       onChange={() => setDirty(true)}
       className="space-y-4"
     >
-      {state?.error && <AlertBanner variant="error">{state.error}</AlertBanner>}
-      {state && "success" in state && (
+      {state && !state.ok && (
+        <AlertBanner variant="error">{translateError(state)}</AlertBanner>
+      )}
+      {state?.ok && (
         <AlertBanner variant="success">
           {t("passwordChangeSuccess")}
         </AlertBanner>

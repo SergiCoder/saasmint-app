@@ -6,9 +6,11 @@ import { Link } from "@/lib/i18n/navigation";
 import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
+import type { ActionResult } from "@/lib/actions/ActionResult";
+import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
 
 interface AuthFormProps {
-  action: (prev: unknown, fd: FormData) => Promise<{ error: string } | void>;
+  action: (prev: unknown, fd: FormData) => Promise<ActionResult | undefined>;
   translationNamespace: string;
   passwordAutoComplete: string;
   showNameField?: boolean;
@@ -29,13 +31,16 @@ export function AuthForm({
   hiddenFields,
 }: AuthFormProps) {
   const t = useTranslations(translationNamespace);
+  const translateError = useActionErrorMessage();
   const [state, formAction, pending] = useActionState(action, null);
+  const errorMessage =
+    state && !state.ok ? translateError(state) : null;
 
   return (
     <>
-      {state?.error ? (
+      {errorMessage ? (
         <AlertBanner variant="error" className="mb-4">
-          {state.error}
+          {errorMessage}
         </AlertBanner>
       ) : (
         serverAlerts

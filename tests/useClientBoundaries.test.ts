@@ -35,6 +35,7 @@ const EXPECTED_USE_CLIENT_FILES: readonly string[] = [
   "src/app/[locale]/(public)/invitations/[token]/_components/AcceptInvitationForm.tsx",
   "src/app/[locale]/auth/callback/_components/AuthCallbackClient.tsx",
   "src/app/global-error.tsx",
+  "src/lib/actions/useActionErrorMessage.ts",
   "src/presentation/components/atoms/AvatarUpload.tsx",
   "src/presentation/components/atoms/LocaleDropdown.tsx",
   "src/presentation/components/molecules/ConfirmDialog.tsx",

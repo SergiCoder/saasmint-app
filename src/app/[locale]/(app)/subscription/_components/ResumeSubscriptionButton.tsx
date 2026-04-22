@@ -12,7 +12,7 @@ interface ResumeSubscriptionButtonProps {
 export function ResumeSubscriptionButton({
   children,
 }: ResumeSubscriptionButtonProps) {
-  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("actionErrors");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -22,10 +22,10 @@ export function ResumeSubscriptionButton({
       try {
         const result = await resumeSubscription();
         if (!result.ok) {
-          setError(result.error);
+          setError(result.message ?? tErrors(result.code));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : tCommon("unknownError"));
+        setError(err instanceof Error ? err.message : tErrors("unknown_error"));
       }
     });
   };
