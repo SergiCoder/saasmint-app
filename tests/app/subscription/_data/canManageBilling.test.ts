@@ -16,7 +16,7 @@ vi.mock("@/infrastructure/registry", () => ({
 }));
 
 // React.cache memoizes by argument identity within a render. Reset module
-// state between tests so each call goes through the use cases freshly.
+// state between tests so each call goes through the gateways freshly.
 let canManageBilling: typeof import("@/app/[locale]/(app)/subscription/_data/canManageBilling").canManageBilling;
 
 beforeEach(async () => {
