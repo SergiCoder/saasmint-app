@@ -47,13 +47,24 @@ describe("AcceptInvitationForm", () => {
       expect(hidden?.value).toBe("tok-abc");
     });
 
+    it("renders the password requirements list so users see the policy before submitting", () => {
+      setup();
+      // PasswordRequirements emits unique rule keys that no other part of the
+      // form uses, so the echoing i18n stub lets us detect its presence.
+      expect(screen.getByText("notCommon")).toBeInTheDocument();
+      expect(screen.getByText("notSimilar")).toBeInTheDocument();
+    });
+
     it("renders fullName + password inputs and a submit button", () => {
       const { container } = setup();
       expect(container.querySelector('input[name="fullName"]')).toBeRequired();
-      expect(container.querySelector('input[name="password"]')).toHaveAttribute(
-        "type",
-        "password",
+      const password = container.querySelector<HTMLInputElement>(
+        'input[name="password"]',
       );
+      expect(password).toHaveAttribute("type", "password");
+      // The invitation acceptance flow creates a new password, so it must
+      // match the site-wide minimum (see src/lib/passwordPolicy.ts).
+      expect(password).toHaveAttribute("minLength", "10");
       expect(screen.getByRole("button", { name: /.+/ })).toHaveAttribute(
         "type",
         "submit",

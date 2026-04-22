@@ -9,6 +9,7 @@ import {
   type ActionResult,
 } from "@/lib/actions/ActionResult";
 import { getString } from "@/lib/actions/parseFormData";
+import { PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 
 export async function acceptInvitation(
   _prev: unknown,
@@ -21,12 +22,13 @@ export async function acceptInvitation(
   if (!token || !fullName || !password) {
     return fail("invalid_input");
   }
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    return fail("password_too_short");
+  }
 
   try {
-    const { accessToken, refreshToken } = await invitationGateway.acceptInvitation(
-      token,
-      { fullName, password },
-    );
+    const { accessToken, refreshToken } =
+      await invitationGateway.acceptInvitation(token, { fullName, password });
     await setAuthCookies(accessToken, refreshToken);
   } catch (err) {
     console.error("Failed to accept invitation", err);

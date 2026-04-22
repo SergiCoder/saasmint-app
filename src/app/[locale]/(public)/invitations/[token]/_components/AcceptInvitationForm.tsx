@@ -4,9 +4,11 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
+import { PasswordRequirements } from "@/presentation/components/molecules/PasswordRequirements";
 import { Button } from "@/presentation/components/atoms/Button";
 import { acceptInvitation } from "@/app/actions/invitation";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
+import { PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 
 interface AcceptInvitationFormProps {
   token: string;
@@ -39,9 +41,10 @@ export function AcceptInvitationForm({ token }: AcceptInvitationFormProps) {
           name="password"
           type="password"
           required
-          minLength={8}
+          minLength={PASSWORD_MIN_LENGTH}
           autoComplete="new-password"
         />
+        <PasswordRequirements />
         <Button
           type="submit"
           variant="primary"
