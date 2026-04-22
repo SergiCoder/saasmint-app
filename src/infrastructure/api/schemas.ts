@@ -3,7 +3,13 @@ import type { Invitation } from "@/domain/models/Invitation";
 import type { Org } from "@/domain/models/Org";
 import type { OrgMember } from "@/domain/models/OrgMember";
 import type { PhonePrefix } from "@/domain/models/PhonePrefix";
-import type { Plan } from "@/domain/models/Plan";
+import {
+  PLAN_TIER_BASIC,
+  PLAN_TIER_FREE,
+  PLAN_TIER_PRO,
+  type Plan,
+  type PlanTier,
+} from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
 import type { Subscription } from "@/domain/models/Subscription";
 import type { User } from "@/domain/models/User";
@@ -76,10 +82,10 @@ export const InvitationSchema = z.object({
   expiresAt: z.string(),
 }) satisfies z.ZodType<Invitation>;
 
-const TIER_STRING_TO_NUMBER: Record<string, 1 | 2 | 3> = {
-  free: 1,
-  basic: 2,
-  pro: 3,
+const TIER_STRING_TO_NUMBER: Record<string, PlanTier> = {
+  free: PLAN_TIER_FREE,
+  basic: PLAN_TIER_BASIC,
+  pro: PLAN_TIER_PRO,
 };
 
 export const PlanSchema = z.object({
