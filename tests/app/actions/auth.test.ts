@@ -175,6 +175,28 @@ describe("auth server actions", () => {
         "/subscription/team-checkout?plan=price_team_pro",
       );
     });
+
+    it("normalizes the email to lowercase and trims whitespace before calling Django", async () => {
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+      });
+
+      const formData = new FormData();
+      formData.set("email", "  User@Example.COM  ");
+      formData.set("password", "secret123");
+
+      await expect(signIn(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/login/", {
+        method: "POST",
+        body: JSON.stringify({
+          email: "user@example.com",
+          password: "secret123",
+        }),
+      });
+    });
   });
 
   describe("signUp", () => {
@@ -250,6 +272,27 @@ describe("auth server actions", () => {
       expect(mockRedirect).toHaveBeenCalledWith(
         "/login?registered=true&plan=price_team_pro&context=team",
       );
+    });
+
+    it("normalizes the email to lowercase and trims whitespace before calling Django", async () => {
+      mockPublicApiFetch.mockResolvedValue({});
+
+      const formData = new FormData();
+      formData.set("fullName", "Jane Doe");
+      formData.set("email", "  New.User@Example.COM  ");
+      formData.set("password", "secret123");
+
+      await expect(signUp(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockPublicApiFetch).toHaveBeenCalledWith("/auth/register/", {
+        method: "POST",
+        body: JSON.stringify({
+          email: "new.user@example.com",
+          password: "secret123",
+          full_name: "Jane Doe",
+        }),
+      });
     });
 
     it("returns full_name_invalid for short or missing fullName", async () => {
