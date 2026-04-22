@@ -25,6 +25,7 @@ import {
   type ActionResult,
 } from "@/lib/actions/ActionResult";
 import { getString } from "@/lib/actions/parseFormData";
+import { PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 
 interface TokenResponse {
   access_token: string;
@@ -64,8 +65,11 @@ async function resolvePlanContext(
     for (const plan of plans) {
       if (plan.price?.id === priceId) return plan.context;
     }
-  } catch {
-    // fall through
+  } catch (err) {
+    // Swallow on a genuine outage so signup still proceeds as personal,
+    // but surface the failure server-side so a misrouted team signup isn't
+    // invisible to operators.
+    console.error("resolvePlanContext failed", err);
   }
   return undefined;
 }
@@ -200,7 +204,8 @@ export async function resetPasswordWithToken(
   const token = getString(formData, "token");
 
   if (!token) return fail("invalid_reset_link");
-  if (!password || password.length < 10) return fail("password_too_short");
+  if (!password || password.length < PASSWORD_MIN_LENGTH)
+    return fail("password_too_short");
   if (password !== confirmPassword) return fail("passwords_do_not_match");
 
   let data: TokenResponse;
@@ -227,7 +232,8 @@ export async function changePassword(
   const confirmPassword = getString(formData, "confirmPassword");
 
   if (!currentPassword) return fail("current_password_required");
-  if (!password || password.length < 10) return fail("password_too_short");
+  if (!password || password.length < PASSWORD_MIN_LENGTH)
+    return fail("password_too_short");
   if (password !== confirmPassword) return fail("passwords_do_not_match");
 
   let data: TokenResponse;

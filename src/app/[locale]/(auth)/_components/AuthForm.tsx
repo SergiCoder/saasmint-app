@@ -9,6 +9,7 @@ import { PasswordRequirements } from "@/presentation/components/molecules/Passwo
 import { Button } from "@/presentation/components/atoms/Button";
 import type { ActionResult } from "@/lib/actions/ActionResult";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
+import { PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 
 interface AuthFormProps {
   action: (prev: unknown, fd: FormData) => Promise<ActionResult | undefined>;
@@ -72,7 +73,7 @@ export function AuthForm({
           name="password"
           type="password"
           required
-          minLength={showNameField ? 10 : undefined}
+          minLength={showNameField ? PASSWORD_MIN_LENGTH : undefined}
           autoComplete={passwordAutoComplete}
         />
         {showNameField && <PasswordRequirements />}

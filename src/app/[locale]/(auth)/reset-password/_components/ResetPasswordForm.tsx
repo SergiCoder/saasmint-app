@@ -5,9 +5,11 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
+import { PasswordRequirements } from "@/presentation/components/molecules/PasswordRequirements";
 import { Button } from "@/presentation/components/atoms/Button";
 import type { ActionResult } from "@/lib/actions/ActionResult";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
+import { PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 
 interface ResetPasswordFormProps {
   action: (prev: unknown, fd: FormData) => Promise<ActionResult>;
@@ -49,7 +51,7 @@ export function ResetPasswordForm({ action, token }: ResetPasswordFormProps) {
           name="password"
           type="password"
           required
-          minLength={8}
+          minLength={PASSWORD_MIN_LENGTH}
           autoComplete="new-password"
         />
         <FormField
@@ -57,9 +59,10 @@ export function ResetPasswordForm({ action, token }: ResetPasswordFormProps) {
           name="confirmPassword"
           type="password"
           required
-          minLength={8}
+          minLength={PASSWORD_MIN_LENGTH}
           autoComplete="new-password"
         />
+        <PasswordRequirements />
         <Button type="submit" loading={pending} className="mt-6 w-full">
           {t("submit")}
         </Button>

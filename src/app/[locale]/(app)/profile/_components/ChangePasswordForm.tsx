@@ -8,6 +8,7 @@ import { PasswordRequirements } from "@/presentation/components/molecules/Passwo
 import { Button } from "@/presentation/components/atoms/Button";
 import { changePassword } from "@/app/actions/auth";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
+import { PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 
 export function ChangePasswordForm() {
   const t = useTranslations("profile");
@@ -41,7 +42,7 @@ export function ChangePasswordForm() {
         name="password"
         type="password"
         required
-        minLength={10}
+        minLength={PASSWORD_MIN_LENGTH}
         autoComplete="new-password"
       />
       <FormField
@@ -49,7 +50,7 @@ export function ChangePasswordForm() {
         name="confirmPassword"
         type="password"
         required
-        minLength={10}
+        minLength={PASSWORD_MIN_LENGTH}
         autoComplete="new-password"
       />
       <PasswordRequirements />
