@@ -136,14 +136,7 @@ describe("ProfileForm", () => {
     renderForm();
 
     const file = new File(["x"], "original.png", { type: "image/png" });
-    const fileInput = screen
-      .getByLabelText(/avatarUpload/, { selector: "input" })
-      .closest("input") as HTMLInputElement;
-    // Fallback: AvatarUpload wires its own hidden file input; find it by type.
-    const input =
-      fileInput ??
-      (document.querySelector('input[type="file"]') as HTMLInputElement);
-
+    const input = screen.getByLabelText<HTMLInputElement>(/avatarUpload/);
     await user.upload(input, file);
 
     expect(mockCompressImage).toHaveBeenCalledWith(file);
@@ -163,9 +156,7 @@ describe("ProfileForm", () => {
     const user = userEvent.setup();
     renderForm();
 
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = screen.getByLabelText<HTMLInputElement>(/avatarUpload/);
     const file = new File(["x"], "avatar.png", { type: "image/png" });
     await user.upload(input, file);
 
@@ -198,5 +189,69 @@ describe("ProfileForm", () => {
     const values = Array.from(select.options).map((o) => o.value);
     // First entry is the empty/placeholder option; rest match the prop.
     expect(values).toEqual(["", "+1", "+34"]);
+  });
+
+  it("renders the full supported-currencies list in the preferredCurrency select", () => {
+    renderForm();
+
+    const select = screen.getByLabelText(
+      "preferredCurrency",
+    ) as HTMLSelectElement;
+    const values = Array.from(select.options).map((o) => o.value);
+    // Sanity-pins the hardcoded currency constant so a silent drop/rename of
+    // an option gets caught — the server action accepts any of these values.
+    expect(values).toContain("usd");
+    expect(values).toContain("eur");
+    expect(values).toContain("jpy");
+    expect(values.length).toBeGreaterThanOrEqual(20);
+  });
+
+  it("enforces the server-action minLength contract on fullName", () => {
+    const { container } = renderForm();
+
+    const fullName = container.querySelector(
+      'input[name="fullName"]',
+    ) as HTMLInputElement;
+    // The server action rejects names shorter than 3 chars; the client
+    // must mirror that so the browser blocks the round-trip.
+    expect(fullName).toBeRequired();
+    expect(fullName.getAttribute("minLength")).toBe("3");
+    expect(fullName.getAttribute("maxLength")).toBe("255");
+  });
+
+  it("calls deleteAvatar and clears the URL when the user removes their avatar", async () => {
+    mockDeleteAvatar.mockResolvedValue({ ok: true });
+    mockUpdateAvatarUrl.mockResolvedValue({ ok: true });
+
+    const user = userEvent.setup();
+    renderForm({ avatarUrl: "https://cdn.example.com/current.webp" });
+
+    // AvatarUpload exposes a remove affordance wired to onChange(null).
+    const removeButton = screen.getByRole("button", { name: /avatarRemove/i });
+    await user.click(removeButton);
+
+    expect(mockDeleteAvatar).toHaveBeenCalledTimes(1);
+    expect(mockUpdateAvatarUrl).toHaveBeenCalledWith(null);
+    // Upload path must not fire on remove.
+    expect(mockUploadAvatar).not.toHaveBeenCalled();
+    expect(mockCompressImage).not.toHaveBeenCalled();
+  });
+
+  it("renders an error banner when avatar deletion fails and leaves avatarUrl untouched", async () => {
+    mockDeleteAvatar.mockResolvedValue({
+      ok: false,
+      code: "avatar_update_failed",
+      message: "delete failed",
+    });
+
+    const user = userEvent.setup();
+    renderForm({ avatarUrl: "https://cdn.example.com/current.webp" });
+
+    const removeButton = screen.getByRole("button", { name: /avatarRemove/i });
+    await user.click(removeButton);
+
+    expect(await screen.findByText("delete failed")).toBeInTheDocument();
+    // If the API call failed, we must NOT persist a null avatarUrl.
+    expect(mockUpdateAvatarUrl).not.toHaveBeenCalled();
   });
 });

@@ -4,13 +4,33 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockAcceptInvitation = vi.fn();
 vi.mock("@/app/actions/invitation", () => ({
+  // Thunk, not a direct reference: vi.mock is hoisted to the top of the
+  // file, so the factory runs before `mockAcceptInvitation` is initialized.
   acceptInvitation: (...args: unknown[]) => mockAcceptInvitation(...args),
 }));
 
 import { AcceptInvitationForm } from "@/app/[locale]/(public)/invitations/[token]/_components/AcceptInvitationForm";
 
+const FULL_NAME = "Jane Doe";
+const PASSWORD = "hunter22long";
+
 function setup(token = "tok-abc") {
   return render(<AcceptInvitationForm token={token} />);
+}
+
+async function fillAndSubmit(
+  container: HTMLElement,
+  user: ReturnType<typeof userEvent.setup>,
+) {
+  await user.type(
+    container.querySelector<HTMLInputElement>('input[name="fullName"]')!,
+    FULL_NAME,
+  );
+  await user.type(
+    container.querySelector<HTMLInputElement>('input[name="password"]')!,
+    PASSWORD,
+  );
+  await user.click(screen.getByRole("button", { name: /.+/ }));
 }
 
 beforeEach(() => {
@@ -21,9 +41,9 @@ describe("AcceptInvitationForm", () => {
   describe("structure", () => {
     it("renders the hidden token input with the provided token", () => {
       const { container } = setup("tok-abc");
-      const hidden = container.querySelector(
+      const hidden = container.querySelector<HTMLInputElement>(
         'input[type="hidden"][name="token"]',
-      ) as HTMLInputElement | null;
+      );
       expect(hidden?.value).toBe("tok-abc");
     });
 
@@ -43,21 +63,11 @@ describe("AcceptInvitationForm", () => {
 
   describe("submission flow", () => {
     it("calls acceptInvitation with the submitted form data on submit", async () => {
-      // The action signature matches `useActionState` — prev state + FormData.
       mockAcceptInvitation.mockResolvedValue({ ok: true });
 
       const user = userEvent.setup();
       const { container } = setup("tok-abc");
-
-      await user.type(
-        container.querySelector('input[name="fullName"]')!,
-        "Jane Doe",
-      );
-      await user.type(
-        container.querySelector('input[name="password"]')!,
-        "hunter22long",
-      );
-      await user.click(screen.getByRole("button", { name: /.+/ }));
+      await fillAndSubmit(container, user);
 
       await waitFor(() => {
         expect(mockAcceptInvitation).toHaveBeenCalledTimes(1);
@@ -65,8 +75,8 @@ describe("AcceptInvitationForm", () => {
 
       const [, formData] = mockAcceptInvitation.mock.calls[0]!;
       expect(formData.get("token")).toBe("tok-abc");
-      expect(formData.get("fullName")).toBe("Jane Doe");
-      expect(formData.get("password")).toBe("hunter22long");
+      expect(formData.get("fullName")).toBe(FULL_NAME);
+      expect(formData.get("password")).toBe(PASSWORD);
     });
 
     it("renders an error banner with the server-provided message on failure", async () => {
@@ -78,16 +88,7 @@ describe("AcceptInvitationForm", () => {
 
       const user = userEvent.setup();
       const { container } = setup();
-
-      await user.type(
-        container.querySelector('input[name="fullName"]')!,
-        "Jane Doe",
-      );
-      await user.type(
-        container.querySelector('input[name="password"]')!,
-        "hunter22long",
-      );
-      await user.click(screen.getByRole("button", { name: /.+/ }));
+      await fillAndSubmit(container, user);
 
       expect(
         await screen.findByText("Invitation already used"),
@@ -99,16 +100,7 @@ describe("AcceptInvitationForm", () => {
 
       const user = userEvent.setup();
       const { container } = setup();
-
-      await user.type(
-        container.querySelector('input[name="fullName"]')!,
-        "Jane Doe",
-      );
-      await user.type(
-        container.querySelector('input[name="password"]')!,
-        "hunter22long",
-      );
-      await user.click(screen.getByRole("button", { name: /.+/ }));
+      await fillAndSubmit(container, user);
 
       expect(await screen.findByText("unknown_error")).toBeInTheDocument();
     });
@@ -118,16 +110,7 @@ describe("AcceptInvitationForm", () => {
 
       const user = userEvent.setup();
       const { container } = setup();
-
-      await user.type(
-        container.querySelector('input[name="fullName"]')!,
-        "Jane Doe",
-      );
-      await user.type(
-        container.querySelector('input[name="password"]')!,
-        "hunter22long",
-      );
-      await user.click(screen.getByRole("button", { name: /.+/ }));
+      await fillAndSubmit(container, user);
 
       await waitFor(() => {
         expect(mockAcceptInvitation).toHaveBeenCalled();

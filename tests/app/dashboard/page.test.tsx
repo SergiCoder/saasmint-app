@@ -2,32 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { User } from "@/domain/models/User";
 import type { Org } from "@/domain/models/Org";
+import { translate } from "../../_helpers/translate";
 
 // --- Mocks ---------------------------------------------------------------
-
-/**
- * Mirror the global i18n translator stub from tests/setup.ts so server
- * components rendered here see the same "key + interpolated {param}"
- * behaviour — tests can then assert on interpolated values directly
- * without coupling to any particular stub format.
- */
-function translate(key: string, params?: Record<string, unknown>): string {
-  if (!params) return key;
-  const entries = Object.entries(params);
-  if (entries.length === 0) return key;
-  let out = key;
-  const leftover: string[] = [];
-  for (const [name, value] of entries) {
-    const placeholder = `{${name}}`;
-    const str = String(value);
-    if (out.includes(placeholder)) {
-      out = out.replaceAll(placeholder, str);
-    } else {
-      leftover.push(str);
-    }
-  }
-  return leftover.length > 0 ? `${out} ${leftover.join(" ")}` : out;
-}
 
 vi.mock("next-intl/server", () => ({
   getTranslations: vi.fn(() => Promise.resolve(translate)),

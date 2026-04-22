@@ -1,31 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, vi } from "vitest";
-
-/**
- * Translator stub: returns the key when called with no params, or the key
- * with `{param}` placeholders substituted (and unused params appended,
- * space-separated) when called with a params object. This lets component
- * tests assert on interpolated values — e.g. `getByText(/Jane Doe/)` —
- * without coupling to any particular key-name format.
- */
-function translate(key: string, params?: Record<string, unknown>): string {
-  if (!params) return key;
-  const entries = Object.entries(params);
-  if (entries.length === 0) return key;
-  let out = key;
-  const leftover: string[] = [];
-  for (const [name, value] of entries) {
-    const placeholder = `{${name}}`;
-    const str = String(value);
-    if (out.includes(placeholder)) {
-      out = out.replaceAll(placeholder, str);
-    } else {
-      leftover.push(str);
-    }
-  }
-  return leftover.length > 0 ? `${out} ${leftover.join(" ")}` : out;
-}
+import { translate } from "./_helpers/translate";
 
 vi.mock("next-intl", () => ({
   useLocale: () => "en",
