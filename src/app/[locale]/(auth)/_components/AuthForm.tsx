@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
+import { PasswordRequirements } from "@/presentation/components/molecules/PasswordRequirements";
 import { Button } from "@/presentation/components/atoms/Button";
 import type { ActionResult } from "@/lib/actions/ActionResult";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
@@ -33,8 +34,7 @@ export function AuthForm({
   const t = useTranslations(translationNamespace);
   const translateError = useActionErrorMessage();
   const [state, formAction, pending] = useActionState(action, null);
-  const errorMessage =
-    state && !state.ok ? translateError(state) : null;
+  const errorMessage = state && !state.ok ? translateError(state) : null;
 
   return (
     <>
@@ -72,8 +72,10 @@ export function AuthForm({
           name="password"
           type="password"
           required
+          minLength={showNameField ? 10 : undefined}
           autoComplete={passwordAutoComplete}
         />
+        {showNameField && <PasswordRequirements />}
         {forgotPasswordHref && (
           <div className="text-right">
             <Link

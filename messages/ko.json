@@ -152,6 +152,13 @@
       "success": "이메일이 인증되었습니다. 대시보드로 이동합니다...",
       "error": "이메일 인증에 실패했습니다. 링크가 만료되었을 수 있습니다.",
       "backToLogin": "로그인으로 돌아가기"
+    },
+    "passwordRequirements": {
+      "title": "비밀번호 요구 사항:",
+      "minLength": "최소 10자 이상이어야 합니다",
+      "notCommon": "일반적으로 사용되는 비밀번호가 아니어야 합니다",
+      "notSimilar": "이메일 또는 이름과 너무 유사하지 않아야 합니다",
+      "notNumeric": "숫자만으로 구성되지 않아야 합니다"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "이 작업을 수행할 권한이 없습니다",
     "not_billing_member": "결제를 관리할 권한이 없습니다",
     "passwords_do_not_match": "비밀번호가 일치하지 않습니다",
-    "password_too_short": "비밀번호는 8자 이상이어야 합니다",
+    "password_too_short": "비밀번호는 10자 이상이어야 합니다",
     "profile_load_failed": "프로필을 불러오지 못했습니다",
     "session_expired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
     "unknown_error": "문제가 발생했습니다. 다시 시도해 주세요.",

@@ -152,6 +152,13 @@
       "success": "Tu correo electrónico ha sido verificado. Redirigiendo a tu panel de control...",
       "error": "La verificación del correo electrónico falló. El enlace puede haber expirado.",
       "backToLogin": "Volver a iniciar sesión"
+    },
+    "passwordRequirements": {
+      "title": "Tu contraseña debe:",
+      "minLength": "Tener al menos 10 caracteres",
+      "notCommon": "No ser una contraseña común",
+      "notSimilar": "No parecerse demasiado a tu correo electrónico o nombre",
+      "notNumeric": "No ser solo números"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "No tienes permiso para realizar esta acción",
     "not_billing_member": "No tienes permiso para gestionar la facturación",
     "passwords_do_not_match": "Las contraseñas no coinciden",
-    "password_too_short": "La contraseña debe tener al menos 8 caracteres",
+    "password_too_short": "La contraseña debe tener al menos 10 caracteres",
     "profile_load_failed": "No se pudo cargar el perfil",
     "session_expired": "La sesión ha caducado. Vuelve a iniciar sesión.",
     "unknown_error": "Algo salió mal. Inténtalo de nuevo.",

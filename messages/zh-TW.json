@@ -152,6 +152,13 @@
       "success": "您的電子郵件已驗證。正在跳轉到控制面板...",
       "error": "電子郵件驗證失敗。連結可能已過期。",
       "backToLogin": "返回登入"
+    },
+    "passwordRequirements": {
+      "title": "您的密碼必須：",
+      "minLength": "至少包含 10 個字元",
+      "notCommon": "不能是常用密碼",
+      "notSimilar": "不能與您的電子郵件或姓名過於相似",
+      "notNumeric": "不能全部是數字"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "您沒有權限執行此操作",
     "not_billing_member": "您沒有權限管理帳單",
     "passwords_do_not_match": "兩次輸入的密碼不一致",
-    "password_too_short": "密碼至少需要 8 個字元",
+    "password_too_short": "密碼長度至少為 10 個字元",
     "profile_load_failed": "載入個人資料失敗",
     "session_expired": "工作階段已過期,請重新登入。",
     "unknown_error": "發生錯誤,請再試一次。",

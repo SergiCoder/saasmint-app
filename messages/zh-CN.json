@@ -152,6 +152,13 @@
       "success": "您的邮箱已验证。正在跳转到控制面板...",
       "error": "邮箱验证失败。链接可能已过期。",
       "backToLogin": "返回登录"
+    },
+    "passwordRequirements": {
+      "title": "您的密码必须：",
+      "minLength": "至少包含 10 个字符",
+      "notCommon": "不能是常用密码",
+      "notSimilar": "不能与您的邮箱或姓名过于相似",
+      "notNumeric": "不能全部是数字"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "您无权执行此操作",
     "not_billing_member": "您无权管理账单",
     "passwords_do_not_match": "两次输入的密码不一致",
-    "password_too_short": "密码至少需要 8 个字符",
+    "password_too_short": "密码长度至少为 10 个字符",
     "profile_load_failed": "加载个人资料失败",
     "session_expired": "会话已过期,请重新登录。",
     "unknown_error": "出了点问题,请重试。",

@@ -152,6 +152,13 @@
       "success": "Din e-post har verifierats. Omdirigerar till din instrumentpanel...",
       "error": "E-postverifiering misslyckades. Länken kan ha löpt ut.",
       "backToLogin": "Tillbaka till inloggning"
+    },
+    "passwordRequirements": {
+      "title": "Ditt lösenord måste:",
+      "minLength": "Vara minst 10 tecken långt",
+      "notCommon": "Inte vara ett vanligt förekommande lösenord",
+      "notSimilar": "Inte likna din e-postadress eller ditt namn för mycket",
+      "notNumeric": "Inte bara bestå av siffror"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "Du har inte behörighet att utföra den här åtgärden",
     "not_billing_member": "Du har inte behörighet att hantera faktureringen",
     "passwords_do_not_match": "Lösenorden matchar inte",
-    "password_too_short": "Lösenordet måste vara minst 8 tecken",
+    "password_too_short": "Lösenordet måste vara minst 10 tecken",
     "profile_load_failed": "Det gick inte att ladda profilen",
     "session_expired": "Sessionen har gått ut. Logga in igen.",
     "unknown_error": "Något gick fel. Försök igen.",

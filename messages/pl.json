@@ -152,6 +152,13 @@
       "success": "Twój e-mail został zweryfikowany. Przekierowywanie do panelu...",
       "error": "Weryfikacja e-maila nie powiodła się. Link mógł wygasnąć.",
       "backToLogin": "Powrót do logowania"
+    },
+    "passwordRequirements": {
+      "title": "Twoje hasło musi:",
+      "minLength": "Mieć co najmniej 10 znaków",
+      "notCommon": "Nie być powszechnie używanym hasłem",
+      "notSimilar": "Nie być zbyt podobne do Twojego e-maila lub imienia",
+      "notNumeric": "Nie składać się wyłącznie z cyfr"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "Nie masz uprawnień do wykonania tej czynności",
     "not_billing_member": "Nie masz uprawnień do zarządzania rozliczeniami",
     "passwords_do_not_match": "Hasła nie pasują do siebie",
-    "password_too_short": "Hasło musi mieć co najmniej 8 znaków",
+    "password_too_short": "Hasło musi mieć co najmniej 10 znaków",
     "profile_load_failed": "Nie udało się wczytać profilu",
     "session_expired": "Sesja wygasła. Zaloguj się ponownie.",
     "unknown_error": "Coś poszło nie tak. Spróbuj ponownie.",

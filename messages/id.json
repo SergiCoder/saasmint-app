@@ -152,6 +152,13 @@
       "success": "Email Anda telah diverifikasi. Mengalihkan ke dasbor Anda...",
       "error": "Verifikasi email gagal. Tautan mungkin telah kedaluwarsa.",
       "backToLogin": "Kembali ke masuk"
+    },
+    "passwordRequirements": {
+      "title": "Kata sandi Anda harus:",
+      "minLength": "Minimal 10 karakter",
+      "notCommon": "Bukan kata sandi yang umum digunakan",
+      "notSimilar": "Tidak terlalu mirip dengan email atau nama Anda",
+      "notNumeric": "Tidak hanya berisi angka"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "Anda tidak berwenang untuk melakukan tindakan ini",
     "not_billing_member": "Anda tidak memiliki izin untuk mengelola penagihan",
     "passwords_do_not_match": "Kata sandi tidak cocok",
-    "password_too_short": "Kata sandi harus minimal 8 karakter",
+    "password_too_short": "Kata sandi harus minimal 10 karakter",
     "profile_load_failed": "Gagal memuat profil",
     "session_expired": "Sesi kedaluwarsa. Silakan masuk lagi.",
     "unknown_error": "Terjadi kesalahan. Silakan coba lagi.",

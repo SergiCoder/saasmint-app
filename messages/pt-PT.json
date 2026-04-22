@@ -152,6 +152,13 @@
       "success": "O seu e-mail foi verificado. A redirecionar para o seu painel...",
       "error": "A verificação do e-mail falhou. O link pode ter expirado.",
       "backToLogin": "Voltar para o início de sessão"
+    },
+    "passwordRequirements": {
+      "title": "A sua palavra-passe tem de:",
+      "minLength": "Ter pelo menos 10 caracteres",
+      "notCommon": "Não ser uma palavra-passe comum",
+      "notSimilar": "Não ser demasiado parecida com o seu e-mail ou nome",
+      "notNumeric": "Não ser apenas números"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "Não tem autorização para realizar esta ação",
     "not_billing_member": "Não tem permissão para gerir a faturação",
     "passwords_do_not_match": "As palavras-passe não coincidem",
-    "password_too_short": "A palavra-passe deve ter pelo menos 8 caracteres",
+    "password_too_short": "A palavra-passe tem de ter pelo menos 10 caracteres",
     "profile_load_failed": "Não foi possível carregar o perfil",
     "session_expired": "Sessão expirada. Inicie sessão novamente.",
     "unknown_error": "Algo correu mal. Tente novamente.",

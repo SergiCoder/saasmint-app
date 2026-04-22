@@ -152,6 +152,13 @@
       "success": "Seu e-mail foi verificado. Redirecionando para seu painel...",
       "error": "A verificação do e-mail falhou. O link pode ter expirado.",
       "backToLogin": "Voltar para o login"
+    },
+    "passwordRequirements": {
+      "title": "Sua senha deve:",
+      "minLength": "Ter pelo menos 10 caracteres",
+      "notCommon": "Não ser uma senha comum",
+      "notSimilar": "Não ser muito parecida com seu e-mail ou nome",
+      "notNumeric": "Não ser apenas números"
     }
   },
   "dashboard": {
@@ -324,7 +331,7 @@
     "not_authorized": "Você não tem autorização para realizar esta ação",
     "not_billing_member": "Você não tem permissão para gerenciar a cobrança",
     "passwords_do_not_match": "As senhas não coincidem",
-    "password_too_short": "A senha deve ter pelo menos 8 caracteres",
+    "password_too_short": "A senha deve ter pelo menos 10 caracteres",
     "profile_load_failed": "Não foi possível carregar o perfil",
     "session_expired": "Sessão expirada. Faça login novamente.",
     "unknown_error": "Algo deu errado. Tente novamente.",

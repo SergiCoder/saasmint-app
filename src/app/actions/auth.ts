@@ -78,7 +78,14 @@ interface Credentials {
 function readCredentials(formData: FormData): Credentials | null {
   const email = getString(formData, "email");
   const password = getString(formData, "password");
-  return email && password ? { email, password } : null;
+  // Normalize the email to lowercase so signup and login send the exact
+  // same value — Django only lowercases the domain in `normalize_email`
+  // and then does a case-sensitive lookup on login, so any uppercase in
+  // the local part would make subsequent logins fail with "invalid
+  // credentials" despite the correct password.
+  return email && password
+    ? { email: email.trim().toLowerCase(), password }
+    : null;
 }
 
 export async function signIn(
@@ -95,6 +102,7 @@ export async function signIn(
       body: JSON.stringify(credentials),
     });
   } catch (err) {
+    console.error("Sign-in failed", err);
     return toActionError(err);
   }
 
@@ -144,6 +152,7 @@ export async function signUp(
       }),
     });
   } catch (err) {
+    console.error("Sign-up failed", err);
     return toActionError(err);
   }
 
@@ -173,7 +182,7 @@ export async function resetPassword(
   try {
     await publicApiFetch("/auth/forgot-password/", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
     });
   } catch {
     // Swallow errors — never reveal whether the email exists
@@ -191,7 +200,7 @@ export async function resetPasswordWithToken(
   const token = getString(formData, "token");
 
   if (!token) return fail("invalid_reset_link");
-  if (!password || password.length < 8) return fail("password_too_short");
+  if (!password || password.length < 10) return fail("password_too_short");
   if (password !== confirmPassword) return fail("passwords_do_not_match");
 
   let data: TokenResponse;
@@ -200,7 +209,8 @@ export async function resetPasswordWithToken(
       method: "POST",
       body: JSON.stringify({ token, password }),
     });
-  } catch {
+  } catch (err) {
+    console.error("Reset-password failed", err);
     return fail("invalid_reset_link");
   }
 
@@ -217,7 +227,7 @@ export async function changePassword(
   const confirmPassword = getString(formData, "confirmPassword");
 
   if (!currentPassword) return fail("current_password_required");
-  if (!password || password.length < 8) return fail("password_too_short");
+  if (!password || password.length < 10) return fail("password_too_short");
   if (password !== confirmPassword) return fail("passwords_do_not_match");
 
   let data: TokenResponse;
@@ -230,6 +240,7 @@ export async function changePassword(
       }),
     });
   } catch (err) {
+    console.error("Change-password failed", err);
     return toActionError(err);
   }
 
@@ -247,6 +258,7 @@ export async function verifyEmail(
       body: JSON.stringify({ token }),
     });
   } catch (err) {
+    console.error("Verify-email failed", err);
     return toActionError(err);
   }
 
@@ -299,7 +311,8 @@ export async function exchangeOAuthCode(
       "/auth/oauth/exchange/",
       { method: "POST", body: JSON.stringify({ code }) },
     );
-  } catch {
+  } catch (err) {
+    console.error("OAuth exchange failed", err);
     return { ok: false, error: "oauth_error" };
   }
 

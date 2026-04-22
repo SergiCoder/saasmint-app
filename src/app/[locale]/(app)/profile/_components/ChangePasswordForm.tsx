@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
+import { PasswordRequirements } from "@/presentation/components/molecules/PasswordRequirements";
 import { Button } from "@/presentation/components/atoms/Button";
 import { changePassword } from "@/app/actions/auth";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
@@ -40,7 +41,7 @@ export function ChangePasswordForm() {
         name="password"
         type="password"
         required
-        minLength={8}
+        minLength={10}
         autoComplete="new-password"
       />
       <FormField
@@ -48,9 +49,10 @@ export function ChangePasswordForm() {
         name="confirmPassword"
         type="password"
         required
-        minLength={8}
+        minLength={10}
         autoComplete="new-password"
       />
+      <PasswordRequirements />
       <Button type="submit" loading={pending} disabled={!dirty}>
         {t("passwordChangeSubmit")}
       </Button>
