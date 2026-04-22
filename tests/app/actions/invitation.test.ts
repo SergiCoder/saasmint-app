@@ -35,7 +35,7 @@ beforeEach(async () => {
 
 describe("invitation server actions", () => {
   describe("acceptInvitation", () => {
-    it("accepts invitation, sets cookies, and redirects to /dashboard", async () => {
+    it("accepts invitation, sets cookies, and returns a client-side redirect target", async () => {
       mockAccept.mockResolvedValue({ accessToken: "at", refreshToken: "rt" });
 
       const formData = new FormData();
@@ -43,15 +43,17 @@ describe("invitation server actions", () => {
       formData.set("fullName", "Bob Smith");
       formData.set("password", "secret1234");
 
-      await expect(acceptInvitation(null, formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
+      const result = await acceptInvitation(null, formData);
       expect(mockAccept).toHaveBeenCalledWith("abc123", {
         fullName: "Bob Smith",
         password: "secret1234",
       });
       expect(mockSetAuthCookies).toHaveBeenCalledWith("at", "rt");
-      expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
+      expect(result).toEqual({ ok: true, data: { redirectTo: "/dashboard" } });
+      // Server-side redirect would race with Set-Cookie propagation during
+      // Next.js's RSC prefetch; the action deliberately lets the client
+      // navigate instead.
+      expect(mockRedirect).not.toHaveBeenCalled();
     });
 
     it("returns invalid_input when required fields are missing", async () => {
