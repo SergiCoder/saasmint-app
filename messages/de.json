@@ -314,9 +314,6 @@
     "unknownError": "Unbekannter Fehler"
   },
   "actionErrors": {
-    "account_delete_failed": "Konto konnte nicht gelöscht werden",
-    "avatar_update_failed": "Avatar konnte nicht aktualisiert werden",
-    "checkout_failed": "Bezahlvorgang konnte nicht gestartet werden",
     "current_password_required": "Aktuelles Passwort ist erforderlich",
     "email_and_password_required": "E-Mail und Passwort sind erforderlich",
     "email_required": "E-Mail ist erforderlich",

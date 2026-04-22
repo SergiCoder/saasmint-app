@@ -314,9 +314,6 @@
     "unknownError": "Kesalahan tidak diketahui"
   },
   "actionErrors": {
-    "account_delete_failed": "Gagal menghapus akun",
-    "avatar_update_failed": "Gagal memperbarui avatar",
-    "checkout_failed": "Gagal memulai pembayaran",
     "current_password_required": "Kata sandi saat ini wajib diisi",
     "email_and_password_required": "Email dan kata sandi wajib diisi",
     "email_required": "Email wajib diisi",

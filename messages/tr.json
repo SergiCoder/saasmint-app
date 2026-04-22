@@ -314,9 +314,6 @@
     "unknownError": "Bilinmeyen hata"
   },
   "actionErrors": {
-    "account_delete_failed": "Hesap silinemedi",
-    "avatar_update_failed": "Avatar güncellenemedi",
-    "checkout_failed": "Ödeme başlatılamadı",
     "current_password_required": "Mevcut şifre gereklidir",
     "email_and_password_required": "E-posta ve şifre gereklidir",
     "email_required": "E-posta gereklidir",

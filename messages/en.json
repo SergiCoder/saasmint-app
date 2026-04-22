@@ -353,9 +353,6 @@
     "unknownError": "Unknown error"
   },
   "actionErrors": {
-    "account_delete_failed": "Failed to delete account",
-    "avatar_update_failed": "Failed to update avatar",
-    "checkout_failed": "Failed to start checkout",
     "current_password_required": "Current password is required",
     "email_and_password_required": "Email and password are required",
     "email_required": "Email is required",

@@ -314,9 +314,6 @@
     "unknownError": "알 수 없는 오류"
   },
   "actionErrors": {
-    "account_delete_failed": "계정을 삭제하지 못했습니다",
-    "avatar_update_failed": "아바타를 업데이트하지 못했습니다",
-    "checkout_failed": "결제를 시작하지 못했습니다",
     "current_password_required": "현재 비밀번호를 입력해 주세요",
     "email_and_password_required": "이메일과 비밀번호를 모두 입력해 주세요",
     "email_required": "이메일을 입력해 주세요",

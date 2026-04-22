@@ -314,9 +314,6 @@
     "unknownError": "Nieznany błąd"
   },
   "actionErrors": {
-    "account_delete_failed": "Nie udało się usunąć konta",
-    "avatar_update_failed": "Nie udało się zaktualizować awatara",
-    "checkout_failed": "Nie udało się rozpocząć płatności",
     "current_password_required": "Aktualne hasło jest wymagane",
     "email_and_password_required": "E-mail i hasło są wymagane",
     "email_required": "Adres e-mail jest wymagany",

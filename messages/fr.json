@@ -314,9 +314,6 @@
     "unknownError": "Erreur inconnue"
   },
   "actionErrors": {
-    "account_delete_failed": "Échec de la suppression du compte",
-    "avatar_update_failed": "Échec de la mise à jour de l'avatar",
-    "checkout_failed": "Impossible de démarrer le paiement",
     "current_password_required": "Le mot de passe actuel est requis",
     "email_and_password_required": "L'e-mail et le mot de passe sont requis",
     "email_required": "L'e-mail est requis",

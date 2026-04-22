@@ -314,9 +314,6 @@
     "unknownError": "未知错误"
   },
   "actionErrors": {
-    "account_delete_failed": "账号删除失败",
-    "avatar_update_failed": "头像更新失败",
-    "checkout_failed": "无法开始结账",
     "current_password_required": "请输入当前密码",
     "email_and_password_required": "请输入邮箱和密码",
     "email_required": "请输入邮箱",

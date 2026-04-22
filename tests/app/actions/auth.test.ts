@@ -121,7 +121,7 @@ describe("auth server actions", () => {
       const result = await signIn(undefined, formData);
       expect(result).toEqual({
         ok: false,
-        code: "HTTP_401",
+        code: "invalid_credentials",
         message: "Invalid credentials.",
       });
       expect(mockRedirect).not.toHaveBeenCalled();

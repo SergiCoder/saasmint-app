@@ -314,9 +314,6 @@
     "unknownError": "不明なエラー"
   },
   "actionErrors": {
-    "account_delete_failed": "アカウントを削除できませんでした",
-    "avatar_update_failed": "アバターを更新できませんでした",
-    "checkout_failed": "チェックアウトを開始できませんでした",
     "current_password_required": "現在のパスワードを入力してください",
     "email_and_password_required": "メールアドレスとパスワードを入力してください",
     "email_required": "メールアドレスを入力してください",

@@ -314,9 +314,6 @@
     "unknownError": "خطأ غير معروف"
   },
   "actionErrors": {
-    "account_delete_failed": "تعذّر حذف الحساب",
-    "avatar_update_failed": "تعذّر تحديث الصورة الرمزية",
-    "checkout_failed": "تعذّر بدء عملية الدفع",
     "current_password_required": "كلمة المرور الحالية مطلوبة",
     "email_and_password_required": "البريد الإلكتروني وكلمة المرور مطلوبان",
     "email_required": "البريد الإلكتروني مطلوب",

@@ -314,9 +314,6 @@
     "unknownError": "未知錯誤"
   },
   "actionErrors": {
-    "account_delete_failed": "帳號刪除失敗",
-    "avatar_update_failed": "頭像更新失敗",
-    "checkout_failed": "無法開始結帳",
     "current_password_required": "請輸入目前的密碼",
     "email_and_password_required": "請輸入電子郵件與密碼",
     "email_required": "請輸入電子郵件",

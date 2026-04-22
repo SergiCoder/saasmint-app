@@ -314,9 +314,6 @@
     "unknownError": "Okänt fel"
   },
   "actionErrors": {
-    "account_delete_failed": "Det gick inte att ta bort kontot",
-    "avatar_update_failed": "Det gick inte att uppdatera avataren",
-    "checkout_failed": "Det gick inte att starta betalningen",
     "current_password_required": "Nuvarande lösenord krävs",
     "email_and_password_required": "E-post och lösenord krävs",
     "email_required": "E-post krävs",

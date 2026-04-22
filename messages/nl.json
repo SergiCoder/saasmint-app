@@ -314,9 +314,6 @@
     "unknownError": "Onbekende fout"
   },
   "actionErrors": {
-    "account_delete_failed": "Account kon niet worden verwijderd",
-    "avatar_update_failed": "Avatar kon niet worden bijgewerkt",
-    "checkout_failed": "Afrekenen kon niet worden gestart",
     "current_password_required": "Huidig wachtwoord is vereist",
     "email_and_password_required": "E-mailadres en wachtwoord zijn vereist",
     "email_required": "E-mailadres is vereist",

@@ -314,9 +314,6 @@
     "unknownError": "Erro desconhecido"
   },
   "actionErrors": {
-    "account_delete_failed": "Não foi possível eliminar a conta",
-    "avatar_update_failed": "Não foi possível atualizar o avatar",
-    "checkout_failed": "Não foi possível iniciar o pagamento",
     "current_password_required": "A palavra-passe atual é obrigatória",
     "email_and_password_required": "O e-mail e a palavra-passe são obrigatórios",
     "email_required": "O e-mail é obrigatório",

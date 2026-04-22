@@ -39,7 +39,7 @@ Domain errors in `src/domain/errors/`:
 - `ApiError` — generic HTTP failure from the Django API (carries `status`, raw `body`, and a `detail` getter that extracts Django-style `{ detail }` or `string[]` messages)
 - `NetworkError` — fetch couldn't reach the server (DNS, connection refused, timeout); carries the original exception as `cause`
 
-All error classes carry a `code: string` field for programmatic handling (`ApiError` defaults its code to `HTTP_<status>`; `NetworkError` is `NETWORK_UNREACHABLE`). Server actions translate thrown domain/gateway errors into stable string codes via `toActionError()` in `src/lib/actions/ActionResult.ts`; client components resolve those codes to user-facing strings through the `actionErrors.<code>` next-intl namespace using the `useActionErrorMessage` hook (`src/lib/actions/useActionErrorMessage.ts`), which falls back to `actionErrors.unknown_error`.
+All error classes carry a `code: string` field for programmatic handling. `ApiError` picks its code in this order: an explicit `code` constructor argument, then a Django-style `body.code` string (e.g. `payment_provider_error`, `invalid_credentials`), then the `HTTP_<status>` fallback. `NetworkError` is `NETWORK_UNREACHABLE`. Server actions translate thrown domain/gateway errors into stable string codes via `toActionError()` in `src/lib/actions/ActionResult.ts`; client components resolve those codes to user-facing strings through the `actionErrors.<code>` next-intl namespace using the `useActionErrorMessage` hook (`src/lib/actions/useActionErrorMessage.ts`), which prefers the server-provided `message` (typically `ApiError.detail`), then the `actionErrors.<code>` translation, then `actionErrors.unknown_error`.
 
 ## Infrastructure
 

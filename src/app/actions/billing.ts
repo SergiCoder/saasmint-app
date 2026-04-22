@@ -72,7 +72,7 @@ export async function startCheckout(
     url = session.url;
   } catch (err) {
     console.error("Failed to start checkout", err);
-    return fail("checkout_failed");
+    return toActionError(err);
   }
 
   redirect(url);

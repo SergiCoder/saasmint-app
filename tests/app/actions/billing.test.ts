@@ -144,17 +144,36 @@ describe("billing server actions", () => {
       expect(callArgs.quantity).toBeUndefined();
     });
 
-    it("returns checkout_failed when gateway throws", async () => {
+    it("returns unknown_error when gateway throws a generic error", async () => {
       mockCreateCheckoutSession.mockRejectedValue(new Error("network down"));
-      const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const formData = new FormData();
       formData.set("planPriceId", "price_abc");
 
       const result = await startCheckout(undefined, formData);
-      expect(result).toEqual({ ok: false, code: "checkout_failed" });
+      expect(result).toEqual({ ok: false, code: "unknown_error" });
       expect(mockRedirect).not.toHaveBeenCalled();
-      errSpy.mockRestore();
+    });
+
+    it("forwards the ApiError code and Django detail to the client", async () => {
+      const { ApiError } = await import("@/domain/errors/ApiError");
+      mockCreateCheckoutSession.mockRejectedValue(
+        new ApiError(400, {
+          detail: "Payment provider error. Please try again.",
+          code: "payment_provider_error",
+        }),
+      );
+
+      const formData = new FormData();
+      formData.set("planPriceId", "price_abc");
+
+      const result = await startCheckout(undefined, formData);
+      expect(result).toEqual({
+        ok: false,
+        code: "payment_provider_error",
+        message: "Payment provider error. Please try again.",
+      });
+      expect(mockRedirect).not.toHaveBeenCalled();
     });
   });
 
@@ -194,7 +213,9 @@ describe("billing server actions", () => {
     });
 
     it("swallows non-redirect errors and returns without redirecting", async () => {
-      mockCreateBillingPortalSession.mockRejectedValue(new Error("portal down"));
+      mockCreateBillingPortalSession.mockRejectedValue(
+        new Error("portal down"),
+      );
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const result = await openBillingPortal();
@@ -217,7 +238,10 @@ describe("billing server actions", () => {
       const result = await cancelRenewal();
 
       expect(mockCancelSubscription).toHaveBeenCalledOnce();
-      expect(mockRevalidatePath).toHaveBeenCalledWith("/subscription", "layout");
+      expect(mockRevalidatePath).toHaveBeenCalledWith(
+        "/subscription",
+        "layout",
+      );
       expect(result.ok).toBe(true);
     });
 
@@ -262,7 +286,10 @@ describe("billing server actions", () => {
       const result = await resumeSubscription();
 
       expect(mockResumeSubscription).toHaveBeenCalledOnce();
-      expect(mockRevalidatePath).toHaveBeenCalledWith("/subscription", "layout");
+      expect(mockRevalidatePath).toHaveBeenCalledWith(
+        "/subscription",
+        "layout",
+      );
       expect(result.ok).toBe(true);
     });
 

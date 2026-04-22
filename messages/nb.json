@@ -314,9 +314,6 @@
     "unknownError": "Ukjent feil"
   },
   "actionErrors": {
-    "account_delete_failed": "Kunne ikke slette kontoen",
-    "avatar_update_failed": "Kunne ikke oppdatere avataren",
-    "checkout_failed": "Kunne ikke starte betalingen",
     "current_password_required": "Nåværende passord er påkrevd",
     "email_and_password_required": "E-post og passord er påkrevd",
     "email_required": "E-post er påkrevd",
