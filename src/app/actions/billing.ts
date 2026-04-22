@@ -16,7 +16,11 @@ import {
   toActionError,
   type ActionResult,
 } from "@/lib/actions/ActionResult";
-import { getInt, getNonEmptyString, getString } from "@/lib/actions/parseFormData";
+import {
+  getInt,
+  getNonEmptyString,
+  getString,
+} from "@/lib/actions/parseFormData";
 
 /**
  * Ensures the current user is allowed to manage billing on the active
@@ -50,7 +54,9 @@ export async function startCheckout(
 
   const rawQuantity = getInt(formData, "quantity");
   const quantity =
-    rawQuantity && rawQuantity > 0 ? Math.min(rawQuantity, MAX_SEATS) : undefined;
+    rawQuantity && rawQuantity > 0
+      ? Math.min(rawQuantity, MAX_SEATS)
+      : undefined;
   const orgName = getNonEmptyString(formData, "orgName");
 
   let url: string;
@@ -89,12 +95,8 @@ export async function openBillingPortal() {
   redirect(url);
 }
 
-/**
- * Schedule the subscription to end at the current period's close. Returns
- * the refreshed subscription snapshot so callers can surface the new
- * `canceledAt` state without waiting on the path revalidation.
- */
-export async function cancelRenewal(): Promise<ActionResult<Subscription | null>> {
+/** Schedule the subscription to end at the current period's close. */
+export async function cancelRenewal(): Promise<ActionResult> {
   try {
     await assertCanManageBilling();
     await subscriptionGateway.cancelSubscription();
@@ -103,13 +105,11 @@ export async function cancelRenewal(): Promise<ActionResult<Subscription | null>
     return toActionError(err);
   }
   revalidatePath("/subscription", "layout");
-  return ok(await subscriptionGateway.getSubscription().catch(() => null));
+  return ok();
 }
 
 /** Undo a pending cancellation so the subscription renews normally. */
-export async function resumeSubscription(): Promise<
-  ActionResult<Subscription | null>
-> {
+export async function resumeSubscription(): Promise<ActionResult> {
   try {
     await assertCanManageBilling();
     await subscriptionGateway.resumeSubscription();
@@ -118,13 +118,13 @@ export async function resumeSubscription(): Promise<
     return toActionError(err);
   }
   revalidatePath("/subscription", "layout");
-  return ok(await subscriptionGateway.getSubscription().catch(() => null));
+  return ok();
 }
 
 export async function updateSeats(
   _prevState: unknown,
   formData: FormData,
-): Promise<ActionResult<Subscription | null>> {
+): Promise<ActionResult> {
   const quantity = getInt(formData, "quantity");
   if (quantity === undefined || quantity < 1 || quantity > MAX_SEATS) {
     return fail("invalid_seat_count");
@@ -138,5 +138,6 @@ export async function updateSeats(
     return toActionError(err);
   }
   revalidatePath("/org", "layout");
-  return ok(await subscriptionGateway.getSubscription().catch(() => null));
+  revalidatePath("/subscription", "layout");
+  return ok();
 }

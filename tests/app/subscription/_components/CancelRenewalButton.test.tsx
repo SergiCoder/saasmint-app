@@ -110,8 +110,8 @@ describe("CancelRenewalButton", () => {
     expect(screen.getByText("Are you sure?")).toBeInTheDocument();
   });
 
-  it("displays a fallback error when the action throws a non-Error", async () => {
-    mockCancelRenewal.mockRejectedValueOnce("nope");
+  it("falls back to the unknown_error translation when only an unknown code is returned", async () => {
+    mockCancelRenewal.mockResolvedValueOnce({ ok: false, code: "HTTP_500" });
     const user = userEvent.setup();
     render(<CancelRenewalButton {...defaultProps} />);
 

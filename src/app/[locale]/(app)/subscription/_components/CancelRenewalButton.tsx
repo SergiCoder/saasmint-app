@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
 import { cancelRenewal } from "@/app/actions/billing";
+import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
 import {
   ConfirmDialog,
   type ConfirmDialogHandle,
@@ -24,7 +24,7 @@ export function CancelRenewalButton({
   confirmAction,
   confirmDismiss,
 }: CancelRenewalButtonProps) {
-  const tErrors = useTranslations("actionErrors");
+  const translateError = useActionErrorMessage();
   const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -36,15 +36,11 @@ export function CancelRenewalButton({
 
   const confirm = () => {
     startTransition(async () => {
-      try {
-        const result = await cancelRenewal();
-        if (result.ok) {
-          confirmRef.current?.close();
-        } else {
-          setError(result.message ?? tErrors(result.code));
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : tErrors("unknown_error"));
+      const result = await cancelRenewal();
+      if (result.ok) {
+        confirmRef.current?.close();
+      } else {
+        setError(translateError(result));
       }
     });
   };
