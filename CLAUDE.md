@@ -96,7 +96,7 @@ Django issues JWTs directly — no third-party auth provider.
 Strict atomic design in `src/presentation/components/`:
 
 - `atoms/` — Button, Input, Badge, Avatar, AvatarUpload, Label, Spinner, FullPageSpinner, Logo, SectionLabel, LocaleDropdown, FormattedDate, Divider, GitHubIcon, GoogleIcon, MicrosoftIcon
-- `molecules/` — FormField, MetricCard, NavLink, PlanCard, AlertBanner, ConfirmDialog, FeatureCard, StatItem, TrustBar, OrgCard, OAuthButtons, UserMenu, PronounsPicker
+- `molecules/` — FormField, MetricCard, NavLink, PlanCard, AlertBanner, ConfirmDialog, FeatureCard, StatItem, TrustBar, OrgCard, OAuthButtons, UserMenu, PronounsPicker, PasswordRequirements
 - `organisms/` — NavBar, MobileMenuToggle, Footer, PricingSection, PricingIntervalSwitch, SubscriptionCard, OrgMemberList, InvoiceTable, CtaSection, DashboardMock, ErrorView, RouteErrorBoundary, ProductsGrid, FeaturesGrid, LogoCloud, StatsSection
 - `templates/` — MarketingLayout, AuthLayout, AppLayout, PolicyPage
 
@@ -118,6 +118,8 @@ Server Actions live in `src/app/actions/` (one file per domain area: `auth.ts`, 
 - `toActionError(err)` — maps a thrown `AuthError`/`NetworkError`/`BillingError`/`ApiError` to a `fail(...)`; used inside try/catch around gateway calls
 
 Form-field parsing uses the tiny helpers in `src/lib/actions/parseFormData.ts` (`getString`, `getNonEmptyString`, `getInt`, `getFile`) — each returns the narrowed value or `undefined`, and the action decides whether to return `fail("invalid_input")`.
+
+Actions `console.error` the raw thrown error (including any `ApiError.body`) before returning `toActionError(err)` / `fail(...)`, so server logs retain the backend failure payload even though clients only see the stable error code.
 
 Co-located server-side fetchers in `_data/` directories also call gateways directly and are wrapped in `React.cache()` (e.g. `(app)/_data/getSubscription.ts`, `(app)/_data/getCurrentUser.ts`).
 
