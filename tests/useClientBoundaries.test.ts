@@ -39,6 +39,7 @@ const EXPECTED_USE_CLIENT_FILES: readonly string[] = [
   "src/presentation/components/atoms/AvatarUpload.tsx",
   "src/presentation/components/atoms/LocaleDropdown.tsx",
   "src/presentation/components/molecules/ConfirmDialog.tsx",
+  "src/presentation/components/molecules/NavLink.tsx",
   "src/presentation/components/molecules/OAuthButtons.tsx",
   "src/presentation/components/molecules/PronounsPicker.tsx",
   "src/presentation/components/molecules/UserMenu.tsx",
