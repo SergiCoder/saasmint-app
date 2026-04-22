@@ -66,10 +66,7 @@ describe("DeleteAccountDialog", () => {
   });
 
   it("calls deleteAccount and redirects on success when emails match", async () => {
-    mockDeleteAccount.mockResolvedValueOnce({
-      ok: true,
-      data: { scheduledDeletionAt: null },
-    });
+    mockDeleteAccount.mockResolvedValueOnce({ ok: true });
     const user = userEvent.setup();
     render(<DeleteAccountDialog userEmail="me@example.com" />);
 

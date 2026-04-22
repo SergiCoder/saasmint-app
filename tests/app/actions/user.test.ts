@@ -249,16 +249,13 @@ describe("user server actions", () => {
   });
 
   describe("deleteAccount", () => {
-    it("deletes account and returns ok with scheduledDeletionAt", async () => {
-      mockDeleteAccount.mockResolvedValue({ scheduledDeletionAt: null });
+    it("deletes account and returns ok", async () => {
+      mockDeleteAccount.mockResolvedValue(undefined);
 
       const result = await deleteAccount();
 
       expect(mockDeleteAccount).toHaveBeenCalledOnce();
-      expect(result).toEqual({
-        ok: true,
-        data: { scheduledDeletionAt: null },
-      });
+      expect(result).toEqual({ ok: true });
     });
 
     it("returns account_delete_failed on failure", async () => {

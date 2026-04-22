@@ -102,12 +102,10 @@ export async function updatePreferredLocale(locale: string): Promise<void> {
   }
 }
 
-export async function deleteAccount(): Promise<
-  ActionResult<{ scheduledDeletionAt: string | null }>
-> {
+export async function deleteAccount(): Promise<ActionResult> {
   try {
-    const result = await authGateway.deleteAccount();
-    return ok({ scheduledDeletionAt: result.scheduledDeletionAt });
+    await authGateway.deleteAccount();
+    return ok();
   } catch {
     return fail("account_delete_failed");
   }
