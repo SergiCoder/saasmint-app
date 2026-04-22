@@ -63,6 +63,28 @@ describe("invitation server actions", () => {
       expect(mockAccept).not.toHaveBeenCalled();
     });
 
+    it("returns full_name_invalid when fullName is shorter than 3 characters", async () => {
+      const formData = new FormData();
+      formData.set("token", "abc123");
+      formData.set("fullName", "Bo");
+      formData.set("password", "secret1234");
+
+      const result = await acceptInvitation(null, formData);
+      expect(result).toEqual({ ok: false, code: "full_name_invalid" });
+      expect(mockAccept).not.toHaveBeenCalled();
+    });
+
+    it("returns full_name_invalid when fullName exceeds 255 characters", async () => {
+      const formData = new FormData();
+      formData.set("token", "abc123");
+      formData.set("fullName", "a".repeat(256));
+      formData.set("password", "secret1234");
+
+      const result = await acceptInvitation(null, formData);
+      expect(result).toEqual({ ok: false, code: "full_name_invalid" });
+      expect(mockAccept).not.toHaveBeenCalled();
+    });
+
     it("returns password_too_short when the password is below PASSWORD_MIN_LENGTH", async () => {
       const formData = new FormData();
       formData.set("token", "abc123");

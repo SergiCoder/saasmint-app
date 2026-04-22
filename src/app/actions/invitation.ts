@@ -22,6 +22,9 @@ export async function acceptInvitation(
   if (!token || !fullName || !password) {
     return fail("invalid_input");
   }
+  if (fullName.length < 3 || fullName.length > 255) {
+    return fail("full_name_invalid");
+  }
   if (password.length < PASSWORD_MIN_LENGTH) {
     return fail("password_too_short");
   }
