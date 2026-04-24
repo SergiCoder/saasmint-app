@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Slet konto permanent",
     "deleteDialogMismatch": "E-mailadressen stemmer ikke overens med din konto.",
     "deleteDialogError": "Kontoen kunne ikke slettes. Prøv igen.",
-    "deleteBlockedOwner": "Du ejer en organisation. Kontakt venligst vores supportteam for at slette din konto.",
+    "deleteBlockedOwner": "Du ejer en organisation. Overdrag ejerskab eller slet organisationen, før du sletter din konto.",
     "deleteBlockedMember": "Du tilhører et team. Kontakt venligst din teamejer for at blive fjernet først.",
     "pronounsHeHim": "Han/Ham",
     "pronounsSheHer": "Hun/Hende",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Pladser opdateret",
     "removeSeatConfirmTitle": "Fjern plads",
     "removeSeatConfirmBody": "Der udstedes ingen refusion. Din næste fornyelse vil afspejle det reducerede antal pladser.",
-    "removeSeatConfirmAction": "Fjern"
+    "removeSeatConfirmAction": "Fjern",
+    "deleteOrg": "Slet organisation",
+    "deleteOrgDescription": "Slet denne organisation permanent. Alle medlemmer fjernes, afventende invitationer annulleres, og dit abonnement annulleres straks uden refusion.",
+    "deleteOrgDialogTitle": "Slet denne organisation?",
+    "deleteOrgDialogDescription": "Denne handling kan ikke fortrydes. Hvis dette er din eneste organisation, slettes din konto også.",
+    "deleteOrgDialogLabel": "Skriv {name} for at bekræfte",
+    "deleteOrgDialogCancel": "Annullér",
+    "deleteOrgDialogSubmit": "Slet organisation permanent",
+    "deleteOrgDialogMismatch": "Organisationens navn stemmer ikke overens."
   },
   "common": {
     "loading": "Indlæser...",

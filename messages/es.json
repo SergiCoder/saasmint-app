@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Eliminar cuenta permanentemente",
     "deleteDialogMismatch": "El correo electrónico no coincide con el de tu cuenta.",
     "deleteDialogError": "No se pudo eliminar la cuenta. Por favor, inténtalo de nuevo.",
-    "deleteBlockedOwner": "Eres propietario de una organización. Por favor, contacta con nuestro equipo de soporte para eliminar tu cuenta.",
+    "deleteBlockedOwner": "Eres propietario de una organización. Transfiere la propiedad o elimina la organización antes de eliminar tu cuenta.",
     "deleteBlockedMember": "Perteneces a un equipo. Por favor, contacta con el propietario de tu equipo para que te eliminen primero.",
     "pronounsHeHim": "Él",
     "pronounsSheHer": "Ella",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Puestos actualizados correctamente",
     "removeSeatConfirmTitle": "Eliminar puesto",
     "removeSeatConfirmBody": "No se emitirá ningún reembolso. Tu próxima renovación reflejará el número reducido de puestos.",
-    "removeSeatConfirmAction": "Eliminar"
+    "removeSeatConfirmAction": "Eliminar",
+    "deleteOrg": "Eliminar organización",
+    "deleteOrgDescription": "Elimina esta organización de forma permanente. Todos los miembros serán eliminados, las invitaciones pendientes canceladas y tu suscripción cancelada inmediatamente sin reembolso.",
+    "deleteOrgDialogTitle": "¿Eliminar esta organización?",
+    "deleteOrgDialogDescription": "Esta acción no se puede deshacer. Si esta es tu única organización, tu cuenta también será eliminada.",
+    "deleteOrgDialogLabel": "Escribe {name} para confirmar",
+    "deleteOrgDialogCancel": "Cancelar",
+    "deleteOrgDialogSubmit": "Eliminar organización permanentemente",
+    "deleteOrgDialogMismatch": "El nombre de la organización no coincide."
   },
   "common": {
     "loading": "Cargando...",

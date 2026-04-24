@@ -251,7 +251,7 @@
     "deleteDialogSubmit": "Permanently delete account",
     "deleteDialogMismatch": "Email does not match your account email.",
     "deleteDialogError": "Failed to delete account. Please try again.",
-    "deleteBlockedOwner": "You own an organization. Please contact our support team to delete your account.",
+    "deleteBlockedOwner": "You own an organization. Transfer ownership or delete the organization before deleting your account.",
     "deleteBlockedMember": "You belong to a team. Please contact your team owner to be removed first.",
     "pronounsHeHim": "He/Him",
     "pronounsSheHer": "She/Her",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Seats updated successfully",
     "removeSeatConfirmTitle": "Remove seat",
     "removeSeatConfirmBody": "No refund will be issued. Your next renewal will reflect the reduced seat count.",
-    "removeSeatConfirmAction": "Remove"
+    "removeSeatConfirmAction": "Remove",
+    "deleteOrg": "Delete organization",
+    "deleteOrgDescription": "Permanently delete this organization. All members will be removed, pending invitations cancelled, and your subscription cancelled immediately with no refund.",
+    "deleteOrgDialogTitle": "Delete this organization?",
+    "deleteOrgDialogDescription": "This action cannot be undone. If this is your only organization, your account will also be deleted.",
+    "deleteOrgDialogLabel": "Type {name} to confirm",
+    "deleteOrgDialogCancel": "Cancel",
+    "deleteOrgDialogSubmit": "Permanently delete organization",
+    "deleteOrgDialogMismatch": "Organization name does not match."
   },
   "invitation": {
     "title": "You've been invited",

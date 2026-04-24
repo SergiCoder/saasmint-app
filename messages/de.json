@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Konto dauerhaft löschen",
     "deleteDialogMismatch": "Die E-Mail-Adresse stimmt nicht mit Ihrem Konto überein.",
     "deleteDialogError": "Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
-    "deleteBlockedOwner": "Sie sind Inhaber einer Organisation. Bitte kontaktieren Sie unser Support-Team, um Ihr Konto zu löschen.",
+    "deleteBlockedOwner": "Sie sind Inhaber einer Organisation. Übertragen Sie die Inhaberschaft oder löschen Sie die Organisation, bevor Sie Ihr Konto löschen.",
     "deleteBlockedMember": "Sie gehören einem Team an. Bitte kontaktieren Sie Ihren Teaminhaber, um zuerst entfernt zu werden.",
     "pronounsHeHim": "Er/Ihm",
     "pronounsSheHer": "Sie/Ihr",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Plätze erfolgreich aktualisiert",
     "removeSeatConfirmTitle": "Platz entfernen",
     "removeSeatConfirmBody": "Es erfolgt keine Rückerstattung. Ihre nächste Verlängerung wird die reduzierte Platzanzahl widerspiegeln.",
-    "removeSeatConfirmAction": "Entfernen"
+    "removeSeatConfirmAction": "Entfernen",
+    "deleteOrg": "Organisation löschen",
+    "deleteOrgDescription": "Diese Organisation dauerhaft löschen. Alle Mitglieder werden entfernt, ausstehende Einladungen storniert und Ihr Abonnement sofort ohne Rückerstattung gekündigt.",
+    "deleteOrgDialogTitle": "Diese Organisation löschen?",
+    "deleteOrgDialogDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Wenn dies Ihre einzige Organisation ist, wird auch Ihr Konto gelöscht.",
+    "deleteOrgDialogLabel": "Geben Sie {name} ein, um zu bestätigen",
+    "deleteOrgDialogCancel": "Abbrechen",
+    "deleteOrgDialogSubmit": "Organisation dauerhaft löschen",
+    "deleteOrgDialogMismatch": "Der Name der Organisation stimmt nicht überein."
   },
   "common": {
     "loading": "Wird geladen...",

@@ -12,6 +12,7 @@ const SRC_ROOT = join(process.cwd(), "src");
  */
 const EXPECTED_USE_CLIENT_FILES: readonly string[] = [
   "src/app/[locale]/(app)/error.tsx",
+  "src/app/[locale]/(app)/org/[slug]/_components/DeleteOrgDialog.tsx",
   "src/app/[locale]/(app)/org/[slug]/_components/InviteByEmailForm.tsx",
   "src/app/[locale]/(app)/org/[slug]/_components/MemberActions.tsx",
   "src/app/[locale]/(app)/org/[slug]/_components/SeatManager.tsx",

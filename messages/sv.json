@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Radera konto permanent",
     "deleteDialogMismatch": "E-postadressen matchar inte ditt konto.",
     "deleteDialogError": "Det gick inte att radera kontot. Försök igen.",
-    "deleteBlockedOwner": "Du äger en organisation. Kontakta vårt supportteam för att radera ditt konto.",
+    "deleteBlockedOwner": "Du äger en organisation. Överför ägarskap eller ta bort organisationen innan du tar bort ditt konto.",
     "deleteBlockedMember": "Du tillhör ett team. Kontakta din teamägare för att bli borttagen först.",
     "pronounsHeHim": "Han/Honom",
     "pronounsSheHer": "Hon/Henne",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Platser uppdaterade",
     "removeSeatConfirmTitle": "Ta bort plats",
     "removeSeatConfirmBody": "Ingen återbetalning kommer att ske. Din nästa förnyelse kommer att återspegla det minskade antalet platser.",
-    "removeSeatConfirmAction": "Ta bort"
+    "removeSeatConfirmAction": "Ta bort",
+    "deleteOrg": "Ta bort organisation",
+    "deleteOrgDescription": "Ta bort denna organisation permanent. Alla medlemmar tas bort, väntande inbjudningar avbryts och din prenumeration avslutas omedelbart utan återbetalning.",
+    "deleteOrgDialogTitle": "Ta bort denna organisation?",
+    "deleteOrgDialogDescription": "Denna åtgärd kan inte ångras. Om detta är din enda organisation tas även ditt konto bort.",
+    "deleteOrgDialogLabel": "Skriv {name} för att bekräfta",
+    "deleteOrgDialogCancel": "Avbryt",
+    "deleteOrgDialogSubmit": "Ta bort organisation permanent",
+    "deleteOrgDialogMismatch": "Organisationens namn stämmer inte."
   },
   "common": {
     "loading": "Laddar...",

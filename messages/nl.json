@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Account permanent verwijderen",
     "deleteDialogMismatch": "Het e-mailadres komt niet overeen met uw account.",
     "deleteDialogError": "Account verwijderen mislukt. Probeer het opnieuw.",
-    "deleteBlockedOwner": "Je bent eigenaar van een organisatie. Neem contact op met ons supportteam om je account te verwijderen.",
+    "deleteBlockedOwner": "U bent eigenaar van een organisatie. Draag het eigenaarschap over of verwijder de organisatie voordat u uw account verwijdert.",
     "deleteBlockedMember": "Je behoort tot een team. Neem contact op met je teameigenaar om eerst verwijderd te worden.",
     "pronounsHeHim": "Hij/Hem",
     "pronounsSheHer": "Zij/Haar",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Stoelen succesvol bijgewerkt",
     "removeSeatConfirmTitle": "Stoel verwijderen",
     "removeSeatConfirmBody": "Er wordt geen restitutie verleend. Uw volgende verlenging zal het verminderde aantal stoelen weerspiegelen.",
-    "removeSeatConfirmAction": "Verwijderen"
+    "removeSeatConfirmAction": "Verwijderen",
+    "deleteOrg": "Organisatie verwijderen",
+    "deleteOrgDescription": "Verwijder deze organisatie permanent. Alle leden worden verwijderd, openstaande uitnodigingen geannuleerd en uw abonnement direct opgezegd zonder restitutie.",
+    "deleteOrgDialogTitle": "Deze organisatie verwijderen?",
+    "deleteOrgDialogDescription": "Deze actie kan niet ongedaan worden gemaakt. Als dit uw enige organisatie is, wordt ook uw account verwijderd.",
+    "deleteOrgDialogLabel": "Typ {name} om te bevestigen",
+    "deleteOrgDialogCancel": "Annuleren",
+    "deleteOrgDialogSubmit": "Organisatie permanent verwijderen",
+    "deleteOrgDialogMismatch": "De naam van de organisatie komt niet overeen."
   },
   "common": {
     "loading": "Laden...",

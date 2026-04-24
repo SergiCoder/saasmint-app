@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Elimina account permanentemente",
     "deleteDialogMismatch": "L'email non corrisponde a quella del tuo account.",
     "deleteDialogError": "Impossibile eliminare l'account. Riprova.",
-    "deleteBlockedOwner": "Sei proprietario di un'organizzazione. Contatta il nostro team di supporto per eliminare il tuo account.",
+    "deleteBlockedOwner": "Sei proprietario di un'organizzazione. Trasferisci la proprietà o elimina l'organizzazione prima di eliminare il tuo account.",
     "deleteBlockedMember": "Fai parte di un team. Contatta il proprietario del team per essere rimosso prima.",
     "pronounsHeHim": "Lui",
     "pronounsSheHer": "Lei",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Posti aggiornati con successo",
     "removeSeatConfirmTitle": "Rimuovi posto",
     "removeSeatConfirmBody": "Non verrà emesso alcun rimborso. Il prossimo rinnovo rifletterà il numero ridotto di posti.",
-    "removeSeatConfirmAction": "Rimuovi"
+    "removeSeatConfirmAction": "Rimuovi",
+    "deleteOrg": "Elimina organizzazione",
+    "deleteOrgDescription": "Elimina definitivamente questa organizzazione. Tutti i membri saranno rimossi, gli inviti in sospeso annullati e il tuo abbonamento cancellato immediatamente senza rimborso.",
+    "deleteOrgDialogTitle": "Eliminare questa organizzazione?",
+    "deleteOrgDialogDescription": "Questa azione non può essere annullata. Se questa è la tua unica organizzazione, anche il tuo account sarà eliminato.",
+    "deleteOrgDialogLabel": "Digita {name} per confermare",
+    "deleteOrgDialogCancel": "Annulla",
+    "deleteOrgDialogSubmit": "Elimina organizzazione definitivamente",
+    "deleteOrgDialogMismatch": "Il nome dell'organizzazione non corrisponde."
   },
   "common": {
     "loading": "Caricamento...",

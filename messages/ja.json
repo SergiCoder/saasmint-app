@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "アカウントを完全に削除",
     "deleteDialogMismatch": "メールアドレスがアカウントのものと一致しません。",
     "deleteDialogError": "アカウントの削除に失敗しました。もう一度お試しください。",
-    "deleteBlockedOwner": "あなたは組織のオーナーです。アカウントを削除するには、サポートチームにお問い合わせください。",
+    "deleteBlockedOwner": "あなたは組織のオーナーです。アカウントを削除する前に、オーナー権限を譲渡するか組織を削除してください。",
     "deleteBlockedMember": "あなたはチームに所属しています。先にチームオーナーに連絡して、メンバーから外してもらってください。",
     "pronounsHeHim": "彼/Him",
     "pronounsSheHer": "彼女/Her",
@@ -300,7 +300,15 @@
     "seatsUpdated": "シートが正常に更新されました",
     "removeSeatConfirmTitle": "シートを削除",
     "removeSeatConfirmBody": "返金は行われません。次回の更新時に削減されたシート数が反映されます。",
-    "removeSeatConfirmAction": "削除"
+    "removeSeatConfirmAction": "削除",
+    "deleteOrg": "組織を削除",
+    "deleteOrgDescription": "この組織を完全に削除します。すべてのメンバーが削除され、保留中の招待がキャンセルされ、サブスクリプションは返金なしで即座にキャンセルされます。",
+    "deleteOrgDialogTitle": "この組織を削除しますか？",
+    "deleteOrgDialogDescription": "この操作は取り消せません。これがあなたの唯一の組織である場合、アカウントも削除されます。",
+    "deleteOrgDialogLabel": "確認のため {name} を入力してください",
+    "deleteOrgDialogCancel": "キャンセル",
+    "deleteOrgDialogSubmit": "組織を完全に削除",
+    "deleteOrgDialogMismatch": "組織名が一致しません。"
   },
   "common": {
     "loading": "読み込み中...",

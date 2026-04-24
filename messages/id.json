@@ -252,7 +252,7 @@
     "deleteDialogSubmit": "Hapus akun secara permanen",
     "deleteDialogMismatch": "Email tidak cocok dengan email akun Anda.",
     "deleteDialogError": "Gagal menghapus akun. Silakan coba lagi.",
-    "deleteBlockedOwner": "Anda memiliki organisasi. Silakan hubungi tim dukungan kami untuk menghapus akun Anda.",
+    "deleteBlockedOwner": "Anda pemilik sebuah organisasi. Transfer kepemilikan atau hapus organisasi sebelum menghapus akun Anda.",
     "deleteBlockedMember": "Anda tergabung dalam tim. Silakan hubungi pemilik tim Anda untuk dihapus terlebih dahulu.",
     "pronounsHeHim": "Dia (laki-laki)",
     "pronounsSheHer": "Dia (perempuan)",
@@ -300,7 +300,15 @@
     "seatsUpdated": "Kursi berhasil diperbarui",
     "removeSeatConfirmTitle": "Hapus kursi",
     "removeSeatConfirmBody": "Tidak ada pengembalian dana yang akan diberikan. Perpanjangan berikutnya akan mencerminkan jumlah kursi yang dikurangi.",
-    "removeSeatConfirmAction": "Hapus"
+    "removeSeatConfirmAction": "Hapus",
+    "deleteOrg": "Hapus organisasi",
+    "deleteOrgDescription": "Hapus organisasi ini secara permanen. Semua anggota akan dihapus, undangan yang tertunda dibatalkan, dan langganan Anda dibatalkan segera tanpa pengembalian dana.",
+    "deleteOrgDialogTitle": "Hapus organisasi ini?",
+    "deleteOrgDialogDescription": "Tindakan ini tidak dapat dibatalkan. Jika ini satu-satunya organisasi Anda, akun Anda juga akan dihapus.",
+    "deleteOrgDialogLabel": "Ketik {name} untuk konfirmasi",
+    "deleteOrgDialogCancel": "Batal",
+    "deleteOrgDialogSubmit": "Hapus organisasi secara permanen",
+    "deleteOrgDialogMismatch": "Nama organisasi tidak cocok."
   },
   "common": {
     "loading": "Memuat...",
