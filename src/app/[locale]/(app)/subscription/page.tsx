@@ -5,6 +5,7 @@ import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
 import { CheckoutButton } from "./_components/CheckoutButton";
+import { ProductCheckoutButton } from "./_components/ProductCheckoutButton";
 import { TeamCheckoutButton } from "./_components/TeamCheckoutButton";
 import { CurrentSubscriptionCard } from "./_components/CurrentSubscriptionCard";
 import { getSubscriptionPageData } from "./_data/getSubscriptionPageData";
@@ -53,14 +54,8 @@ export default async function BillingPage({
     searchParams,
   ]);
 
-  const {
-    subscription,
-    plans,
-    products,
-    userOrgs,
-    canManage,
-    teamOwnerName,
-  } = await getSubscriptionPageData(user);
+  const { subscription, plans, products, userOrgs, canManage, teamOwnerName } =
+    await getSubscriptionPageData(user);
 
   const hasOrg = userOrgs.length > 0;
   const currentPlan = subscription?.plan;
@@ -200,9 +195,9 @@ export default async function BillingPage({
         locale={locale}
         renderCta={(product) =>
           product.price && (
-            <CheckoutButton planPriceId={product.price.id}>
+            <ProductCheckoutButton productPriceId={product.price.id}>
               {t("buy")}
-            </CheckoutButton>
+            </ProductCheckoutButton>
           )
         }
       />

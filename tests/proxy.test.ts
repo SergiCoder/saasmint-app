@@ -361,6 +361,7 @@ describe("proxy", () => {
       "/reset-password",
       "/verify-email",
       "/auth/callback",
+      "/auth/error",
       "/invitations",
     ];
 

@@ -32,6 +32,7 @@ const ANONYMOUS_PREFIXES = [
   "/reset-password",
   "/verify-email",
   "/auth/callback",
+  "/auth/error",
   "/invitations",
 ];
 
