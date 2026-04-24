@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { planGateway } from "@/infrastructure/registry";
 import { PLAN_TIER_FREE } from "@/domain/models/Plan";
+import { formatCurrency } from "@/lib/formatCurrency";
 import { translatePlanName } from "@/lib/i18n/planTranslation";
 import { getCurrentUser } from "../../_data/getCurrentUser";
 import { CheckoutButton } from "../_components/CheckoutButton";
@@ -53,8 +54,12 @@ export default async function CheckoutPage({
             {translatePlanName(tPlans, plan)}
           </p>
           <p className="text-sm text-gray-600">
-            {plan.price.displayAmount} {plan.price.currency.toUpperCase()} ·{" "}
-            {intervalLabel}
+            {formatCurrency(
+              plan.price.displayAmount,
+              plan.price.currency,
+              locale,
+            )}{" "}
+            · {intervalLabel}
           </p>
         </div>
         <CheckoutButton planPriceId={plan.price.id} highlighted>
