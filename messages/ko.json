@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "{name}이(가) 관리",
-    "teamPlanReadonly": "팀 구독은 조직 소유자가 관리합니다."
+    "teamPlanReadonly": "팀 구독은 조직 소유자가 관리합니다.",
+    "checkout": "결제"
   },
   "profile": {
     "title": "설정",

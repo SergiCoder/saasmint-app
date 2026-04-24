@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "由 {name} 管理",
-    "teamPlanReadonly": "您的团队订阅由组织所有者管理。"
+    "teamPlanReadonly": "您的团队订阅由组织所有者管理。",
+    "checkout": "结账"
   },
   "profile": {
     "title": "设置",

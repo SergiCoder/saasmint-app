@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Managed by {name}",
-    "teamPlanReadonly": "Your team subscription is managed by the organization owner."
+    "teamPlanReadonly": "Your team subscription is managed by the organization owner.",
+    "checkout": "Checkout"
   },
   "profile": {
     "title": "Profile",

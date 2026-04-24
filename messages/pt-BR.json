@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Gerenciado por {name}",
-    "teamPlanReadonly": "A assinatura da sua equipe é gerenciada pelo proprietário da organização."
+    "teamPlanReadonly": "A assinatura da sua equipe é gerenciada pelo proprietário da organização.",
+    "checkout": "Pagamento"
   },
   "profile": {
     "title": "Configurações",

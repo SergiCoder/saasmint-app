@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Gestito da {name}",
-    "teamPlanReadonly": "L'abbonamento del tuo team è gestito dal proprietario dell'organizzazione."
+    "teamPlanReadonly": "L'abbonamento del tuo team è gestito dal proprietario dell'organizzazione.",
+    "checkout": "Pagamento"
   },
   "profile": {
     "title": "Impostazioni",

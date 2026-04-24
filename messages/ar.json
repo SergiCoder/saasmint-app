@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "تتم الإدارة بواسطة {name}",
-    "teamPlanReadonly": "يتم إدارة اشتراك فريقك بواسطة مالك المؤسسة."
+    "teamPlanReadonly": "يتم إدارة اشتراك فريقك بواسطة مالك المؤسسة.",
+    "checkout": "الدفع"
   },
   "profile": {
     "title": "الإعدادات",

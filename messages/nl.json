@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Beheerd door {name}",
-    "teamPlanReadonly": "Het teamabonnement wordt beheerd door de eigenaar van de organisatie."
+    "teamPlanReadonly": "Het teamabonnement wordt beheerd door de eigenaar van de organisatie.",
+    "checkout": "Afrekenen"
   },
   "profile": {
     "title": "Instellingen",

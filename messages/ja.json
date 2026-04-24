@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "{name} が管理",
-    "teamPlanReadonly": "チームのサブスクリプションは組織オーナーが管理しています。"
+    "teamPlanReadonly": "チームのサブスクリプションは組織オーナーが管理しています。",
+    "checkout": "お支払い"
   },
   "profile": {
     "title": "設定",

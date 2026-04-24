@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Administreret af {name}",
-    "teamPlanReadonly": "Dit teamabonnement administreres af organisationens ejer."
+    "teamPlanReadonly": "Dit teamabonnement administreres af organisationens ejer.",
+    "checkout": "Betaling"
   },
   "profile": {
     "title": "Indstillinger",

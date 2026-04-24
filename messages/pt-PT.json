@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Gerido por {name}",
-    "teamPlanReadonly": "A subscrição da sua equipa é gerida pelo proprietário da organização."
+    "teamPlanReadonly": "A subscrição da sua equipa é gerida pelo proprietário da organização.",
+    "checkout": "Pagamento"
   },
   "profile": {
     "title": "Definições",

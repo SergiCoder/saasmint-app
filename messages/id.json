@@ -214,7 +214,8 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Dikelola oleh {name}",
-    "teamPlanReadonly": "Langganan tim Anda dikelola oleh pemilik organisasi."
+    "teamPlanReadonly": "Langganan tim Anda dikelola oleh pemilik organisasi.",
+    "checkout": "Pembayaran"
   },
   "profile": {
     "title": "Pengaturan",
