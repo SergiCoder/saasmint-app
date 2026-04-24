@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/formatCurrency";
 import { translatePlanName } from "@/lib/i18n/planTranslation";
 import { getCurrentUser } from "../../_data/getCurrentUser";
 import { CheckoutButton } from "../_components/CheckoutButton";
+import { startCheckout } from "@/app/actions/billing";
 
 interface CheckoutPageProps {
   params: Promise<{ locale: string }>;
@@ -62,7 +63,11 @@ export default async function CheckoutPage({
             · {intervalLabel}
           </p>
         </div>
-        <CheckoutButton planPriceId={plan.price.id} highlighted>
+        <CheckoutButton
+          action={startCheckout}
+          field={{ name: "planPriceId", value: plan.price.id }}
+          highlighted
+        >
           {t("upgrade")}
         </CheckoutButton>
       </div>

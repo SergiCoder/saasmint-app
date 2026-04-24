@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
 
 interface Props {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ error?: string }>;
 }
 
@@ -18,8 +20,9 @@ const LOGIN_PASSTHROUGH = new Set([
   "account_deactivated",
 ]);
 
-export default async function AuthErrorPage({ searchParams }: Props) {
-  const { error } = await searchParams;
+export default async function AuthErrorPage({ params, searchParams }: Props) {
+  const [{ locale }, { error }] = await Promise.all([params, searchParams]);
+  setRequestLocale(locale);
   const code = error && LOGIN_PASSTHROUGH.has(error) ? error : "oauth_error";
   redirect(`/login?error=${encodeURIComponent(code)}`);
 }

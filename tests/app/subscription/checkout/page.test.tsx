@@ -34,12 +34,16 @@ vi.mock("@/infrastructure/registry", () => ({
 // correct plan price id. The real component's form + action wiring is
 // covered by tests/app/subscription/_components/CheckoutButton.test.tsx.
 vi.mock("@/app/[locale]/(app)/subscription/_components/CheckoutButton", () => ({
-  CheckoutButton: (props: { planPriceId: string; children: React.ReactNode }) =>
+  CheckoutButton: (props: {
+    field: { name: string; value: string };
+    children: React.ReactNode;
+  }) =>
     React.createElement(
       "button",
       {
         "data-testid": "checkout-button",
-        "data-plan-price-id": props.planPriceId,
+        "data-field-name": props.field.name,
+        "data-plan-price-id": props.field.value,
       },
       props.children,
     ),

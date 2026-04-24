@@ -5,7 +5,7 @@ import type {
 import type { Product } from "@/domain/models/Product";
 import { apiFetch } from "./apiClient";
 import { keysToCamelWithPrice, keysToSnake } from "./caseTransform";
-import { ProductSchema } from "./schemas";
+import { CheckoutSessionResponseSchema, ProductSchema } from "./schemas";
 
 export class DjangoApiProductGateway implements IProductGateway {
   async listProducts(currency?: string): Promise<Product[]> {
@@ -21,9 +21,10 @@ export class DjangoApiProductGateway implements IProductGateway {
   async createCheckoutSession(
     input: ProductCheckoutInput,
   ): Promise<{ url: string }> {
-    return apiFetch<{ url: string }>("/billing/product-checkout-sessions/", {
+    const raw = await apiFetch<unknown>("/billing/product-checkout-sessions/", {
       method: "POST",
       body: JSON.stringify(keysToSnake(input)),
     });
+    return CheckoutSessionResponseSchema.parse(raw);
   }
 }

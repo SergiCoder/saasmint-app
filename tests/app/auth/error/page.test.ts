@@ -7,15 +7,24 @@ vi.mock("next/navigation", () => ({
   redirect: (path: string) => mockRedirect(path),
 }));
 
+const mockSetRequestLocale = vi.fn();
+vi.mock("next-intl/server", () => ({
+  setRequestLocale: (locale: string) => mockSetRequestLocale(locale),
+}));
+
 const { default: AuthErrorPage } =
   await import("@/app/[locale]/auth/error/page");
 
-async function renderPage(searchParams: { error?: string }) {
-  await AuthErrorPage({ searchParams: Promise.resolve(searchParams) });
+async function renderPage(searchParams: { error?: string }, locale = "en") {
+  await AuthErrorPage({
+    params: Promise.resolve({ locale }),
+    searchParams: Promise.resolve(searchParams),
+  });
 }
 
 beforeEach(() => {
   mockRedirect.mockClear();
+  mockSetRequestLocale.mockClear();
 });
 
 describe("AuthErrorPage (Django OAuth failure landing)", () => {
@@ -67,5 +76,10 @@ describe("AuthErrorPage (Django OAuth failure landing)", () => {
       /NEXT_REDIRECT/,
     );
     expect(mockRedirect).toHaveBeenCalledWith("/login?error=oauth_error");
+  });
+
+  it("calls setRequestLocale with the locale from params", async () => {
+    await expect(renderPage({}, "es")).rejects.toThrow(/NEXT_REDIRECT/);
+    expect(mockSetRequestLocale).toHaveBeenCalledWith("es");
   });
 });

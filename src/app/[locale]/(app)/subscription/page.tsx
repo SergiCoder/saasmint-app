@@ -5,9 +5,9 @@ import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
 import { CheckoutButton } from "./_components/CheckoutButton";
-import { ProductCheckoutButton } from "./_components/ProductCheckoutButton";
 import { TeamCheckoutButton } from "./_components/TeamCheckoutButton";
 import { CurrentSubscriptionCard } from "./_components/CurrentSubscriptionCard";
+import { startCheckout, startProductCheckout } from "@/app/actions/billing";
 import { getSubscriptionPageData } from "./_data/getSubscriptionPageData";
 import {
   buildPlanCardGroups,
@@ -111,7 +111,11 @@ export default async function BillingPage({
         );
       }
       return (
-        <CheckoutButton planPriceId={plan.price.id} highlighted={highlighted}>
+        <CheckoutButton
+          action={startCheckout}
+          field={{ name: "planPriceId", value: plan.price.id }}
+          highlighted={highlighted}
+        >
           {ctaLabel}
         </CheckoutButton>
       );
@@ -195,9 +199,12 @@ export default async function BillingPage({
         locale={locale}
         renderCta={(product) =>
           product.price && (
-            <ProductCheckoutButton productPriceId={product.price.id}>
+            <CheckoutButton
+              action={startProductCheckout}
+              field={{ name: "productPriceId", value: product.price.id }}
+            >
               {t("buy")}
-            </ProductCheckoutButton>
+            </CheckoutButton>
           )
         }
       />
