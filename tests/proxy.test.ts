@@ -154,6 +154,20 @@ describe("proxy", () => {
       expect(response.headers.get("location")).toContain("/es/login");
     });
 
+    it("falls back to default locale when the first segment is not a supported locale (Stripe return case)", async () => {
+      // Stripe redirects back to ${APP_ORIGIN}/subscription?status=success with
+      // no locale prefix. If cookies were blocked (sameSite) or expired, the
+      // proxy must redirect to /en/login — NOT /subscription/login, which
+      // would loop because /subscription/... is itself a protected prefix.
+      const request = createMockRequest(`${APP_URL}/subscription`);
+      const response = await proxy(request as unknown as NextRequest);
+
+      expect(response.status).toBe(307);
+      const location = response.headers.get("location") ?? "";
+      expect(location).toContain("/en/login");
+      expect(location).not.toContain("/subscription/login");
+    });
+
     it("redirects to login when access_token is expired and no refresh_token", async () => {
       const pastExp = Math.floor(Date.now() / 1000) - 60;
       const request = createMockRequest(`${APP_URL}/en/dashboard`, [

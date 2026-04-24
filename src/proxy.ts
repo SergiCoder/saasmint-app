@@ -165,7 +165,12 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isProtected && (!accessToken || isTokenExpired(accessToken))) {
-    const locale = pathname.split("/")[1] ?? routing.defaultLocale;
+    const firstSegment = pathname.split("/")[1];
+    const supportedLocales = routing.locales as readonly string[];
+    const locale =
+      firstSegment && supportedLocales.includes(firstSegment)
+        ? firstSegment
+        : routing.defaultLocale;
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
