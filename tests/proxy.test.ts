@@ -64,6 +64,9 @@ function createMockRequest(
   const cookieSetSpy = vi.fn((name: string, value: string) => {
     jar.set(name, value);
   });
+  const cookieDeleteSpy = vi.fn((name: string) => {
+    jar.delete(name);
+  });
   return {
     nextUrl: parsedUrl,
     url: parsedUrl.toString(),
@@ -73,6 +76,7 @@ function createMockRequest(
       get: (name: string) =>
         jar.has(name) ? { name, value: jar.get(name)! } : undefined,
       set: cookieSetSpy,
+      delete: cookieDeleteSpy,
     },
     headers: new Headers(),
     cookieSetSpy,
@@ -293,6 +297,30 @@ describe("proxy", () => {
       // Public routes should NOT redirect to login even if refresh fails
       const location = response.headers.get("location");
       expect(location).toBeNull();
+    });
+
+    it("clears stale cookies when Django rejects the refresh (public route)", async () => {
+      const pastExp = Math.floor(Date.now() / 1000) - 60;
+
+      fetchSpy.mockResolvedValue({ ok: false, status: 401 });
+
+      const request = createMockRequest(`${APP_URL}/en/pricing`, [
+        { name: "access_token", value: makeToken(pastExp) },
+        { name: "refresh_token", value: "revoked-refresh-tok" },
+      ]);
+      const response = await proxy(request as unknown as NextRequest);
+
+      // Downstream server components must see the cookies gone so gateway
+      // calls don't send a rejected token (the bug that crashed /pricing).
+      expect(request.cookies.get("access_token")).toBeUndefined();
+      expect(request.cookies.get("refresh_token")).toBeUndefined();
+
+      // Response must also clear them in the browser (Max-Age=0 Set-Cookie).
+      const responseCookies = response.cookies.getAll();
+      const access = responseCookies.find((c) => c.name === "access_token");
+      const refresh = responseCookies.find((c) => c.name === "refresh_token");
+      expect(access?.value).toBe("");
+      expect(refresh?.value).toBe("");
     });
   });
 
