@@ -1,5 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+vi.mock("@/app/actions/marketing", () => ({
+  submitInquiry: vi.fn(),
+}));
+
 import { CtaSection } from "@/presentation/components/organisms";
 
 const defaultProps = {
@@ -8,6 +13,8 @@ const defaultProps = {
   subtitle: "Start your free trial today.",
   inputPlaceholder: "you@example.com",
   buttonText: "Sign Up",
+  successTitle: "Thanks!",
+  successBody: "We'll be in touch shortly.",
 };
 
 describe("CtaSection", () => {
@@ -43,5 +50,27 @@ describe("CtaSection", () => {
     );
     const section = container.querySelector("section") as HTMLElement;
     expect(section.className).toContain("bg-gray-50");
+  });
+
+  it("includes a hidden source input pinning the inquiry to landing-cta", () => {
+    const { container } = render(<CtaSection {...defaultProps} />);
+    const source = container.querySelector(
+      'input[type="hidden"][name="source"]',
+    ) as HTMLInputElement | null;
+    expect(source?.value).toBe("landing-cta");
+  });
+
+  it("includes a visually-hidden honeypot input bots will fill", () => {
+    const { container } = render(<CtaSection {...defaultProps} />);
+    const honeypot = container.querySelector(
+      'input[name="honeypot"]',
+    ) as HTMLInputElement | null;
+
+    expect(honeypot).not.toBeNull();
+    expect(honeypot?.tabIndex).toBe(-1);
+    expect(honeypot?.getAttribute("aria-hidden")).toBe("true");
+    // Off-screen via positioning, not display:none — bots that respect
+    // display:none would otherwise skip the field and defeat the trap.
+    expect(honeypot?.className).toMatch(/-left-\[9999px\]/);
   });
 });
