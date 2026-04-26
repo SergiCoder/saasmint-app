@@ -1,11 +1,31 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { ActionResult } from "@/lib/actions/ActionResult";
 
 vi.mock("@/app/actions/marketing", () => ({
   submitInquiry: vi.fn(),
 }));
 
+// Stub `useActionState` so tests can drive the rendered state through the
+// success/error branches without actually invoking the server action.
+const mockState = vi.hoisted(
+  () => ({ value: null }) as { value: ActionResult | null },
+);
+
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react")>();
+  return {
+    ...actual,
+    useActionState: <S, P>(_action: unknown, _initial: S) =>
+      [mockState.value as S, (_payload: P) => {}, false] as const,
+  };
+});
+
 import { CtaSection } from "@/presentation/components/organisms";
+
+beforeEach(() => {
+  mockState.value = null;
+});
 
 const defaultProps = {
   label: "Get Started",
@@ -72,5 +92,32 @@ describe("CtaSection", () => {
     // Off-screen via positioning, not display:none — bots that respect
     // display:none would otherwise skip the field and defeat the trap.
     expect(honeypot?.className).toMatch(/-left-\[9999px\]/);
+  });
+
+  it("swaps the form for the success message when the action succeeds", () => {
+    mockState.value = { ok: true };
+    const { container } = render(<CtaSection {...defaultProps} />);
+
+    expect(screen.getByText("Thanks!")).toBeInTheDocument();
+    expect(screen.getByText("We'll be in touch shortly.")).toBeInTheDocument();
+    // Pre-submit copy & form are gone.
+    expect(screen.queryByText("Ready to launch?")).toBeNull();
+    expect(screen.queryByText("Start your free trial today.")).toBeNull();
+    expect(container.querySelector("form")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Sign Up" })).toBeNull();
+  });
+
+  it("renders an error AlertBanner with the action message when the action fails", () => {
+    mockState.value = {
+      ok: false,
+      code: "HTTP_429",
+      message: "Too many requests, slow down.",
+    };
+    render(<CtaSection {...defaultProps} />);
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("Too many requests, slow down.");
+    // Pre-submit form is still rendered so the user can retry.
+    expect(screen.getByRole("button", { name: "Sign Up" })).toBeInTheDocument();
   });
 });
