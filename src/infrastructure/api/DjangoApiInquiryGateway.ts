@@ -12,7 +12,9 @@ export class DjangoApiInquiryGateway implements IInquiryGateway {
         email: input.email,
         message: input.message ?? "",
         source: input.source,
-        honeypot: input.honeypot ?? "",
+        // Server action short-circuits before reaching the gateway when the
+        // honeypot was filled, so submissions that get here are always clean.
+        honeypot: "",
       }),
     });
   }

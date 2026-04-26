@@ -10,10 +10,10 @@ import {
 import { getString } from "@/lib/actions/parseFormData";
 import type { InquirySource } from "@/application/ports/IInquiryGateway";
 
-const VALID_SOURCES: ReadonlySet<InquirySource> = new Set([
+const VALID_SOURCES = [
   "landing-cta",
   "contact-page",
-]);
+] as const satisfies readonly InquirySource[];
 
 const MAX_MESSAGE_LENGTH = 5000;
 const MAX_EMAIL_LENGTH = 254;
@@ -21,7 +21,7 @@ const MAX_EMAIL_LENGTH = 254;
 function isValidSource(value: unknown): value is InquirySource {
   return (
     typeof value === "string" &&
-    (VALID_SOURCES as ReadonlySet<string>).has(value)
+    (VALID_SOURCES as readonly string[]).includes(value)
   );
 }
 

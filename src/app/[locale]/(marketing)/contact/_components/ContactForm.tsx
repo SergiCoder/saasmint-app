@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Input } from "@/presentation/components/atoms/Input";
 import { Button } from "@/presentation/components/atoms/Button";
+import { HoneypotInput } from "@/presentation/components/atoms/HoneypotInput";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { submitInquiry } from "@/app/actions/marketing";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
@@ -40,14 +41,7 @@ export function ContactForm({
         <AlertBanner variant="error">{translateError(state)}</AlertBanner>
       )}
       <input type="hidden" name="source" value="contact-page" />
-      <input
-        type="text"
-        name="honeypot"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-      />
+      <HoneypotInput />
       <Input
         type="email"
         name="email"

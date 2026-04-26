@@ -61,23 +61,6 @@ describe("DjangoApiInquiryGateway", () => {
     );
   });
 
-  it("forwards a populated honeypot field so the backend can silently drop it", async () => {
-    mockPublicApiFetchVoid.mockResolvedValue(undefined);
-
-    await gateway.submit({
-      email: "bot@example.com",
-      source: "landing-cta",
-      honeypot: "spammed",
-    });
-
-    expect(mockPublicApiFetchVoid).toHaveBeenCalledWith(
-      "/marketing/inquiries/",
-      expect.objectContaining({
-        body: expect.stringContaining('"honeypot":"spammed"'),
-      }),
-    );
-  });
-
   it("propagates errors from publicApiFetchVoid", async () => {
     mockPublicApiFetchVoid.mockRejectedValue(
       new Error("API 429: rate limited"),

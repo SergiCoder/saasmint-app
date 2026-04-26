@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Input } from "../atoms/Input";
 import { Button } from "../atoms/Button";
+import { HoneypotInput } from "../atoms/HoneypotInput";
 import { SectionLabel } from "../atoms/SectionLabel";
 import { AlertBanner } from "../molecules/AlertBanner";
 import { submitInquiry } from "@/app/actions/marketing";
@@ -63,14 +64,7 @@ export function CtaSection({
                 className="flex flex-col items-center justify-center gap-2 sm:flex-row"
               >
                 <input type="hidden" name="source" value="landing-cta" />
-                <input
-                  type="text"
-                  name="honeypot"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  aria-hidden="true"
-                  className="absolute -left-[9999px] h-0 w-0 opacity-0"
-                />
+                <HoneypotInput />
                 <Input
                   name="email"
                   type="email"
