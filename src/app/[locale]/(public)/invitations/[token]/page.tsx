@@ -4,6 +4,7 @@ import {
   invitationGateway,
   subscriptionGateway,
 } from "@/infrastructure/registry";
+import { AuthError } from "@/domain/errors/AuthError";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
 import { declineInvitation } from "@/app/actions/invitation";
@@ -32,10 +33,14 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
   const [t, invitation, subscription] = await Promise.all([
     getTranslations("invitation"),
     invitationGateway.getByToken(token),
-    // Anonymous visitors see null (apiFetch throws AuthError → caught here);
-    // already-authenticated visitors with an active personal sub see the
-    // concurrent-billing notice below.
-    subscriptionGateway.getSubscription().catch(() => null),
+    // Anonymous visitors hit AuthError ("NO_SESSION") because apiFetch needs
+    // a token; coerce that single case to null. Anything else (network down,
+    // schema parse failure, 5xx) should still surface to the error boundary.
+    // The gateway already maps a 404 (no subscription) to null on its own.
+    subscriptionGateway.getSubscription().catch((err: unknown) => {
+      if (err instanceof AuthError) return null;
+      throw err;
+    }),
   ]);
 
   const showConcurrentBillingNotice =

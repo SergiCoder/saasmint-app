@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Invitation } from "@/domain/models/Invitation";
 import type { Subscription } from "@/domain/models/Subscription";
+import { AuthError } from "@/domain/errors/AuthError";
 
 // --- Mocks ---------------------------------------------------------------
 
@@ -106,8 +107,12 @@ describe("InvitationPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetByToken.mockResolvedValue(makeInvitation());
-    // Default: anonymous visitor — gateway throws → page coerces to null.
-    mockGetSubscription.mockRejectedValue(new Error("AuthError"));
+    // Default: anonymous visitor — gateway throws AuthError → page coerces
+    // to null. Use the real domain class so the page's `instanceof AuthError`
+    // narrowing actually fires (a generic Error would re-throw).
+    mockGetSubscription.mockRejectedValue(
+      new AuthError("No active session", "NO_SESSION"),
+    );
   });
 
   it("fetches the invitation by its token and forwards the token to the accept form", async () => {
@@ -177,6 +182,20 @@ describe("InvitationPage", () => {
       expect(
         screen.getByText(/concurrentSubscriptionNotice/),
       ).toBeInTheDocument();
+    });
+
+    it("does not render the notice when an authed free-tier visitor has no subscription (gateway resolves null)", async () => {
+      // Distinct from the anonymous AuthError-rejected case: an authed user
+      // on the free tier hits the gateway successfully and gets `null` back
+      // (backend 404 → null per DjangoApiSubscriptionGateway). No concurrent
+      // billing risk, so no notice.
+      mockGetSubscription.mockResolvedValue(null);
+
+      await renderPage("tok_abc123");
+
+      expect(
+        screen.queryByText(/concurrentSubscriptionNotice/),
+      ).not.toBeInTheDocument();
     });
 
     it("does not render the notice when the authed visitor has a team sub (only personal subs trigger dual billing on accept)", async () => {
