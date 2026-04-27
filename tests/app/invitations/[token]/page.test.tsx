@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Invitation } from "@/domain/models/Invitation";
+import type { Subscription } from "@/domain/models/Subscription";
 
 // --- Mocks ---------------------------------------------------------------
 
@@ -15,8 +16,13 @@ vi.mock("next-intl/server", () => ({
 }));
 
 const mockGetByToken = vi.fn<(token: string) => Promise<Invitation>>();
+const mockGetSubscription =
+  vi.fn<(currency?: string) => Promise<Subscription | null>>();
 vi.mock("@/infrastructure/registry", () => ({
   invitationGateway: { getByToken: (t: string) => mockGetByToken(t) },
+  subscriptionGateway: {
+    getSubscription: (currency?: string) => mockGetSubscription(currency),
+  },
 }));
 
 vi.mock("@/app/actions/invitation", () => ({
@@ -64,6 +70,29 @@ function makeInvitation(overrides: Partial<Invitation> = {}): Invitation {
   };
 }
 
+function makeSub(overrides: Partial<Subscription> = {}): Subscription {
+  return {
+    id: "sub_1",
+    status: "active",
+    plan: {
+      id: "plan_1",
+      name: "Pro",
+      description: "",
+      context: "personal",
+      tier: 3,
+      interval: "month",
+      price: null,
+    },
+    quantity: 1,
+    trialEndsAt: null,
+    currentPeriodStart: "2026-01-01T00:00:00Z",
+    currentPeriodEnd: "2026-02-01T00:00:00Z",
+    canceledAt: null,
+    createdAt: "2026-01-01T00:00:00Z",
+    ...overrides,
+  };
+}
+
 async function renderPage(token: string) {
   const jsx = await InvitationPage({
     params: Promise.resolve({ locale: "en", token }),
@@ -77,6 +106,8 @@ describe("InvitationPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetByToken.mockResolvedValue(makeInvitation());
+    // Default: anonymous visitor — gateway throws → page coerces to null.
+    mockGetSubscription.mockRejectedValue(new Error("AuthError"));
   });
 
   it("fetches the invitation by its token and forwards the token to the accept form", async () => {
@@ -126,6 +157,49 @@ describe("InvitationPage", () => {
     mockGetByToken.mockRejectedValue(new Error("Not found"));
 
     await expect(renderPage("bad_token")).rejects.toThrow("Not found");
+  });
+
+  describe("concurrent-billing notice", () => {
+    it("does not render the notice for anonymous visitors (no active session)", async () => {
+      // beforeEach already configures mockGetSubscription to reject.
+      await renderPage("tok_abc123");
+
+      expect(
+        screen.queryByText(/concurrentSubscriptionNotice/),
+      ).not.toBeInTheDocument();
+    });
+
+    it("renders the concurrent-billing notice when an authed visitor has an active personal sub", async () => {
+      mockGetSubscription.mockResolvedValue(makeSub());
+
+      await renderPage("tok_abc123");
+
+      expect(
+        screen.getByText(/concurrentSubscriptionNotice/),
+      ).toBeInTheDocument();
+    });
+
+    it("does not render the notice when the authed visitor has a team sub (only personal subs trigger dual billing on accept)", async () => {
+      mockGetSubscription.mockResolvedValue(
+        makeSub({
+          plan: {
+            id: "plan_team",
+            name: "Team Pro",
+            description: "",
+            context: "team",
+            tier: 3,
+            interval: "month",
+            price: null,
+          },
+        }),
+      );
+
+      await renderPage("tok_abc123");
+
+      expect(
+        screen.queryByText(/concurrentSubscriptionNotice/),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("generateMetadata", () => {

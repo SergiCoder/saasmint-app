@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { invitationGateway } from "@/infrastructure/registry";
+import {
+  invitationGateway,
+  subscriptionGateway,
+} from "@/infrastructure/registry";
+import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
 import { declineInvitation } from "@/app/actions/invitation";
 import { AcceptInvitationForm } from "./_components/AcceptInvitationForm";
@@ -25,10 +29,17 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
   const { locale, token } = await params;
   setRequestLocale(locale);
 
-  const [t, invitation] = await Promise.all([
+  const [t, invitation, subscription] = await Promise.all([
     getTranslations("invitation"),
     invitationGateway.getByToken(token),
+    // Anonymous visitors see null (apiFetch throws AuthError → caught here);
+    // already-authenticated visitors with an active personal sub see the
+    // concurrent-billing notice below.
+    subscriptionGateway.getSubscription().catch(() => null),
   ]);
+
+  const showConcurrentBillingNotice =
+    subscription !== null && subscription.plan.context === "personal";
 
   return (
     <div className="mx-auto max-w-md space-y-6 py-12">
@@ -37,6 +48,12 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
         <p className="mt-2 mb-6 text-sm text-gray-600">
           {t("description", { orgName: invitation.orgName })}
         </p>
+
+        {showConcurrentBillingNotice && (
+          <AlertBanner variant="info" className="mb-4 text-left">
+            {t("concurrentSubscriptionNotice")}
+          </AlertBanner>
+        )}
 
         <AcceptInvitationForm token={token} />
 
