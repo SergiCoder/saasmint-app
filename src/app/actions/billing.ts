@@ -94,8 +94,7 @@ export async function startCheckout(
     const session = await subscriptionGateway.createCheckoutSession({
       planPriceId,
       ...(quantity ? { quantity } : {}),
-      ...(orgName ? { orgName } : {}),
-      ...(orgName ? { keepPersonalSubscription } : {}),
+      ...(orgName ? { orgName, keepPersonalSubscription } : {}),
       successUrl: `${APP_ORIGIN}/subscription?status=success`,
       cancelUrl: `${APP_ORIGIN}/subscription`,
     });

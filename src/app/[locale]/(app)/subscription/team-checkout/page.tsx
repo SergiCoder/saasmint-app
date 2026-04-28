@@ -48,11 +48,13 @@ export default async function TeamCheckoutPage({
     subscription.status === "active" &&
     subscription.canceledAt === null;
 
+  const personalSubEndDate = showPersonalSubNotice
+    ? new Date(subscription.currentPeriodEnd)
+    : null;
   const personalSubEndDateDisplay =
-    showPersonalSubNotice &&
-    !Number.isNaN(new Date(subscription.currentPeriodEnd).getTime())
+    personalSubEndDate && !Number.isNaN(personalSubEndDate.getTime())
       ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-          new Date(subscription.currentPeriodEnd),
+          personalSubEndDate,
         )
       : undefined;
 
