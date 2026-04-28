@@ -21,6 +21,8 @@ const defaultProps = {
     total: "Total",
     checkout: "Upgrade",
     error: "Failed to start checkout. Please try again.",
+    keepPersonalSubscription:
+      "Keep my personal subscription running alongside the team plan.",
   },
 };
 
@@ -96,5 +98,37 @@ describe("TeamCheckoutForm", () => {
   it("renders the checkout button", () => {
     render(<TeamCheckoutForm {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
+  });
+
+  it("hides the personal-sub notice and checkbox when no notice is provided", () => {
+    const { container } = render(<TeamCheckoutForm {...defaultProps} />);
+    expect(
+      container.querySelector('input[name="keepPersonalSubscription"]'),
+    ).toBeNull();
+  });
+
+  it("renders the personal-sub notice and an unchecked opt-out checkbox when a notice is provided", () => {
+    const { container } = render(
+      <TeamCheckoutForm
+        {...defaultProps}
+        personalSubAutoCancelNotice="Your personal subscription will end on May 1, 2026 when this team plan starts billing."
+      />,
+    );
+
+    expect(
+      screen.getByText(/Your personal subscription will end on May 1, 2026/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(
+        /Keep my personal subscription running alongside the team plan/,
+      ),
+    ).toBeInTheDocument();
+
+    const checkbox = container.querySelector(
+      'input[name="keepPersonalSubscription"]',
+    ) as HTMLInputElement;
+    expect(checkbox).not.toBeNull();
+    expect(checkbox.type).toBe("checkbox");
+    expect(checkbox.checked).toBe(false);
   });
 });
