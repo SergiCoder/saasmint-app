@@ -280,4 +280,47 @@ describe("TeamCheckoutPage", () => {
     const form = screen.getByTestId("team-checkout-form");
     expect(form).toHaveAttribute("data-personal-sub-notice", "");
   });
+
+  it("does not pass a personal-sub notice when the personal subscription is trialing (only 'active' qualifies)", async () => {
+    mockGetSubscription.mockResolvedValue(
+      makePersonalSubscription({ status: "trialing" }),
+    );
+
+    await renderPage({ plan: "price_team_pro_year" });
+
+    const form = screen.getByTestId("team-checkout-form");
+    expect(form).toHaveAttribute("data-personal-sub-notice", "");
+  });
+
+  it("does not pass a personal-sub notice when currentPeriodEnd is unparseable", async () => {
+    mockGetSubscription.mockResolvedValue(
+      makePersonalSubscription({ currentPeriodEnd: "not-a-date" }),
+    );
+
+    await renderPage({ plan: "price_team_pro_year" });
+
+    const form = screen.getByTestId("team-checkout-form");
+    expect(form).toHaveAttribute("data-personal-sub-notice", "");
+  });
+
+  it("formats currentPeriodEnd via Intl.DateTimeFormat and passes it as the 'date' param of the notice translation", async () => {
+    mockGetSubscription.mockResolvedValue(
+      makePersonalSubscription({ currentPeriodEnd: "2026-05-01T00:00:00Z" }),
+    );
+
+    await renderPage({ plan: "price_team_pro_year" });
+
+    // The translator stub echoes the key, so we verify formatting by checking
+    // how `t(...)` was invoked: with the long-format date string for the en
+    // locale. The exact string is whatever `Intl.DateTimeFormat("en", { dateStyle: "long" })`
+    // produces for that ISO date — recompute it locally to keep the assertion
+    // independent of timezone/ICU drift.
+    const expectedDate = new Intl.DateTimeFormat("en", {
+      dateStyle: "long",
+    }).format(new Date("2026-05-01T00:00:00Z"));
+
+    expect(mockTranslate).toHaveBeenCalledWith("personalSubAutoCancelNotice", {
+      date: expectedDate,
+    });
+  });
 });

@@ -131,4 +131,21 @@ describe("TeamCheckoutForm", () => {
     expect(checkbox.type).toBe("checkbox");
     expect(checkbox.checked).toBe(false);
   });
+
+  it("toggles the opt-out checkbox to checked when the user clicks it", () => {
+    const { container } = render(
+      <TeamCheckoutForm
+        {...defaultProps}
+        personalSubAutoCancelNotice="Your personal subscription will end on May 1, 2026."
+      />,
+    );
+
+    const checkbox = container.querySelector(
+      'input[name="keepPersonalSubscription"]',
+    ) as HTMLInputElement;
+    expect(checkbox.checked).toBe(false);
+
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+  });
 });
