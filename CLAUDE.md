@@ -25,11 +25,11 @@ Core types in `src/domain/models/`. All model fields are declared `readonly` (in
 - `Org` — organisation record (id, name, slug, logoUrl)
 - `OrgMember` — org membership (nested `user: OrgMemberUser`, role: `owner | admin | member`, isBilling flag)
 - `Invitation` — org invite (id, org, email, role: `admin | member`, status: `pending | accepted | expired | cancelled | declined`, invitedBy, dates)
-- `Plan` — billing plan (id, name, description, context: `personal | team`, tier: `PlanTier` (1=free, 2=basic, 3=pro), interval: `month | year`, single `price`). The backend catalog only returns paid plans; the personal-free tier is the absence of a `Subscription` and is synthesised client-side where a Free card needs to be rendered (e.g. marketing pricing page).
+- `Plan` — billing plan (id, name, description, context: `personal | team`, tier: `PlanTier` (1=free, 2=basic, 3=pro), interval: `month | year`, single `price`). The backend catalog only returns paid plans; the personal-free tier is the absence of a personal `Subscription` row and is synthesised client-side where a Free card needs to be rendered (e.g. marketing pricing page).
 - `PlanPrice` — individual plan price point (id, amount, displayAmount, currency)
 - `Product` — one-time purchase product (id, name, type: `one_time`, credits, `price`)
 - `ProductPrice` — individual product price point (id, amount, displayAmount, currency)
-- `Subscription` — real Stripe subscription row (status, plan snapshot, seat `quantity`, period dates, trial); team seat count is capped by `MAX_SEATS`. Users on the free tier have no row — the backend returns 404 and `(app)/_data/getSubscription.ts` resolves to `null`.
+- `Subscription` — real Stripe subscription row (status, plan snapshot, seat `quantity`, period dates, trial); team seat count is capped by `MAX_SEATS`. `GET /billing/subscriptions/me/` returns a paginated envelope with 0–2 rows: free-tier users get an empty `results` array (no 404 special-case anymore), single-context users get one row, and concurrent personal+team billers (rule 5) get both. The gateway (`DjangoApiSubscriptionGateway.listSubscriptions`) unwraps the envelope; `(app)/_data/getSubscriptions.ts` is the cached fetcher and resolves to `[]` on any failure. Use `findPersonalSubscription()` / `findTeamSubscription()` from `src/domain/models/Subscription.ts` to pick a row out of the list. Mutating endpoints (`cancel`, `resume`, `updateSeats`) accept an optional `SubscriptionContext` (`"personal" | "team"`) that is plumbed end-to-end as a `?context=` query string — required when both rows exist, optional otherwise (the backend defaults to `team` for org members and `personal` for everyone else).
 - `PhonePrefix` — reference entry for phone-number country prefixes (prefix, label)
 
 Domain errors in `src/domain/errors/`:
@@ -121,7 +121,7 @@ Form-field parsing uses the tiny helpers in `src/lib/actions/parseFormData.ts` (
 
 Actions `console.error` the raw thrown error (including any `ApiError.body`) before returning `toActionError(err)` / `fail(...)`, so server logs retain the backend failure payload even though clients only see the stable error code.
 
-Co-located server-side fetchers in `_data/` directories also call gateways directly and are wrapped in `React.cache()` (e.g. `(app)/_data/getSubscription.ts`, `(app)/_data/getCurrentUser.ts`).
+Co-located server-side fetchers in `_data/` directories also call gateways directly and are wrapped in `React.cache()` (e.g. `(app)/_data/getSubscriptions.ts`, `(app)/_data/getCurrentUser.ts`).
 
 ## Route Groups
 
@@ -132,7 +132,7 @@ Co-located server-side fetchers in `_data/` directories also call gateways direc
 - `(app)/` — authenticated pages (dashboard, subscription, profile, org) using `AppLayout`
 - `(public)/` — unauthenticated public pages (invitation acceptance)
 
-Route-specific client components live in co-located `_components/` directories (e.g. `(app)/subscription/_components/CheckoutButton.tsx`). Shared server-side data fetchers live in co-located `_data/` directories and are wrapped in `React.cache()` so a layout and its pages share a single API call per render (e.g. `(app)/_data/getSubscription.ts`). These fetchers call gateways directly from the infrastructure registry.
+Route-specific client components live in co-located `_components/` directories (e.g. `(app)/subscription/_components/CheckoutButton.tsx`). Shared server-side data fetchers live in co-located `_data/` directories and are wrapped in `React.cache()` so a layout and its pages share a single API call per render (e.g. `(app)/_data/getSubscriptions.ts`). These fetchers call gateways directly from the infrastructure registry.
 
 ## Key Rules
 
