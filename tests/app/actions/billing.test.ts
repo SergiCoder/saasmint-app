@@ -14,7 +14,7 @@ vi.mock("next/cache", () => ({
 }));
 
 const mockGetCurrentUser = vi.fn();
-const mockGetSubscription = vi.fn();
+const mockListSubscriptions = vi.fn();
 const mockCreateCheckoutSession = vi.fn();
 const mockCreateBillingPortalSession = vi.fn();
 const mockCancelSubscription = vi.fn();
@@ -25,7 +25,7 @@ const mockCreateProductCheckoutSession = vi.fn();
 vi.mock("@/infrastructure/registry", () => ({
   authGateway: { getCurrentUser: mockGetCurrentUser },
   subscriptionGateway: {
-    getSubscription: mockGetSubscription,
+    listSubscriptions: mockListSubscriptions,
     createCheckoutSession: mockCreateCheckoutSession,
     createBillingPortalSession: mockCreateBillingPortalSession,
     cancelSubscription: mockCancelSubscription,
@@ -315,7 +315,7 @@ describe("billing server actions", () => {
 
     beforeEach(() => {
       mockGetCurrentUser.mockResolvedValue(portalUser);
-      mockGetSubscription.mockResolvedValue(portalSubscription);
+      mockListSubscriptions.mockResolvedValue([portalSubscription]);
       mockCanManageBilling.mockResolvedValue(true);
     });
 
@@ -363,7 +363,7 @@ describe("billing server actions", () => {
 
     it("cancels the subscription and revalidates when allowed", async () => {
       mockGetCurrentUser.mockResolvedValue(user);
-      mockGetSubscription.mockResolvedValue(subscription);
+      mockListSubscriptions.mockResolvedValue([subscription]);
       mockCanManageBilling.mockResolvedValue(true);
       mockCancelSubscription.mockResolvedValue(undefined);
 
@@ -379,7 +379,7 @@ describe("billing server actions", () => {
 
     it("returns not_billing_member when caller cannot manage billing", async () => {
       mockGetCurrentUser.mockResolvedValue(user);
-      mockGetSubscription.mockResolvedValue(subscription);
+      mockListSubscriptions.mockResolvedValue([subscription]);
       mockCanManageBilling.mockResolvedValue(false);
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -393,7 +393,7 @@ describe("billing server actions", () => {
 
     it("returns no_subscription when there is no active subscription", async () => {
       mockGetCurrentUser.mockResolvedValue(user);
-      mockGetSubscription.mockResolvedValue(null);
+      mockListSubscriptions.mockResolvedValue([]);
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const result = await cancelRenewal();
@@ -411,7 +411,7 @@ describe("billing server actions", () => {
 
     it("resumes and revalidates when user can manage billing", async () => {
       mockGetCurrentUser.mockResolvedValue(user);
-      mockGetSubscription.mockResolvedValue(subscription);
+      mockListSubscriptions.mockResolvedValue([subscription]);
       mockCanManageBilling.mockResolvedValue(true);
       mockResumeSubscription.mockResolvedValue(undefined);
 
@@ -427,7 +427,7 @@ describe("billing server actions", () => {
 
     it("returns not_billing_member when user cannot manage billing", async () => {
       mockGetCurrentUser.mockResolvedValue(user);
-      mockGetSubscription.mockResolvedValue(subscription);
+      mockListSubscriptions.mockResolvedValue([subscription]);
       mockCanManageBilling.mockResolvedValue(false);
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -445,7 +445,7 @@ describe("billing server actions", () => {
 
     beforeEach(() => {
       mockGetCurrentUser.mockResolvedValue(seatsUser);
-      mockGetSubscription.mockResolvedValue(teamSubscription);
+      mockListSubscriptions.mockResolvedValue([teamSubscription]);
       mockCanManageBilling.mockResolvedValue(true);
     });
 
@@ -456,8 +456,20 @@ describe("billing server actions", () => {
       formData.set("quantity", "5");
 
       const result = await updateSeats(undefined, formData);
-      expect(mockUpdateSeats).toHaveBeenCalledWith(5);
+      expect(mockUpdateSeats).toHaveBeenCalledWith(5, undefined);
       expect(mockRevalidatePath).toHaveBeenCalledWith("/org", "layout");
+      expect(result.ok).toBe(true);
+    });
+
+    it("forwards context=team to the gateway when the form supplies it (concurrent-billing case)", async () => {
+      mockUpdateSeats.mockResolvedValue(undefined);
+
+      const formData = new FormData();
+      formData.set("quantity", "5");
+      formData.set("context", "team");
+
+      const result = await updateSeats(undefined, formData);
+      expect(mockUpdateSeats).toHaveBeenCalledWith(5, "team");
       expect(result.ok).toBe(true);
     });
 

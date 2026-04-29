@@ -181,6 +181,8 @@
   "billing": {
     "title": "Оплата",
     "currentPlan": "Текущий план",
+    "currentPersonalPlan": "Текущий личный тариф",
+    "currentTeamPlan": "Текущий тариф для команды",
     "upgrade": "Улучшить",
     "cancel": "Подписка будет отменена в конце периода",
     "cancelRenewal": "Отменить продление",

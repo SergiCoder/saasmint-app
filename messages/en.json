@@ -181,6 +181,8 @@
   "billing": {
     "title": "Billing",
     "currentPlan": "Current Plan",
+    "currentPersonalPlan": "Current Personal Plan",
+    "currentTeamPlan": "Current Team Plan",
     "upgrade": "Upgrade",
     "cancel": "Subscription will cancel at end of period",
     "cancelRenewal": "Cancel renewal",

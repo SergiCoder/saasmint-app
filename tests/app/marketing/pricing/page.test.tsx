@@ -19,12 +19,12 @@ vi.mock("@/app/[locale]/(marketing)/_data/getOptionalUser", () => ({
 }));
 
 const mockListPlans = vi.fn<(currency?: string) => Promise<Plan[]>>();
-const mockGetSubscription = vi.fn(() => Promise.resolve(null));
+const mockListSubscriptions = vi.fn(() => Promise.resolve([] as unknown[]));
 const mockListProducts = vi.fn(() => Promise.resolve([]));
 const mockListUserOrgs = vi.fn(() => Promise.resolve([]));
 vi.mock("@/infrastructure/registry", () => ({
   planGateway: { listPlans: (c?: string) => mockListPlans(c) },
-  subscriptionGateway: { getSubscription: () => mockGetSubscription() },
+  subscriptionGateway: { listSubscriptions: () => mockListSubscriptions() },
   productGateway: { listProducts: () => mockListProducts() },
   orgGateway: { listUserOrgs: () => mockListUserOrgs() },
 }));

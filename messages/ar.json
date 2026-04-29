@@ -181,6 +181,8 @@
   "billing": {
     "title": "الفوترة",
     "currentPlan": "الخطة الحالية",
+    "currentPersonalPlan": "الخطة الشخصية الحالية",
+    "currentTeamPlan": "خطة الفريق الحالية",
     "upgrade": "ترقية",
     "cancel": "سيتم إلغاء الاشتراك في نهاية الفترة",
     "cancelRenewal": "إلغاء التجديد",

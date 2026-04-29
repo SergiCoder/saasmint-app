@@ -181,6 +181,8 @@
   "billing": {
     "title": "Płatności",
     "currentPlan": "Aktualny plan",
+    "currentPersonalPlan": "Aktualny plan osobisty",
+    "currentTeamPlan": "Aktualny plan zespołowy",
     "upgrade": "Uaktualnij",
     "cancel": "Subskrypcja zostanie anulowana na koniec okresu",
     "cancelRenewal": "Anuluj odnowienie",

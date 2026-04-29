@@ -58,26 +58,35 @@ export default async function BillingPage({
   ]);
 
   const [
-    { subscription, plans, products, userOrgs, canManage, teamOwnerName },
+    { subscriptions, plans, products, userOrgs, canManageById, teamOwnerName },
     creditBalance,
   ] = await Promise.all([getSubscriptionPageData(user), getCreditBalance()]);
 
   const hasOrg = userOrgs.length > 0;
-  const currentPlan = subscription?.plan;
-  const planName = currentPlan
-    ? translatePlanName(tPlans, currentPlan)
-    : undefined;
-  // URL ?interval=... wins; otherwise default to the user's current plan
-  // interval so the relevant tab is pre-selected on first visit.
-  const defaultInterval = currentPlan?.interval === "year" ? "year" : "month";
+  const personalSubscription =
+    subscriptions.find((s) => s.plan.context === "personal") ?? null;
+  const teamSubscription =
+    subscriptions.find((s) => s.plan.context === "team") ?? null;
+  const isConcurrent = subscriptions.length > 1;
+  // URL ?interval=... wins; otherwise default to whichever active sub has a
+  // yearly cadence so the relevant tab is pre-selected on first visit.
+  const defaultInterval = subscriptions.some((s) => s.plan.interval === "year")
+    ? "year"
+    : "month";
   const selectedInterval = parseIntervalParam(query.interval, defaultInterval);
-  const isTeamSubscription = currentPlan?.context === "team";
+  const isTeamSubscription = teamSubscription !== null;
+  const teamCanManage =
+    teamSubscription !== null && canManageById[teamSubscription.id] === true;
 
   const { planNames, planDescriptions } = buildPlanTranslations(plans, tPlans);
 
+  // Treat all of the user's subs as "current" — when concurrent, the user's
+  // personal AND team plan cards both show the no-CTA "current plan" badge.
+  const currentPlans = subscriptions.map((s) => s.plan);
+
   const groups = buildPlanCardGroups({
     plans,
-    currentPlanId: currentPlan?.id,
+    currentPlans,
     locale,
     labels: {
       upgrade: t("upgrade"),
@@ -147,21 +156,27 @@ export default async function BillingPage({
         <AlertBanner variant="error">{t("checkoutError")}</AlertBanner>
       )}
 
-      {subscription ? (
-        <CurrentSubscriptionCard
-          subscription={subscription}
-          locale={locale}
-          planName={planName ?? t("currentPlan")}
-          canManage={canManage}
-          teamOwnerName={teamOwnerName}
-        />
-      ) : (
+      {subscriptions.length === 0 ? (
         <FreePlanCard
           eyebrowLabel={t("currentPlan")}
           planName={tPlans("personal.1.name")}
           description={tPlans("personal.1.description")}
           badgeLabel={tPlans("personal.1.name")}
         />
+      ) : (
+        <div className="space-y-4">
+          {subscriptions.map((s) => (
+            <CurrentSubscriptionCard
+              key={s.id}
+              subscription={s}
+              locale={locale}
+              planName={translatePlanName(tPlans, s.plan)}
+              canManage={canManageById[s.id] === true}
+              teamOwnerName={s.plan.context === "team" ? teamOwnerName : null}
+              isConcurrent={isConcurrent}
+            />
+          ))}
+        </div>
       )}
 
       {creditBalance && (
@@ -183,7 +198,7 @@ export default async function BillingPage({
         />
       )}
 
-      {isTeamSubscription && !canManage ? (
+      {isTeamSubscription && !teamCanManage && !personalSubscription ? (
         <p className="text-sm text-gray-500">{t("teamPlanReadonly")}</p>
       ) : groups.length === 0 ? (
         <p className="text-sm text-gray-500">{t("changePlan")}</p>

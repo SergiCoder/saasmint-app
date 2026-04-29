@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { invitationGateway } from "@/infrastructure/registry";
+import { findTeamSubscription } from "@/domain/models/Subscription";
 import { getCurrentUser } from "../../_data/getCurrentUser";
 import { getOrgMembers } from "../../_data/getOrgMembers";
-import { getSubscription } from "../../_data/getSubscription";
+import { getSubscriptions } from "../../_data/getSubscriptions";
 import { getUserOrgs } from "../../_data/getUserOrgs";
 import { OrgMemberList } from "@/presentation/components/organisms/OrgMemberList";
 import { InviteByEmailForm } from "./_components/InviteByEmailForm";
@@ -31,14 +32,15 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
 
   if (!org) notFound();
 
-  const [members, invitations, subscription] = await Promise.all([
+  const [members, invitations, subscriptions] = await Promise.all([
     getOrgMembers(org.id),
     invitationGateway.listInvitations(org.id).catch(() => []),
-    getSubscription(),
+    getSubscriptions(),
   ]);
 
-  const isTeamSubscription = subscription?.plan.context === "team";
-  const totalSpots = isTeamSubscription ? subscription.quantity : null;
+  const teamSubscription = findTeamSubscription(subscriptions);
+  const isTeamSubscription = teamSubscription !== null;
+  const totalSpots = teamSubscription?.quantity ?? null;
 
   const me = members.find((m) => m.user.id === user.id);
   const isOwner = me?.role === "owner";

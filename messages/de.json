@@ -181,6 +181,8 @@
   "billing": {
     "title": "Abrechnung",
     "currentPlan": "Aktueller Plan",
+    "currentPersonalPlan": "Aktueller persönlicher Tarif",
+    "currentTeamPlan": "Aktueller Team-Tarif",
     "upgrade": "Upgraden",
     "cancel": "Abo wird zum Ende der Laufzeit gekündigt",
     "cancelRenewal": "Verlängerung kündigen",

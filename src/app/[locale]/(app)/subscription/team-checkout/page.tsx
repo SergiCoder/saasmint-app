@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { planGateway } from "@/infrastructure/registry";
+import { findPersonalSubscription } from "@/domain/models/Subscription";
 import { translatePlanName } from "@/lib/i18n/planTranslation";
 import { getCurrentUser } from "../../_data/getCurrentUser";
-import { getSubscription } from "../../_data/getSubscription";
+import { getSubscriptions } from "../../_data/getSubscriptions";
 import { TeamCheckoutForm } from "./_components/TeamCheckoutForm";
 
 interface TeamCheckoutPageProps {
@@ -18,12 +19,12 @@ export default async function TeamCheckoutPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tPlans, user, subscription, { plan: planPriceId }] =
+  const [t, tPlans, user, subscriptions, { plan: planPriceId }] =
     await Promise.all([
       getTranslations("billing"),
       getTranslations("plans"),
       getCurrentUser(),
-      getSubscription(),
+      getSubscriptions(),
       searchParams,
     ]);
 
@@ -41,15 +42,16 @@ export default async function TeamCheckoutPage({
 
   // Show the auto-cancel notice + opt-out checkbox only when the user has a
   // currently-active personal subscription that isn't already scheduled to
-  // cancel. Anything else (no sub, team sub, already-canceling) skips the UI.
+  // cancel. Anything else (no sub, only-team-sub, already-canceling) skips
+  // the UI.
+  const personalSubscription = findPersonalSubscription(subscriptions);
   const showPersonalSubNotice =
-    subscription !== null &&
-    subscription.plan.context === "personal" &&
-    subscription.status === "active" &&
-    subscription.canceledAt === null;
+    personalSubscription !== null &&
+    personalSubscription.status === "active" &&
+    personalSubscription.canceledAt === null;
 
   const personalSubEndDate = showPersonalSubNotice
-    ? new Date(subscription.currentPeriodEnd)
+    ? new Date(personalSubscription.currentPeriodEnd)
     : null;
   const personalSubEndDateDisplay =
     personalSubEndDate && !Number.isNaN(personalSubEndDate.getTime())

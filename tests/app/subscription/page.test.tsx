@@ -20,8 +20,8 @@ vi.mock("@/app/[locale]/(app)/_data/getOrgMembers", () => ({
   getOrgMembers: vi.fn(() => Promise.resolve([])),
 }));
 
-vi.mock("@/app/[locale]/(app)/_data/getSubscription", () => ({
-  getSubscription: vi.fn(() => Promise.resolve(null)),
+vi.mock("@/app/[locale]/(app)/_data/getSubscriptions", () => ({
+  getSubscriptions: vi.fn(() => Promise.resolve([])),
 }));
 
 const mockGetCreditBalance = vi.fn<
@@ -198,7 +198,7 @@ describe("BillingPage (subscription/page)", () => {
   });
 
   it("renders the FreePlanCard when the user has no active subscription", async () => {
-    // getSubscription is mocked to resolve null at the top of this file. The
+    // getSubscriptions is mocked to resolve [] at the top of this file. The
     // page falls back to FreePlanCard, which pulls the personal-free plan
     // name + description from the `plans` next-intl namespace.
     await renderPage({});

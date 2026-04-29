@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { BillingError } from "@/domain/errors/BillingError";
-import { MAX_SEATS, type Subscription } from "@/domain/models/Subscription";
+import {
+  findPersonalSubscription,
+  findTeamSubscription,
+  MAX_SEATS,
+  type Subscription,
+} from "@/domain/models/Subscription";
+import type { SubscriptionContext } from "@/application/ports/ISubscriptionGateway";
 import {
   authGateway,
   productGateway,
@@ -27,16 +33,24 @@ import {
 } from "@/lib/actions/parseFormData";
 
 /**
- * Ensures the current user is allowed to manage billing on the active
- * subscription. Throws a BillingError otherwise. Used as defense-in-depth
- * for the cancel/resume server actions — the UI already hides the buttons
+ * Ensures the current user is allowed to manage billing on the subscription
+ * matching `context` (or the only one when context is omitted). Throws a
+ * BillingError otherwise. Defense-in-depth — the UI already hides the buttons
  * for non-billing members, and the Django API also enforces the rule.
  */
-async function assertCanManageBilling(): Promise<Subscription> {
-  const [user, subscription] = await Promise.all([
+async function assertCanManageBilling(
+  context?: SubscriptionContext,
+): Promise<Subscription> {
+  const [user, subscriptions] = await Promise.all([
     authGateway.getCurrentUser(),
-    subscriptionGateway.getSubscription(),
+    subscriptionGateway.listSubscriptions(),
   ]);
+  const subscription =
+    context === "personal"
+      ? findPersonalSubscription(subscriptions)
+      : context === "team"
+        ? findTeamSubscription(subscriptions)
+        : (subscriptions[0] ?? null);
   if (!subscription) {
     throw new BillingError("No active subscription", "no_subscription");
   }
@@ -125,11 +139,18 @@ export async function openBillingPortal() {
   redirect(url);
 }
 
+function parseContext(formData: FormData): SubscriptionContext | undefined {
+  const raw = getString(formData, "context");
+  return raw === "personal" || raw === "team" ? raw : undefined;
+}
+
 /** Schedule the subscription to end at the current period's close. */
-export async function cancelRenewal(): Promise<ActionResult> {
+export async function cancelRenewal(
+  context?: SubscriptionContext,
+): Promise<ActionResult> {
   try {
-    await assertCanManageBilling();
-    await subscriptionGateway.cancelSubscription();
+    await assertCanManageBilling(context);
+    await subscriptionGateway.cancelSubscription(context);
   } catch (err) {
     console.error("Failed to cancel subscription", err);
     return toActionError(err);
@@ -139,10 +160,12 @@ export async function cancelRenewal(): Promise<ActionResult> {
 }
 
 /** Undo a pending cancellation so the subscription renews normally. */
-export async function resumeSubscription(): Promise<ActionResult> {
+export async function resumeSubscription(
+  context?: SubscriptionContext,
+): Promise<ActionResult> {
   try {
-    await assertCanManageBilling();
-    await subscriptionGateway.resumeSubscription();
+    await assertCanManageBilling(context);
+    await subscriptionGateway.resumeSubscription(context);
   } catch (err) {
     console.error("Failed to resume subscription", err);
     return toActionError(err);
@@ -159,10 +182,11 @@ export async function updateSeats(
   if (quantity === undefined || quantity < 1 || quantity > MAX_SEATS) {
     return fail("invalid_seat_count");
   }
+  const context = parseContext(formData);
 
   try {
-    await assertCanManageBilling();
-    await subscriptionGateway.updateSeats(quantity);
+    await assertCanManageBilling(context);
+    await subscriptionGateway.updateSeats(quantity, context);
   } catch (err) {
     console.error("Failed to update seats", err);
     return toActionError(err);

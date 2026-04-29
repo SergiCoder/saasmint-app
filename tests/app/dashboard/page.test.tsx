@@ -22,12 +22,14 @@ vi.mock("@/app/[locale]/(app)/_data/getCurrentUser", () => ({
 
 const mockListUserOrgsExecute = vi.fn<() => Promise<Org[]>>();
 const mockListOrgMembersExecute = vi.fn(() => Promise.resolve([]));
-const mockGetSubscriptionExecute = vi.fn(() => Promise.resolve(null));
+const mockListSubscriptionsExecute = vi.fn(() => Promise.resolve([]));
 
 vi.mock("@/infrastructure/registry", () => ({
   orgGateway: { listUserOrgs: () => mockListUserOrgsExecute() },
   orgMemberGateway: { listMembers: () => mockListOrgMembersExecute() },
-  subscriptionGateway: { getSubscription: () => mockGetSubscriptionExecute() },
+  subscriptionGateway: {
+    listSubscriptions: () => mockListSubscriptionsExecute(),
+  },
 }));
 
 vi.mock("@/presentation/components/molecules/OrgCard", async () => {

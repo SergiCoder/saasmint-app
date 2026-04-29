@@ -181,6 +181,8 @@
   "billing": {
     "title": "Fakturering",
     "currentPlan": "Nåværende plan",
+    "currentPersonalPlan": "Nåværende personlige abonnement",
+    "currentTeamPlan": "Nåværende team-abonnement",
     "upgrade": "Oppgrader",
     "cancel": "Abonnementet avsluttes ved periodens slutt",
     "cancelRenewal": "Avbryt fornyelse",

@@ -181,6 +181,8 @@
   "billing": {
     "title": "Tagihan",
     "currentPlan": "Paket saat ini",
+    "currentPersonalPlan": "Paket pribadi saat ini",
+    "currentTeamPlan": "Paket tim saat ini",
     "upgrade": "Tingkatkan",
     "cancel": "Langganan akan dibatalkan pada akhir periode",
     "cancelRenewal": "Batalkan perpanjangan",

@@ -30,21 +30,22 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
   const { locale, token } = await params;
   setRequestLocale(locale);
 
-  const [t, invitation, subscription] = await Promise.all([
+  const [t, invitation, subscriptions] = await Promise.all([
     getTranslations("invitation"),
     invitationGateway.getByToken(token),
     // Anonymous visitors hit AuthError ("NO_SESSION") because apiFetch needs
-    // a token; coerce that single case to null. Anything else (network down,
-    // schema parse failure, 5xx) should still surface to the error boundary.
-    // The gateway already maps a 404 (no subscription) to null on its own.
-    subscriptionGateway.getSubscription().catch((err: unknown) => {
-      if (err instanceof AuthError) return null;
+    // a token; coerce that single case to an empty list. Anything else
+    // (network down, schema parse failure, 5xx) should still surface to the
+    // error boundary.
+    subscriptionGateway.listSubscriptions().catch((err: unknown) => {
+      if (err instanceof AuthError) return [];
       throw err;
     }),
   ]);
 
-  const showConcurrentBillingNotice =
-    subscription !== null && subscription.plan.context === "personal";
+  const showConcurrentBillingNotice = subscriptions.some(
+    (s) => s.plan.context === "personal",
+  );
 
   return (
     <div className="mx-auto max-w-md space-y-6 py-12">

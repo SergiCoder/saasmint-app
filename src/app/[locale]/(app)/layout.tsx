@@ -3,9 +3,10 @@ import { AppLayout } from "@/presentation/components/templates/AppLayout";
 import { redirect } from "@/lib/i18n/navigation";
 import { getPathnameWithoutLocale } from "@/lib/pathname";
 import { isLocale } from "@/lib/i18n/routing";
+import { findTeamSubscription } from "@/domain/models/Subscription";
 import { SignOutButton } from "../_components/SignOutButton";
 import { getCurrentUser } from "./_data/getCurrentUser";
-import { getSubscription } from "./_data/getSubscription";
+import { getSubscriptions } from "./_data/getSubscriptions";
 import { getUserOrgs } from "./_data/getUserOrgs";
 
 interface AppLayoutRouteProps {
@@ -20,11 +21,11 @@ export default async function AppLayoutRoute({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tCommon, user, subscription, userOrgs] = await Promise.all([
+  const [t, tCommon, user, subscriptions, userOrgs] = await Promise.all([
     getTranslations("nav"),
     getTranslations("common"),
     getCurrentUser(),
-    getSubscription(),
+    getSubscriptions(),
     getUserOrgs(),
   ]);
 
@@ -39,7 +40,8 @@ export default async function AppLayoutRoute({
     redirect({ href: pathname, locale: user.preferredLocale });
   }
 
-  const hasOrg = subscription?.plan.context === "team" || userOrgs.length > 0;
+  const hasOrg =
+    findTeamSubscription(subscriptions) !== null || userOrgs.length > 0;
 
   const navLinks = [
     { href: "/dashboard", label: t("dashboard") },

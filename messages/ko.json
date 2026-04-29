@@ -181,6 +181,8 @@
   "billing": {
     "title": "결제",
     "currentPlan": "현재 플랜",
+    "currentPersonalPlan": "현재 개인 플랜",
+    "currentTeamPlan": "현재 팀 플랜",
     "upgrade": "업그레이드",
     "cancel": "구독은 기간 종료 시 취소됩니다",
     "cancelRenewal": "갱신 취소",

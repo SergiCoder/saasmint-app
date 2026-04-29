@@ -181,6 +181,8 @@
   "billing": {
     "title": "Faturamento",
     "currentPlan": "Plano atual",
+    "currentPersonalPlan": "Plano pessoal atual",
+    "currentTeamPlan": "Plano da equipe atual",
     "upgrade": "Fazer upgrade",
     "cancel": "A assinatura será cancelada no final do período",
     "cancelRenewal": "Cancelar renovação",

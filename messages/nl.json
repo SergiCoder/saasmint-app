@@ -181,6 +181,8 @@
   "billing": {
     "title": "Facturering",
     "currentPlan": "Huidig abonnement",
+    "currentPersonalPlan": "Huidig persoonlijk abonnement",
+    "currentTeamPlan": "Huidig teamabonnement",
     "upgrade": "Upgraden",
     "cancel": "Abonnement wordt opgezegd aan het einde van de periode",
     "cancelRenewal": "Verlenging annuleren",
