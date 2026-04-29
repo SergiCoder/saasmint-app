@@ -71,7 +71,7 @@ Non-OK responses are normalized: `401` on an authenticated request becomes `Auth
 Gateways never cast raw JSON to domain types. The pattern is:
 
 1. `apiFetch<Record<string, unknown>>(...)` to get untyped JSON
-2. `keysToCamel(raw)` (or `keysToCamelWithPrice` for Plan/Product/Subscription, plus `flattenPhone` for User) in `src/infrastructure/api/caseTransform.ts` to normalise key shape
+2. `keysToCamel(raw)` (or `keysToCamelWithPrice` for Plan/Product, plus `flattenPhone` for User) in `src/infrastructure/api/caseTransform.ts` to normalise key shape. Subscription rows nest their `price` under `plan`, so the gateway runs `keysToCamel` once on the envelope and then `applyPriceDefaults` on each row's `plan`
 3. `UserSchema.parse(...)` etc. from `src/infrastructure/api/schemas.ts` — a set of Zod schemas `satisfies z.ZodType<DomainModel>` that validate and return a correctly-typed domain object
 
 Always validate through the relevant schema when adding a new endpoint; do not re-introduce `keysToCamel<T>()` generic casts.
