@@ -53,18 +53,29 @@ export default async function BillingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tPlans, tProducts, user, query] = await Promise.all([
-    getTranslations("billing"),
-    getTranslations("plans"),
-    getTranslations("products"),
-    getCurrentUser(),
-    searchParams,
-  ]);
-
-  const [
-    { subscriptions, plans, products, userOrgs, canManageById, teamOwnerName },
-    creditBalance,
-  ] = await Promise.all([getSubscriptionPageData(user), getCreditBalance()]);
+  // Kick off `getCreditBalance` in stage 1 — it doesn't depend on the user
+  // object, so chaining it behind `getSubscriptionPageData(user)` would burn
+  // an unnecessary RTT on the critical path. `getSubscriptionPageData` still
+  // chains off the user fetch because it needs `user.preferredCurrency`.
+  const userPromise = getCurrentUser();
+  const [t, tPlans, tProducts, user, query, creditBalance, pageData] =
+    await Promise.all([
+      getTranslations("billing"),
+      getTranslations("plans"),
+      getTranslations("products"),
+      userPromise,
+      searchParams,
+      getCreditBalance(),
+      userPromise.then((u) => getSubscriptionPageData(u)),
+    ]);
+  const {
+    subscriptions,
+    plans,
+    products,
+    userOrgs,
+    canManageById,
+    teamOwnerName,
+  } = pageData;
 
   const hasOrg = userOrgs.length > 0;
   const personalSubscription = findPersonalSubscription(subscriptions);
