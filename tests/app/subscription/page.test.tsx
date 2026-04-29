@@ -28,11 +28,11 @@ vi.mock("@/app/[locale]/(app)/_data/getSubscriptions", () => ({
   getSubscriptions: () => mockGetSubscriptions(),
 }));
 
-const mockGetCreditBalance = vi.fn<
-  () => Promise<{ balance: number; scope: "user" | "org" } | null>
->(() => Promise.resolve(null));
-vi.mock("@/app/[locale]/(app)/_data/getCreditBalance", () => ({
-  getCreditBalance: () => mockGetCreditBalance(),
+const mockGetCreditBalances = vi.fn<
+  () => Promise<{ balance: number; scope: "user" | "org" }[]>
+>(() => Promise.resolve([]));
+vi.mock("@/app/[locale]/(app)/_data/getCreditBalances", () => ({
+  getCreditBalances: () => mockGetCreditBalances(),
 }));
 
 vi.mock("@/app/[locale]/(app)/_data/getUserOrgs", () => ({
@@ -268,16 +268,18 @@ describe("BillingPage (subscription/page)", () => {
     expect(screen.getByText("currentPlan")).toBeInTheDocument();
   });
 
-  it("does not render a credit-balance card when getCreditBalance returns null", async () => {
-    mockGetCreditBalance.mockResolvedValueOnce(null);
+  it("does not render a credit-balance card when getCreditBalances returns []", async () => {
+    mockGetCreditBalances.mockResolvedValueOnce([]);
     await renderPage({});
 
-    // The eyebrow label key only appears when the card renders.
+    // The eyebrow label key only appears when at least one card renders.
     expect(screen.queryByText("creditBalanceLabel")).not.toBeInTheDocument();
   });
 
-  it("renders the CreditBalanceCard above the upgrade options when a balance is returned", async () => {
-    mockGetCreditBalance.mockResolvedValueOnce({ balance: 250, scope: "user" });
+  it("renders the CreditBalanceCard above the upgrade options when a personal balance is returned", async () => {
+    mockGetCreditBalances.mockResolvedValueOnce([
+      { balance: 250, scope: "user" },
+    ]);
     await renderPage({});
 
     expect(screen.getByText("creditBalanceLabel")).toBeInTheDocument();
@@ -288,13 +290,37 @@ describe("BillingPage (subscription/page)", () => {
     ).toBeInTheDocument();
   });
 
-  it("uses the org-scope wording when the balance scope is 'org'", async () => {
-    mockGetCreditBalance.mockResolvedValueOnce({ balance: 9000, scope: "org" });
+  it("uses the org-scope wording when only an org balance is returned", async () => {
+    mockGetCreditBalances.mockResolvedValueOnce([
+      { balance: 9000, scope: "org" },
+    ]);
     await renderPage({});
 
     expect(screen.getByText("9,000")).toBeInTheDocument();
     expect(screen.getByText("creditBalanceOrgBadge")).toBeInTheDocument();
     expect(screen.getByText("creditBalanceOrgDescription")).toBeInTheDocument();
+  });
+
+  it("renders both cards in personal-then-org order for concurrent billers", async () => {
+    // Backend may return them in any order — verify the page sorts personal
+    // before org so the order matches the subscription cards above.
+    mockGetCreditBalances.mockResolvedValueOnce([
+      { balance: 500, scope: "org" },
+      { balance: 75, scope: "user" },
+    ]);
+    await renderPage({});
+
+    const personalBadge = screen.getByText("creditBalancePersonalBadge");
+    const orgBadge = screen.getByText("creditBalanceOrgBadge");
+    expect(personalBadge).toBeInTheDocument();
+    expect(orgBadge).toBeInTheDocument();
+    expect(screen.getByText("75")).toBeInTheDocument();
+    expect(screen.getByText("500")).toBeInTheDocument();
+    // Personal card precedes org card in document order.
+    expect(
+      personalBadge.compareDocumentPosition(orgBadge) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   describe("concurrent personal+team rendering (rule 5)", () => {

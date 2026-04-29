@@ -10,7 +10,7 @@ import { CurrentSubscriptionCard } from "./_components/CurrentSubscriptionCard";
 import { CreditBalanceCard } from "./_components/CreditBalanceCard";
 import { FreePlanCard } from "./_components/FreePlanCard";
 import { startCheckout, startProductCheckout } from "@/app/actions/billing";
-import { getCreditBalance } from "../_data/getCreditBalance";
+import { getCreditBalances } from "../_data/getCreditBalances";
 import { getSubscriptionPageData } from "./_data/getSubscriptionPageData";
 import {
   buildPlanCardGroups,
@@ -28,6 +28,10 @@ import {
   findPersonalSubscription,
   findTeamSubscription,
 } from "@/domain/models/Subscription";
+import {
+  findOrgCreditBalance,
+  findPersonalCreditBalance,
+} from "@/domain/models/CreditBalance";
 
 interface BillingPageProps {
   params: Promise<{ locale: string }>;
@@ -53,19 +57,19 @@ export default async function BillingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Kick off `getCreditBalance` in stage 1 — it doesn't depend on the user
+  // Kick off `getCreditBalances` in stage 1 — it doesn't depend on the user
   // object, so chaining it behind `getSubscriptionPageData(user)` would burn
   // an unnecessary RTT on the critical path. `getSubscriptionPageData` still
   // chains off the user fetch because it needs `user.preferredCurrency`.
   const userPromise = getCurrentUser();
-  const [t, tPlans, tProducts, user, query, creditBalance, pageData] =
+  const [t, tPlans, tProducts, user, query, creditBalances, pageData] =
     await Promise.all([
       getTranslations("billing"),
       getTranslations("plans"),
       getTranslations("products"),
       userPromise,
       searchParams,
-      getCreditBalance(),
+      getCreditBalances(),
       userPromise.then((u) => getSubscriptionPageData(u)),
     ]);
   const {
@@ -192,24 +196,40 @@ export default async function BillingPage({
         </div>
       )}
 
-      {creditBalance && (
-        <CreditBalanceCard
-          eyebrowLabel={t("creditBalanceLabel")}
-          balance={creditBalance.balance}
-          unitLabel={t("credits")}
-          description={t(
-            creditBalance.scope === "org"
-              ? "creditBalanceOrgDescription"
-              : "creditBalancePersonalDescription",
-          )}
-          scopeBadge={t(
-            creditBalance.scope === "org"
-              ? "creditBalanceOrgBadge"
-              : "creditBalancePersonalBadge",
-          )}
-          locale={locale}
-        />
-      )}
+      {(() => {
+        // Render personal-then-org so the order matches the subscription
+        // cards above. Concurrent billers (rule 5) get both; everyone else
+        // gets at most one.
+        const personalCredits = findPersonalCreditBalance(creditBalances);
+        const orgCredits = findOrgCreditBalance(creditBalances);
+        const ordered = [personalCredits, orgCredits].filter(
+          (b): b is NonNullable<typeof b> => b !== null,
+        );
+        if (ordered.length === 0) return null;
+        return (
+          <div className="space-y-4">
+            {ordered.map((b) => (
+              <CreditBalanceCard
+                key={b.scope}
+                eyebrowLabel={t("creditBalanceLabel")}
+                balance={b.balance}
+                unitLabel={t("credits")}
+                description={t(
+                  b.scope === "org"
+                    ? "creditBalanceOrgDescription"
+                    : "creditBalancePersonalDescription",
+                )}
+                scopeBadge={t(
+                  b.scope === "org"
+                    ? "creditBalanceOrgBadge"
+                    : "creditBalancePersonalBadge",
+                )}
+                locale={locale}
+              />
+            ))}
+          </div>
+        );
+      })()}
 
       {isTeamSubscription && !teamCanManage && !personalSubscription ? (
         <p className="text-sm text-gray-500">{t("teamPlanReadonly")}</p>
