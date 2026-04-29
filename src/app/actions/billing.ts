@@ -144,13 +144,24 @@ function parseContext(formData: FormData): SubscriptionContext | undefined {
   return raw === "personal" || raw === "team" ? raw : undefined;
 }
 
+/**
+ * Server actions are reachable as RPC endpoints — the TypeScript signature
+ * does not survive the wire boundary. Normalize any caller-supplied value
+ * down to the literal union (or `undefined`) before it touches authorization
+ * checks or URL construction.
+ */
+function normalizeContext(value: unknown): SubscriptionContext | undefined {
+  return value === "personal" || value === "team" ? value : undefined;
+}
+
 /** Schedule the subscription to end at the current period's close. */
 export async function cancelRenewal(
   context?: SubscriptionContext,
 ): Promise<ActionResult> {
+  const safeContext = normalizeContext(context);
   try {
-    await assertCanManageBilling(context);
-    await subscriptionGateway.cancelSubscription(context);
+    await assertCanManageBilling(safeContext);
+    await subscriptionGateway.cancelSubscription(safeContext);
   } catch (err) {
     console.error("Failed to cancel subscription", err);
     return toActionError(err);
@@ -163,9 +174,10 @@ export async function cancelRenewal(
 export async function resumeSubscription(
   context?: SubscriptionContext,
 ): Promise<ActionResult> {
+  const safeContext = normalizeContext(context);
   try {
-    await assertCanManageBilling(context);
-    await subscriptionGateway.resumeSubscription(context);
+    await assertCanManageBilling(safeContext);
+    await subscriptionGateway.resumeSubscription(safeContext);
   } catch (err) {
     console.error("Failed to resume subscription", err);
     return toActionError(err);
