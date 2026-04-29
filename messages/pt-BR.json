@@ -338,6 +338,7 @@
     "unknownError": "Erro desconhecido"
   },
   "actionErrors": {
+    "context_required": "Indique qual assinatura você quer gerenciar.",
     "current_password_required": "A senha atual é obrigatória",
     "email_and_password_required": "E-mail e senha são obrigatórios",
     "email_required": "O e-mail é obrigatório",

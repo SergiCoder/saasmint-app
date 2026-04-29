@@ -338,6 +338,7 @@
     "unknownError": "未知錯誤"
   },
   "actionErrors": {
+    "context_required": "請指定要管理的訂閱。",
     "current_password_required": "請輸入目前的密碼",
     "email_and_password_required": "請輸入電子郵件與密碼",
     "email_required": "請輸入電子郵件",

@@ -338,6 +338,7 @@
     "unknownError": "Неизвестная ошибка"
   },
   "actionErrors": {
+    "context_required": "Пожалуйста, укажите, какой подпиской управлять.",
     "current_password_required": "Требуется текущий пароль",
     "email_and_password_required": "Требуются электронная почта и пароль",
     "email_required": "Требуется электронная почта",

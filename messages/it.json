@@ -338,6 +338,7 @@
     "unknownError": "Errore sconosciuto"
   },
   "actionErrors": {
+    "context_required": "Indica quale abbonamento gestire.",
     "current_password_required": "La password attuale è obbligatoria",
     "email_and_password_required": "Email e password sono obbligatori",
     "email_required": "L'email è obbligatoria",

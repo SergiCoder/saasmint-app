@@ -338,6 +338,7 @@
     "unknownError": "Onbekende fout"
   },
   "actionErrors": {
+    "context_required": "Geef aan welk abonnement je wilt beheren.",
     "current_password_required": "Huidig wachtwoord is vereist",
     "email_and_password_required": "E-mailadres en wachtwoord zijn vereist",
     "email_required": "E-mailadres is vereist",

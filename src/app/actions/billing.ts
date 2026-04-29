@@ -37,6 +37,12 @@ import {
  * matching `context` (or the only one when context is omitted). Throws a
  * BillingError otherwise. Defense-in-depth — the UI already hides the buttons
  * for non-billing members, and the Django API also enforces the rule.
+ *
+ * When the caller has BOTH a personal and a team subscription (rule 5
+ * concurrent billing), `context` is required: otherwise the frontend gate
+ * would authorize an arbitrary row while the backend dispatches on its own
+ * default ("team" for org members, "personal" otherwise), letting the gate
+ * silently authorize a different sub than the one being mutated.
  */
 async function assertCanManageBilling(
   context?: SubscriptionContext,
@@ -45,12 +51,21 @@ async function assertCanManageBilling(
     authGateway.getCurrentUser(),
     subscriptionGateway.listSubscriptions(),
   ]);
-  const subscription =
-    context === "personal"
-      ? findPersonalSubscription(subscriptions)
-      : context === "team"
-        ? findTeamSubscription(subscriptions)
-        : (subscriptions[0] ?? null);
+  let subscription: Subscription | null;
+  if (context === "personal") {
+    subscription = findPersonalSubscription(subscriptions);
+  } else if (context === "team") {
+    subscription = findTeamSubscription(subscriptions);
+  } else if (subscriptions.length > 1) {
+    // Concurrent personal+team billing: caller must disambiguate so the
+    // authorization check operates on the same row the backend will mutate.
+    throw new BillingError(
+      "Subscription context is required when multiple subscriptions exist",
+      "context_required",
+    );
+  } else {
+    subscription = subscriptions[0] ?? null;
+  }
   if (!subscription) {
     throw new BillingError("No active subscription", "no_subscription");
   }
@@ -139,11 +154,6 @@ export async function openBillingPortal() {
   redirect(url);
 }
 
-function parseContext(formData: FormData): SubscriptionContext | undefined {
-  const raw = getString(formData, "context");
-  return raw === "personal" || raw === "team" ? raw : undefined;
-}
-
 /**
  * Server actions are reachable as RPC endpoints — the TypeScript signature
  * does not survive the wire boundary. Normalize any caller-supplied value
@@ -152,6 +162,10 @@ function parseContext(formData: FormData): SubscriptionContext | undefined {
  */
 function normalizeContext(value: unknown): SubscriptionContext | undefined {
   return value === "personal" || value === "team" ? value : undefined;
+}
+
+function parseContext(formData: FormData): SubscriptionContext | undefined {
+  return normalizeContext(getString(formData, "context"));
 }
 
 /** Schedule the subscription to end at the current period's close. */

@@ -338,6 +338,7 @@
     "unknownError": "Erro desconhecido"
   },
   "actionErrors": {
+    "context_required": "Indique qual a subscrição que pretende gerir.",
     "current_password_required": "A palavra-passe atual é obrigatória",
     "email_and_password_required": "O e-mail e a palavra-passe são obrigatórios",
     "email_required": "O e-mail é obrigatório",

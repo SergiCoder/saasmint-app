@@ -338,6 +338,7 @@
     "unknownError": "Erreur inconnue"
   },
   "actionErrors": {
+    "context_required": "Veuillez préciser quel abonnement gérer.",
     "current_password_required": "Le mot de passe actuel est requis",
     "email_and_password_required": "L'e-mail et le mot de passe sont requis",
     "email_required": "L'e-mail est requis",

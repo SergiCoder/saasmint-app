@@ -403,6 +403,97 @@ describe("billing server actions", () => {
       expect(mockRevalidatePath).not.toHaveBeenCalled();
       errSpy.mockRestore();
     });
+
+    it("forwards context=personal to the gateway and selects the personal sub when concurrent", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([teamSub, personalSub]);
+      mockCanManageBilling.mockResolvedValue(true);
+      mockCancelSubscription.mockResolvedValue(undefined);
+
+      const result = await cancelRenewal("personal");
+
+      // Authorization check ran against the personal sub, not the team one.
+      expect(mockCanManageBilling).toHaveBeenCalledWith(user, personalSub);
+      expect(mockCancelSubscription).toHaveBeenCalledWith("personal");
+      expect(result.ok).toBe(true);
+    });
+
+    it("forwards context=team to the gateway and selects the team sub when concurrent", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockCanManageBilling.mockResolvedValue(true);
+      mockCancelSubscription.mockResolvedValue(undefined);
+
+      await cancelRenewal("team");
+
+      expect(mockCanManageBilling).toHaveBeenCalledWith(user, teamSub);
+      expect(mockCancelSubscription).toHaveBeenCalledWith("team");
+    });
+
+    it("normalizes a tampered context arg to undefined before touching the gateway", async () => {
+      // The TS signature does not survive RPC: a malicious caller could pass
+      // anything. The action must drop unknown values to undefined.
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([subscription]);
+      mockCanManageBilling.mockResolvedValue(true);
+      mockCancelSubscription.mockResolvedValue(undefined);
+
+      const result = await cancelRenewal(
+        "../admin" as unknown as "personal",
+      );
+
+      expect(mockCancelSubscription).toHaveBeenCalledWith(undefined);
+      expect(result.ok).toBe(true);
+    });
+
+    it("returns no_subscription when context targets a row that doesn't exist (e.g. only team sub but personal requested)", async () => {
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([teamSub]);
+      const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      const result = await cancelRenewal("personal");
+
+      expect(result).toEqual({ ok: false, code: "no_subscription" });
+      expect(mockCancelSubscription).not.toHaveBeenCalled();
+      errSpy.mockRestore();
+    });
+
+    it("returns context_required when caller has both personal and team subs and no context is supplied", async () => {
+      // Rule 5 concurrent billing — without an explicit context the
+      // authorization check would operate on an arbitrary row while the
+      // backend dispatches on its own default. The action must reject.
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockCanManageBilling.mockResolvedValue(true);
+
+      const result = await cancelRenewal();
+
+      expect(result).toEqual({ ok: false, code: "context_required" });
+      expect(mockCancelSubscription).not.toHaveBeenCalled();
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("returns context_required when concurrent subs and a tampered context is normalized to undefined", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockCanManageBilling.mockResolvedValue(true);
+
+      const result = await cancelRenewal(
+        "../admin" as unknown as "personal",
+      );
+
+      expect(result).toEqual({ ok: false, code: "context_required" });
+      expect(mockCancelSubscription).not.toHaveBeenCalled();
+    });
   });
 
   describe("resumeSubscription", () => {
@@ -436,6 +527,45 @@ describe("billing server actions", () => {
       expect(result).toEqual({ ok: false, code: "not_billing_member" });
       expect(mockResumeSubscription).not.toHaveBeenCalled();
       errSpy.mockRestore();
+    });
+
+    it("forwards context=personal to the gateway and authorizes against the personal sub when concurrent", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockCanManageBilling.mockResolvedValue(true);
+      mockResumeSubscription.mockResolvedValue(undefined);
+
+      await resumeSubscription("personal");
+
+      expect(mockCanManageBilling).toHaveBeenCalledWith(user, personalSub);
+      expect(mockResumeSubscription).toHaveBeenCalledWith("personal");
+    });
+
+    it("normalizes a tampered context arg to undefined", async () => {
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([subscription]);
+      mockCanManageBilling.mockResolvedValue(true);
+      mockResumeSubscription.mockResolvedValue(undefined);
+
+      await resumeSubscription({ evil: true } as unknown as "personal");
+
+      expect(mockResumeSubscription).toHaveBeenCalledWith(undefined);
+    });
+
+    it("returns context_required when caller has both personal and team subs and no context is supplied", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockCanManageBilling.mockResolvedValue(true);
+
+      const result = await resumeSubscription();
+
+      expect(result).toEqual({ ok: false, code: "context_required" });
+      expect(mockResumeSubscription).not.toHaveBeenCalled();
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
     });
   });
 
@@ -473,6 +603,34 @@ describe("billing server actions", () => {
       expect(result.ok).toBe(true);
     });
 
+    it("drops a tampered context form value to undefined (whitelist)", async () => {
+      mockUpdateSeats.mockResolvedValue(undefined);
+
+      const formData = new FormData();
+      formData.set("quantity", "5");
+      formData.set("context", "admin");
+
+      const result = await updateSeats(undefined, formData);
+      expect(mockUpdateSeats).toHaveBeenCalledWith(5, undefined);
+      expect(result.ok).toBe(true);
+    });
+
+    it("selects the team sub when concurrent and context=team is supplied (authorization runs against the right row)", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockUpdateSeats.mockResolvedValue(undefined);
+
+      const formData = new FormData();
+      formData.set("quantity", "5");
+      formData.set("context", "team");
+
+      await updateSeats(undefined, formData);
+
+      expect(mockCanManageBilling).toHaveBeenCalledWith(seatsUser, teamSub);
+      expect(mockUpdateSeats).toHaveBeenCalledWith(5, "team");
+    });
+
     it("returns invalid_seat_count when quantity is missing, 0, NaN, or too large", async () => {
       for (const raw of ["", "0", "abc", "999999"]) {
         const fd = new FormData();
@@ -495,6 +653,34 @@ describe("billing server actions", () => {
       expect(mockUpdateSeats).not.toHaveBeenCalled();
       expect(mockRevalidatePath).not.toHaveBeenCalled();
       errSpy.mockRestore();
+    });
+
+    it("returns context_required when caller has both personal and team subs and no context form value is supplied", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+
+      const fd = new FormData();
+      fd.set("quantity", "5");
+
+      const result = await updateSeats(undefined, fd);
+      expect(result).toEqual({ ok: false, code: "context_required" });
+      expect(mockUpdateSeats).not.toHaveBeenCalled();
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("returns context_required when concurrent subs and a tampered context form value is normalized to undefined", async () => {
+      const personalSub = { id: "sub_p", plan: { context: "personal" } };
+      const teamSub = { id: "sub_t", plan: { context: "team" } };
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+
+      const fd = new FormData();
+      fd.set("quantity", "5");
+      fd.set("context", "admin");
+
+      const result = await updateSeats(undefined, fd);
+      expect(result).toEqual({ ok: false, code: "context_required" });
+      expect(mockUpdateSeats).not.toHaveBeenCalled();
     });
   });
 });

@@ -338,6 +338,7 @@
     "unknownError": "알 수 없는 오류"
   },
   "actionErrors": {
+    "context_required": "관리할 구독을 지정해 주세요.",
     "current_password_required": "현재 비밀번호를 입력해 주세요",
     "email_and_password_required": "이메일과 비밀번호를 모두 입력해 주세요",
     "email_required": "이메일을 입력해 주세요",

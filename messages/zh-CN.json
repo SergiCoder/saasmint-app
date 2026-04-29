@@ -338,6 +338,7 @@
     "unknownError": "未知错误"
   },
   "actionErrors": {
+    "context_required": "请指定要管理的订阅。",
     "current_password_required": "请输入当前密码",
     "email_and_password_required": "请输入邮箱和密码",
     "email_required": "请输入邮箱",

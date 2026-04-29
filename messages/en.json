@@ -378,6 +378,7 @@
     "unknownError": "Unknown error"
   },
   "actionErrors": {
+    "context_required": "Please specify which subscription to manage.",
     "current_password_required": "Current password is required",
     "email_and_password_required": "Email and password are required",
     "email_required": "Email is required",
