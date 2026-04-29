@@ -199,6 +199,7 @@
     "success": "Betalning lyckades!",
     "successDesc": "Din prenumeration har uppdaterats.",
     "renewsOn": "Förnyas den",
+    "cancelsOn": "Avslutas",
     "endsOn": "Slutar den",
     "billedMonthly": "Faktureras månadsvis",
     "billedYearly": "Faktureras årligen",

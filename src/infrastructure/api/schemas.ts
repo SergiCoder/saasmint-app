@@ -127,6 +127,7 @@ export const SubscriptionSchema = z.object({
   trialEndsAt: nullableString,
   currentPeriodStart: z.string(),
   currentPeriodEnd: z.string(),
+  cancelAt: nullableString,
   canceledAt: nullableString,
   createdAt: z.string(),
 }) satisfies z.ZodType<Subscription>;

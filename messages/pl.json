@@ -199,6 +199,7 @@
     "success": "Płatność powiodła się!",
     "successDesc": "Twoja subskrypcja została zaktualizowana.",
     "renewsOn": "Odnawia się",
+    "cancelsOn": "Anuluje się",
     "endsOn": "Kończy się",
     "billedMonthly": "Rozliczane miesięcznie",
     "billedYearly": "Rozliczane rocznie",

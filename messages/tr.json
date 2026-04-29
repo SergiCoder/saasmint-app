@@ -199,6 +199,7 @@
     "success": "Ödeme başarılı!",
     "successDesc": "Aboneliğiniz güncellendi.",
     "renewsOn": "Yenilenme tarihi",
+    "cancelsOn": "İptal tarihi",
     "endsOn": "Bitiş tarihi",
     "billedMonthly": "Aylık faturalandırma",
     "billedYearly": "Yıllık faturalandırma",

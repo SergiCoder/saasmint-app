@@ -199,6 +199,7 @@
     "success": "Pembayaran berhasil!",
     "successDesc": "Langganan Anda telah diperbarui.",
     "renewsOn": "Diperpanjang pada",
+    "cancelsOn": "Dibatalkan pada",
     "endsOn": "Berakhir pada",
     "billedMonthly": "Ditagih bulanan",
     "billedYearly": "Ditagih tahunan",

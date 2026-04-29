@@ -106,6 +106,7 @@ const validSubscription = {
   trialEndsAt: null,
   currentPeriodStart: "2024-01-01T00:00:00Z",
   currentPeriodEnd: "2024-02-01T00:00:00Z",
+  cancelAt: null,
   canceledAt: null,
   createdAt: "2024-01-01T00:00:00Z",
 };

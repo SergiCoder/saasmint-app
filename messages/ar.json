@@ -199,6 +199,7 @@
     "success": "تم الدفع بنجاح!",
     "successDesc": "تم تحديث اشتراكك.",
     "renewsOn": "يُجدد في",
+    "cancelsOn": "يُلغى في",
     "endsOn": "ينتهي في",
     "billedMonthly": "فوترة شهرية",
     "billedYearly": "فوترة سنوية",

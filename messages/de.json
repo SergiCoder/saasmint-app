@@ -199,6 +199,7 @@
     "success": "Zahlung erfolgreich!",
     "successDesc": "Ihr Abonnement wurde aktualisiert.",
     "renewsOn": "Verlängert sich am",
+    "cancelsOn": "Wird gekündigt am",
     "endsOn": "Endet am",
     "billedMonthly": "Monatlich abgerechnet",
     "billedYearly": "Jährlich abgerechnet",

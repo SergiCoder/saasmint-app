@@ -199,6 +199,7 @@
     "success": "Pagamento realizado!",
     "successDesc": "Sua assinatura foi atualizada.",
     "renewsOn": "Renova em",
+    "cancelsOn": "Cancela em",
     "endsOn": "Termina em",
     "billedMonthly": "Cobrança mensal",
     "billedYearly": "Cobrança anual",

@@ -199,6 +199,7 @@
     "success": "Betaling geslaagd!",
     "successDesc": "Uw abonnement is bijgewerkt.",
     "renewsOn": "Verlengt op",
+    "cancelsOn": "Wordt opgezegd op",
     "endsOn": "Eindigt op",
     "billedMonthly": "Maandelijks gefactureerd",
     "billedYearly": "Jaarlijks gefactureerd",

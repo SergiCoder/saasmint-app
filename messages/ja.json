@@ -199,6 +199,7 @@
     "success": "お支払い完了！",
     "successDesc": "サブスクリプションが更新されました。",
     "renewsOn": "更新日",
+    "cancelsOn": "解約日",
     "endsOn": "終了日",
     "billedMonthly": "月額請求",
     "billedYearly": "年額請求",

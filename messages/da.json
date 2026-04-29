@@ -199,6 +199,7 @@
     "success": "Betaling gennemført!",
     "successDesc": "Dit abonnement er blevet opdateret.",
     "renewsOn": "Fornyes den",
+    "cancelsOn": "Opsiges den",
     "endsOn": "Slutter den",
     "billedMonthly": "Faktureret månedligt",
     "billedYearly": "Faktureret årligt",

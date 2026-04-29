@@ -199,6 +199,7 @@
     "success": "결제 완료!",
     "successDesc": "구독이 업데이트되었습니다.",
     "renewsOn": "갱신일",
+    "cancelsOn": "해지일",
     "endsOn": "종료일",
     "billedMonthly": "월간 청구",
     "billedYearly": "연간 청구",

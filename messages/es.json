@@ -199,6 +199,7 @@
     "success": "¡Pago exitoso!",
     "successDesc": "Tu suscripción ha sido actualizada.",
     "renewsOn": "Se renueva el",
+    "cancelsOn": "Se cancela el",
     "endsOn": "Finaliza el",
     "billedMonthly": "Facturación mensual",
     "billedYearly": "Facturación anual",

@@ -199,6 +199,7 @@
     "success": "付款成功！",
     "successDesc": "您的訂閱已更新。",
     "renewsOn": "續訂日期",
+    "cancelsOn": "取消日期",
     "endsOn": "結束日期",
     "billedMonthly": "按月計費",
     "billedYearly": "按年計費",
