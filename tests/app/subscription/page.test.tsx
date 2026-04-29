@@ -39,8 +39,18 @@ vi.mock("@/app/[locale]/(app)/_data/getUserOrgs", () => ({
   getUserOrgs: vi.fn(() => Promise.resolve([])),
 }));
 
+const mockCanManageBilling = vi.fn<
+  (
+    user: unknown,
+    sub: { plan: { context: "personal" | "team" } },
+  ) => Promise<boolean>
+>(() => Promise.resolve(false));
 vi.mock("@/app/[locale]/(app)/subscription/_data/canManageBilling", () => ({
-  canManageBilling: vi.fn(() => Promise.resolve(false)),
+  canManageBilling: (user: unknown, sub: unknown) =>
+    mockCanManageBilling(
+      user,
+      sub as { plan: { context: "personal" | "team" } },
+    ),
 }));
 
 // Use-case stubs — return empty lists so we don't render the pricing table.
@@ -332,7 +342,9 @@ describe("BillingPage (subscription/page)", () => {
       expect(cards[1]).toHaveAttribute("data-is-concurrent", "true");
 
       // FreePlanCard is suppressed when there are subs to render.
-      expect(screen.queryByText("personal.1.description")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("personal.1.description"),
+      ).not.toBeInTheDocument();
     });
 
     it("renders a single card with isConcurrent=false when only one sub exists", async () => {
@@ -346,6 +358,79 @@ describe("BillingPage (subscription/page)", () => {
       expect(cards).toHaveLength(1);
       expect(cards[0]).toHaveAttribute("data-context", "personal");
       expect(cards[0]).toHaveAttribute("data-is-concurrent", "false");
+    });
+  });
+
+  describe("teamPlanReadonly notice (org members on a team-only sub they can't manage)", () => {
+    function makeSub(id: string, context: "personal" | "team"): Subscription {
+      return {
+        id,
+        status: "active",
+        plan: {
+          id: `${id}-plan`,
+          name: "Pro",
+          description: "",
+          context,
+          tier: 3,
+          interval: "month",
+          price: null,
+        },
+        quantity: 1,
+        trialEndsAt: null,
+        currentPeriodStart: "2026-01-01T00:00:00Z",
+        currentPeriodEnd: "2026-02-01T00:00:00Z",
+        canceledAt: null,
+        createdAt: "2026-01-01T00:00:00Z",
+      };
+    }
+
+    it("renders the teamPlanReadonly notice when the only sub is team and the caller can't manage it", async () => {
+      // Org member viewing the page: team sub exists, they can't manage it,
+      // and they have no personal sub of their own. Plan options are
+      // suppressed — the team owner controls billing.
+      mockGetSubscriptions.mockResolvedValueOnce([makeSub("sub_t", "team")]);
+      mockCanManageBilling.mockResolvedValue(false);
+
+      await renderPage({});
+
+      expect(screen.getByText("teamPlanReadonly")).toBeInTheDocument();
+    });
+
+    it("does NOT render the teamPlanReadonly notice when the caller has a personal sub alongside an unmanageable team sub", async () => {
+      // Concurrent personal+team — even if the team sub is owner-managed
+      // (caller can't), the caller can still upgrade/downgrade their own
+      // personal plan, so plan options must remain visible.
+      mockGetSubscriptions.mockResolvedValueOnce([
+        makeSub("sub_p", "personal"),
+        makeSub("sub_t", "team"),
+      ]);
+      mockCanManageBilling.mockImplementation(
+        async (_user, sub) => sub.plan.context === "personal",
+      );
+
+      await renderPage({});
+
+      expect(screen.queryByText("teamPlanReadonly")).not.toBeInTheDocument();
+    });
+
+    it("does NOT render the teamPlanReadonly notice when the caller CAN manage the team sub", async () => {
+      mockGetSubscriptions.mockResolvedValueOnce([makeSub("sub_t", "team")]);
+      mockCanManageBilling.mockResolvedValue(true);
+
+      await renderPage({});
+
+      expect(screen.queryByText("teamPlanReadonly")).not.toBeInTheDocument();
+    });
+
+    it("does NOT render the teamPlanReadonly notice when the only sub is personal", async () => {
+      mockGetSubscriptions.mockResolvedValueOnce([
+        makeSub("sub_p", "personal"),
+      ]);
+      mockCanManageBilling.mockResolvedValue(false);
+
+      await renderPage({});
+
+      expect(screen.queryByText("teamPlanReadonly")).not.toBeInTheDocument();
     });
   });
 });
