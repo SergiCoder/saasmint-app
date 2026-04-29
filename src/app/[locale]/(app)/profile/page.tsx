@@ -25,18 +25,18 @@ export default async function ProfilePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Resolve the current user up front so we can pass `preferredCurrency` to
-  // getSubscriptions() — that matches the (app) layout's React.cache key,
-  // letting layout + page share a single subscription roundtrip per render.
-  // getCurrentUser is itself React-cached and the layout already requested
-  // it in parallel, so this introduces no extra fetch.
-  const currentUser = await getCurrentUser();
+  // Independent calls run fully in parallel; only `getSubscriptions` chains
+  // off the user fetch so it can pass `user.preferredCurrency` and share
+  // the (app) layout's React.cache key for the subscription roundtrip.
+  // `getCurrentUser` itself is React-cached (the layout requested it in
+  // parallel) so the chained subscription call settles in one RTT total.
+  const userPromise = getCurrentUser();
   const [t, user, phonePrefixes, myOrgRole, subscriptions] = await Promise.all([
     getTranslations("profile"),
     userGateway.getProfile(),
     referenceGateway.getPhonePrefixes(),
     getMyOrgRole(),
-    getSubscriptions(currentUser.preferredCurrency),
+    userPromise.then((u) => getSubscriptions(u.preferredCurrency)),
   ]);
 
   const deleteRestriction: "owner" | undefined =

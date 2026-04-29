@@ -29,16 +29,15 @@ export default async function DashboardPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Resolve the user first so we can pass `user.preferredCurrency` into
-  // getSubscriptions() — matching the (app) layout's cache key keeps the
-  // layout + page on a single shared roundtrip via React.cache.
-  const [t, tOrg, user] = await Promise.all([
+  // Independent calls run fully in parallel; only `getSubscriptions` chains
+  // off the user fetch so it can pass `user.preferredCurrency` and share
+  // the (app) layout's React.cache key for the subscription roundtrip.
+  const userPromise = getCurrentUser();
+  const [t, tOrg, user, subscriptions, orgs] = await Promise.all([
     getTranslations("dashboard"),
     getTranslations("org"),
-    getCurrentUser(),
-  ]);
-  const [subscriptions, orgs] = await Promise.all([
-    getSubscriptions(user.preferredCurrency),
+    userPromise,
+    userPromise.then((u) => getSubscriptions(u.preferredCurrency)),
     getUserOrgs(),
   ]);
 

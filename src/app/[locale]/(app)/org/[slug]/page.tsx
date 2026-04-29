@@ -22,23 +22,25 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const [t, tCommon, user, orgs] = await Promise.all([
+  // Kick off the subscription fetch alongside the user/orgs lookup so it
+  // doesn't sit behind the `org.id` dependency in stage 2. The currency
+  // argument matches the (app) layout's React.cache key so layout + page
+  // share a single subscription roundtrip.
+  const userPromise = getCurrentUser();
+  const [t, tCommon, user, orgs, subscriptions] = await Promise.all([
     getTranslations("org"),
     getTranslations("common"),
-    getCurrentUser(),
+    userPromise,
     getUserOrgs(),
+    userPromise.then((u) => getSubscriptions(u.preferredCurrency)),
   ]);
   const org = orgs.find((o) => o.slug === slug);
 
   if (!org) notFound();
 
-  const [members, invitations, subscriptions] = await Promise.all([
+  const [members, invitations] = await Promise.all([
     getOrgMembers(org.id),
     invitationGateway.listInvitations(org.id).catch(() => []),
-    // Pass currency so this call shares the (app) layout's React.cache entry
-    // for getSubscriptions(currency) — otherwise the layout + this page each
-    // make their own subscription roundtrip.
-    getSubscriptions(user.preferredCurrency),
   ]);
 
   const teamSubscription = findTeamSubscription(subscriptions);
