@@ -19,21 +19,27 @@ export default async function TeamCheckoutPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tPlans, user, subscriptions, { plan: planPriceId }] =
-    await Promise.all([
-      getTranslations("billing"),
-      getTranslations("plans"),
-      getCurrentUser(),
-      getSubscriptions(),
-      searchParams,
-    ]);
+  // Resolve the user first so subsequent fetches can share its
+  // preferredCurrency. getCurrentUser is React-cached and is already in
+  // flight from the (app) layout, so this isn't an extra roundtrip.
+  const [t, tPlans, user, { plan: planPriceId }] = await Promise.all([
+    getTranslations("billing"),
+    getTranslations("plans"),
+    getCurrentUser(),
+    searchParams,
+  ]);
 
   if (!planPriceId) {
     redirect("/subscription");
   }
 
   const currency = user.preferredCurrency;
-  const plans = await planGateway.listPlans(currency);
+  // getSubscriptions(currency) shares the (app) layout's React.cache key,
+  // so layout + this page render off a single subscription roundtrip.
+  const [subscriptions, plans] = await Promise.all([
+    getSubscriptions(currency),
+    planGateway.listPlans(currency),
+  ]);
   const plan = plans.find((p) => p.price?.id === planPriceId);
 
   if (!plan || !plan.price || plan.context !== "team") {

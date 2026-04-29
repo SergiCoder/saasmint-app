@@ -63,20 +63,25 @@ export async function getSubscriptionPageData(
     ...(team ? [team] : []),
   ];
 
-  const canManageEntries = await Promise.all(
-    subscriptions.map(
-      async (s) => [s.id, await canManageBilling(user, s)] as const,
-    ),
-  );
-  const canManageById = Object.fromEntries(canManageEntries);
-
-  let teamOwnerName: string | null = null;
+  // Resolve canManage flags and the team owner's name in parallel — they
+  // both reach for the same React-cached getOrgMembers(firstOrg.id) call,
+  // so running them concurrently lets the second one short-circuit on the
+  // shared cache entry instead of waiting for the first to finish.
   const firstOrg = userOrgs.at(0);
-  if (team && firstOrg) {
-    const members = await getOrgMembers(firstOrg.id);
-    const owner = members.find((m) => m.role === "owner");
-    if (owner) teamOwnerName = owner.user.fullName;
-  }
+  const [canManageEntries, teamOwnerName] = await Promise.all([
+    Promise.all(
+      subscriptions.map(
+        async (s) => [s.id, await canManageBilling(user, s)] as const,
+      ),
+    ),
+    (async (): Promise<string | null> => {
+      if (!team || !firstOrg) return null;
+      const members = await getOrgMembers(firstOrg.id);
+      const owner = members.find((m) => m.role === "owner");
+      return owner?.user.fullName ?? null;
+    })(),
+  ]);
+  const canManageById = Object.fromEntries(canManageEntries);
 
   return {
     subscriptions,

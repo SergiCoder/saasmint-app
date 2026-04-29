@@ -35,7 +35,10 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
   const [members, invitations, subscriptions] = await Promise.all([
     getOrgMembers(org.id),
     invitationGateway.listInvitations(org.id).catch(() => []),
-    getSubscriptions(),
+    // Pass currency so this call shares the (app) layout's React.cache entry
+    // for getSubscriptions(currency) — otherwise the layout + this page each
+    // make their own subscription roundtrip.
+    getSubscriptions(user.preferredCurrency),
   ]);
 
   const teamSubscription = findTeamSubscription(subscriptions);

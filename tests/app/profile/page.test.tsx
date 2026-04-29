@@ -25,9 +25,15 @@ vi.mock("@/app/[locale]/(app)/_data/getMyOrgRole", () => ({
   getMyOrgRole: () => mockGetMyOrgRole(),
 }));
 
-const mockGetSubscriptions = vi.fn<() => Promise<Subscription[]>>();
+const mockGetCurrentUser = vi.fn<() => Promise<User>>();
+vi.mock("@/app/[locale]/(app)/_data/getCurrentUser", () => ({
+  getCurrentUser: () => mockGetCurrentUser(),
+}));
+
+const mockGetSubscriptions =
+  vi.fn<(currency?: string) => Promise<Subscription[]>>();
 vi.mock("@/app/[locale]/(app)/_data/getSubscriptions", () => ({
-  getSubscriptions: () => mockGetSubscriptions(),
+  getSubscriptions: (currency?: string) => mockGetSubscriptions(currency),
 }));
 
 // Stub the client child components so we can capture the props the page
@@ -137,6 +143,7 @@ async function renderPage() {
 describe("ProfilePage (currency-locked wiring)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetCurrentUser.mockResolvedValue(makeUser());
     mockGetProfile.mockResolvedValue(makeUser());
     mockGetPhonePrefixes.mockResolvedValue([]);
     mockGetMyOrgRole.mockResolvedValue(null);

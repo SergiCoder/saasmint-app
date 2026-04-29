@@ -21,11 +21,18 @@ export default async function AppLayoutRoute({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tCommon, user, subscriptions, userOrgs] = await Promise.all([
-    getTranslations("nav"),
+  // Resolve the user first so we can pass `user.preferredCurrency` into
+  // getSubscriptions(); React.cache keys on the argument tuple, and the
+  // subscription page passes the same currency from its own
+  // getSubscriptionPageData call. Matching keys means layout + page share
+  // a single API roundtrip per render pass instead of two.
+  const [tCommon, user] = await Promise.all([
     getTranslations("common"),
     getCurrentUser(),
-    getSubscriptions(),
+  ]);
+  const [t, subscriptions, userOrgs] = await Promise.all([
+    getTranslations("nav"),
+    getSubscriptions(user.preferredCurrency),
     getUserOrgs(),
   ]);
 

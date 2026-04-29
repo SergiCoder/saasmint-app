@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { referenceGateway, userGateway } from "@/infrastructure/registry";
+import { getCurrentUser } from "../_data/getCurrentUser";
 import { getMyOrgRole } from "../_data/getMyOrgRole";
 import { getSubscriptions } from "../_data/getSubscriptions";
 import { ChangePasswordForm } from "./_components/ChangePasswordForm";
@@ -24,12 +25,18 @@ export default async function ProfilePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
+  // Resolve the current user up front so we can pass `preferredCurrency` to
+  // getSubscriptions() — that matches the (app) layout's React.cache key,
+  // letting layout + page share a single subscription roundtrip per render.
+  // getCurrentUser is itself React-cached and the layout already requested
+  // it in parallel, so this introduces no extra fetch.
+  const currentUser = await getCurrentUser();
   const [t, user, phonePrefixes, myOrgRole, subscriptions] = await Promise.all([
     getTranslations("profile"),
     userGateway.getProfile(),
     referenceGateway.getPhonePrefixes(),
     getMyOrgRole(),
-    getSubscriptions(),
+    getSubscriptions(currentUser.preferredCurrency),
   ]);
 
   const deleteRestriction: "owner" | undefined =
