@@ -3,13 +3,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
-import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
 import { CheckoutButton } from "./_components/CheckoutButton";
 import { TeamCheckoutButton } from "./_components/TeamCheckoutButton";
 import { CurrentSubscriptionCard } from "./_components/CurrentSubscriptionCard";
 import { CreditBalanceCard } from "./_components/CreditBalanceCard";
 import { FreePlanCard } from "./_components/FreePlanCard";
-import { startCheckout, startProductCheckout } from "@/app/actions/billing";
+import { ProductsCheckoutSection } from "./_components/ProductsCheckoutSection";
+import { startCheckout } from "@/app/actions/billing";
 import { getCreditBalances } from "../_data/getCreditBalances";
 import { getSubscriptionPageData } from "./_data/getSubscriptionPageData";
 import {
@@ -79,6 +79,7 @@ export default async function BillingPage({
     userOrgs,
     canManageById,
     teamOwnerName,
+    isCurrentUserOrgOwner,
   } = pageData;
 
   const hasOrg = userOrgs.length > 0;
@@ -197,36 +198,49 @@ export default async function BillingPage({
       )}
 
       {(() => {
-        // Render personal-then-org so the order matches the subscription
-        // cards above. Concurrent billers (rule 5) get both; everyone else
-        // gets at most one.
+        // For org-member upgraders (rule 16) the backend returns org first
+        // and the user-scoped row carries leftover personal credits from
+        // before the upgrade — render org-first and label the user row as
+        // carry-over so it doesn't read like a live spendable balance.
         const personalCredits = findPersonalCreditBalance(creditBalances);
         const orgCredits = findOrgCreditBalance(creditBalances);
-        const ordered = [personalCredits, orgCredits].filter(
+        const ordered = [orgCredits, personalCredits].filter(
           (b): b is NonNullable<typeof b> => b !== null,
         );
         if (ordered.length === 0) return null;
+        const hasBoth = personalCredits !== null && orgCredits !== null;
         return (
           <div className="space-y-4">
-            {ordered.map((b) => (
-              <CreditBalanceCard
-                key={b.scope}
-                eyebrowLabel={t("creditBalanceLabel")}
-                balance={b.balance}
-                unitLabel={t("credits")}
-                description={t(
-                  b.scope === "org"
-                    ? "creditBalanceOrgDescription"
-                    : "creditBalancePersonalDescription",
-                )}
-                scopeBadge={t(
-                  b.scope === "org"
-                    ? "creditBalanceOrgBadge"
-                    : "creditBalancePersonalBadge",
-                )}
-                locale={locale}
-              />
-            ))}
+            {ordered.map((b) => {
+              const isCarryover = hasBoth && b.scope === "user";
+              return (
+                <CreditBalanceCard
+                  key={b.scope}
+                  eyebrowLabel={t(
+                    isCarryover
+                      ? "creditBalanceCarryoverLabel"
+                      : "creditBalanceLabel",
+                  )}
+                  balance={b.balance}
+                  unitLabel={t("credits")}
+                  description={t(
+                    isCarryover
+                      ? "creditBalanceCarryoverDescription"
+                      : b.scope === "org"
+                        ? "creditBalanceOrgDescription"
+                        : "creditBalancePersonalDescription",
+                  )}
+                  scopeBadge={t(
+                    isCarryover
+                      ? "creditBalanceCarryoverBadge"
+                      : b.scope === "org"
+                        ? "creditBalanceOrgBadge"
+                        : "creditBalancePersonalBadge",
+                  )}
+                  locale={locale}
+                />
+              );
+            })}
           </div>
         );
       })()}
@@ -270,22 +284,22 @@ export default async function BillingPage({
         </>
       )}
 
-      <ProductsGrid
+      <ProductsCheckoutSection
         title={t("products")}
         products={products}
         productNames={buildProductTranslations(products, tProducts)}
         creditsLabel={t("credits")}
+        buyLabel={t("buy")}
         locale={locale}
-        renderCta={(product) =>
-          product.price && (
-            <CheckoutButton
-              action={startProductCheckout}
-              field={{ name: "productPriceId", value: product.price.id }}
-            >
-              {t("buy")}
-            </CheckoutButton>
-          )
-        }
+        // Picker is only shown for the rule-5b case: an org owner who kept
+        // their personal subscription alongside the team plan and therefore
+        // has two Stripe customers the credits could land on.
+        showPicker={isCurrentUserOrgOwner && isConcurrent}
+        pickerLabel={t("productCheckoutContextLabel")}
+        personalOptionLabel={t("productCheckoutContextPersonal")}
+        teamOptionLabel={t("productCheckoutContextTeam", {
+          orgName: userOrgs.at(0)?.name ?? "",
+        })}
       />
     </div>
   );

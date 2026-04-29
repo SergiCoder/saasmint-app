@@ -6,7 +6,18 @@ import type { Subscription } from "@/domain/models/Subscription";
 // --- Mocks ---------------------------------------------------------------
 
 const setRequestLocaleMock = vi.fn();
-const mockTranslate = vi.fn((key: string) => key);
+// Echo the key when called without params; interpolate `{name}` placeholders
+// when called with a params object so component tests can assert on the
+// substituted value (e.g. orgName -> "Acme").
+const mockTranslate = vi.fn(
+  (key: string, params?: Record<string, string | number>) => {
+    if (!params) return key;
+    const tail = Object.entries(params)
+      .map(([k, v]) => `${k}=${v}`)
+      .join(" ");
+    return tail ? `${key} ${tail}` : key;
+  },
+);
 vi.mock("next-intl/server", () => ({
   getTranslations: vi.fn(() => Promise.resolve(mockTranslate)),
   setRequestLocale: (locale: string) => setRequestLocaleMock(locale),
@@ -17,8 +28,11 @@ vi.mock("@/app/[locale]/(app)/_data/getCurrentUser", () => ({
   getCurrentUser: () => mockGetCurrentUser(),
 }));
 
+const mockGetOrgMembers = vi.fn<() => Promise<unknown[]>>(() =>
+  Promise.resolve([]),
+);
 vi.mock("@/app/[locale]/(app)/_data/getOrgMembers", () => ({
-  getOrgMembers: vi.fn(() => Promise.resolve([])),
+  getOrgMembers: () => mockGetOrgMembers(),
 }));
 
 const mockGetSubscriptions = vi.fn<() => Promise<Subscription[]>>(() =>
@@ -35,8 +49,11 @@ vi.mock("@/app/[locale]/(app)/_data/getCreditBalances", () => ({
   getCreditBalances: () => mockGetCreditBalances(),
 }));
 
+const mockGetUserOrgs = vi.fn<() => Promise<unknown[]>>(() =>
+  Promise.resolve([]),
+);
 vi.mock("@/app/[locale]/(app)/_data/getUserOrgs", () => ({
-  getUserOrgs: vi.fn(() => Promise.resolve([])),
+  getUserOrgs: () => mockGetUserOrgs(),
 }));
 
 const mockCanManageBilling = vi.fn<
@@ -75,6 +92,28 @@ vi.mock("@/presentation/components/organisms/ProductsGrid", async () => {
     ProductsGrid: () => React.createElement("div", null, "products-grid"),
   };
 });
+
+vi.mock(
+  "@/app/[locale]/(app)/subscription/_components/ProductsCheckoutSection",
+  async () => {
+    const React = await import("react");
+    return {
+      ProductsCheckoutSection: (props: {
+        showPicker: boolean;
+        teamOptionLabel: string;
+      }) =>
+        React.createElement(
+          "div",
+          {
+            "data-testid": "products-checkout-section",
+            "data-show-picker": props.showPicker ? "true" : "false",
+            "data-team-option-label": props.teamOptionLabel,
+          },
+          "products-checkout-section",
+        ),
+    };
+  },
+);
 
 vi.mock("@/presentation/components/organisms/SubscriptionCard", async () => {
   const React = await import("react");
@@ -301,26 +340,153 @@ describe("BillingPage (subscription/page)", () => {
     expect(screen.getByText("creditBalanceOrgDescription")).toBeInTheDocument();
   });
 
-  it("renders both cards in personal-then-org order for concurrent billers", async () => {
-    // Backend may return them in any order — verify the page sorts personal
-    // before org so the order matches the subscription cards above.
+  it("renders both cards in org-first order with carry-over labelling for upgraded org members (rule 16)", async () => {
+    // Backend may return them in any order — verify the page sorts org
+    // before user, and re-labels the user-scope row as carry-over so it
+    // doesn't read like a live spendable personal balance.
     mockGetCreditBalances.mockResolvedValueOnce([
-      { balance: 500, scope: "org" },
       { balance: 75, scope: "user" },
+      { balance: 500, scope: "org" },
     ]);
     await renderPage({});
 
-    const personalBadge = screen.getByText("creditBalancePersonalBadge");
     const orgBadge = screen.getByText("creditBalanceOrgBadge");
-    expect(personalBadge).toBeInTheDocument();
+    const carryoverBadge = screen.getByText("creditBalanceCarryoverBadge");
     expect(orgBadge).toBeInTheDocument();
-    expect(screen.getByText("75")).toBeInTheDocument();
+    expect(carryoverBadge).toBeInTheDocument();
     expect(screen.getByText("500")).toBeInTheDocument();
-    // Personal card precedes org card in document order.
+    expect(screen.getByText("75")).toBeInTheDocument();
+    // The personal-scope row is relabelled in the rule-16 case, so the plain
+    // personal badge / description must NOT be rendered.
     expect(
-      personalBadge.compareDocumentPosition(orgBadge) &
+      screen.queryByText("creditBalancePersonalBadge"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("creditBalancePersonalDescription"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("creditBalanceCarryoverDescription"),
+    ).toBeInTheDocument();
+    // Org card precedes carry-over card in document order.
+    expect(
+      orgBadge.compareDocumentPosition(carryoverBadge) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+  });
+
+  describe("product checkout context picker (rule 5b)", () => {
+    function makeSub(id: string, context: "personal" | "team"): Subscription {
+      return {
+        id,
+        status: "active",
+        plan: {
+          id: `${id}-plan`,
+          name: "Pro",
+          description: "",
+          context,
+          tier: 3,
+          interval: "month",
+          price: null,
+        },
+        quantity: 1,
+        trialEndsAt: null,
+        currentPeriodStart: "2026-01-01T00:00:00Z",
+        currentPeriodEnd: "2026-02-01T00:00:00Z",
+        canceledAt: null,
+        createdAt: "2026-01-01T00:00:00Z",
+      };
+    }
+
+    it("does NOT show the picker for a single-sub user (no concurrent billing)", async () => {
+      mockGetSubscriptions.mockResolvedValueOnce([
+        makeSub("sub_p", "personal"),
+      ]);
+      await renderPage({});
+
+      const section = screen.getByTestId("products-checkout-section");
+      expect(section).toHaveAttribute("data-show-picker", "false");
+    });
+
+    it("shows the picker only when the caller is the org owner with concurrent personal+team subs", async () => {
+      mockGetSubscriptions.mockResolvedValueOnce([
+        makeSub("sub_p", "personal"),
+        makeSub("sub_t", "team"),
+      ]);
+      mockGetUserOrgs.mockResolvedValueOnce([
+        { id: "org_1", name: "Acme", slug: "acme", logoUrl: null },
+      ]);
+      mockGetOrgMembers.mockResolvedValueOnce([
+        {
+          id: "m1",
+          org: "org_1",
+          user: {
+            id: "u1",
+            email: "u1@e.co",
+            fullName: "User One",
+            avatarUrl: null,
+          },
+          role: "owner",
+          isBilling: true,
+          joinedAt: "2026-01-01T00:00:00Z",
+        },
+      ]);
+
+      await renderPage({});
+
+      const section = screen.getByTestId("products-checkout-section");
+      expect(section).toHaveAttribute("data-show-picker", "true");
+      // Org name is interpolated into the team-option label.
+      expect(section).toHaveAttribute(
+        "data-team-option-label",
+        expect.stringContaining("Acme") as unknown as string,
+      );
+    });
+
+    it("does NOT show the picker for an org admin/member even with concurrent subs", async () => {
+      // Admins and regular members can buy credits, but only the owner can
+      // direct the charge to either Stripe customer — backend would 403 on a
+      // ?context=team request from a non-owner.
+      mockGetSubscriptions.mockResolvedValueOnce([
+        makeSub("sub_p", "personal"),
+        makeSub("sub_t", "team"),
+      ]);
+      mockGetUserOrgs.mockResolvedValueOnce([
+        { id: "org_1", name: "Acme", slug: "acme", logoUrl: null },
+      ]);
+      mockGetOrgMembers.mockResolvedValueOnce([
+        {
+          id: "m1",
+          org: "org_1",
+          user: {
+            id: "u1",
+            email: "u1@e.co",
+            fullName: "User One",
+            avatarUrl: null,
+          },
+          role: "admin",
+          isBilling: false,
+          joinedAt: "2026-01-01T00:00:00Z",
+        },
+        {
+          id: "m2",
+          org: "org_1",
+          user: {
+            id: "owner",
+            email: "o@e.co",
+            fullName: "Owner",
+            avatarUrl: null,
+          },
+          role: "owner",
+          isBilling: true,
+          joinedAt: "2026-01-01T00:00:00Z",
+        },
+      ]);
+
+      await renderPage({});
+
+      const section = screen.getByTestId("products-checkout-section");
+      expect(section).toHaveAttribute("data-show-picker", "false");
+    });
   });
 
   describe("concurrent personal+team rendering (rule 5)", () => {
