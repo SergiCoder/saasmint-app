@@ -340,36 +340,25 @@ describe("BillingPage (subscription/page)", () => {
     expect(screen.getByText("creditBalanceOrgDescription")).toBeInTheDocument();
   });
 
-  it("renders both cards in org-first order with carry-over labelling for upgraded org members (rule 16)", async () => {
-    // Backend may return them in any order — verify the page sorts org
-    // before user, and re-labels the user-scope row as carry-over so it
-    // doesn't read like a live spendable personal balance.
+  it("renders one card per scope in the order the backend returned them", async () => {
+    // Backend controls the order per its UX intent (rule 16 returns
+    // [org, user] for upgraded ORG_MEMBERs); the page renders rows as-is.
+    // Plain personal/org labels stay accurate regardless of why both rows
+    // appear, so we don't second-guess scope semantics in the client.
     mockGetCreditBalances.mockResolvedValueOnce([
-      { balance: 75, scope: "user" },
       { balance: 500, scope: "org" },
+      { balance: 75, scope: "user" },
     ]);
     await renderPage({});
 
     const orgBadge = screen.getByText("creditBalanceOrgBadge");
-    const carryoverBadge = screen.getByText("creditBalanceCarryoverBadge");
-    expect(orgBadge).toBeInTheDocument();
-    expect(carryoverBadge).toBeInTheDocument();
+    const personalBadge = screen.getByText("creditBalancePersonalBadge");
     expect(screen.getByText("500")).toBeInTheDocument();
     expect(screen.getByText("75")).toBeInTheDocument();
-    // The personal-scope row is relabelled in the rule-16 case, so the plain
-    // personal badge / description must NOT be rendered.
+    // Org card precedes personal card because that's the order the gateway
+    // resolved into `creditBalances` (the page does not re-sort).
     expect(
-      screen.queryByText("creditBalancePersonalBadge"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("creditBalancePersonalDescription"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByText("creditBalanceCarryoverDescription"),
-    ).toBeInTheDocument();
-    // Org card precedes carry-over card in document order.
-    expect(
-      orgBadge.compareDocumentPosition(carryoverBadge) &
+      orgBadge.compareDocumentPosition(personalBadge) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });

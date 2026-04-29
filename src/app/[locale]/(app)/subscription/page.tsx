@@ -28,10 +28,6 @@ import {
   findPersonalSubscription,
   findTeamSubscription,
 } from "@/domain/models/Subscription";
-import {
-  findOrgCreditBalance,
-  findPersonalCreditBalance,
-} from "@/domain/models/CreditBalance";
 
 interface BillingPageProps {
   params: Promise<{ locale: string }>;
@@ -197,53 +193,33 @@ export default async function BillingPage({
         </div>
       )}
 
-      {(() => {
-        // For org-member upgraders (rule 16) the backend returns org first
-        // and the user-scoped row carries leftover personal credits from
-        // before the upgrade — render org-first and label the user row as
-        // carry-over so it doesn't read like a live spendable balance.
-        const personalCredits = findPersonalCreditBalance(creditBalances);
-        const orgCredits = findOrgCreditBalance(creditBalances);
-        const ordered = [orgCredits, personalCredits].filter(
-          (b): b is NonNullable<typeof b> => b !== null,
-        );
-        if (ordered.length === 0) return null;
-        const hasBoth = personalCredits !== null && orgCredits !== null;
-        return (
-          <div className="space-y-4">
-            {ordered.map((b) => {
-              const isCarryover = hasBoth && b.scope === "user";
-              return (
-                <CreditBalanceCard
-                  key={b.scope}
-                  eyebrowLabel={t(
-                    isCarryover
-                      ? "creditBalanceCarryoverLabel"
-                      : "creditBalanceLabel",
-                  )}
-                  balance={b.balance}
-                  unitLabel={t("credits")}
-                  description={t(
-                    isCarryover
-                      ? "creditBalanceCarryoverDescription"
-                      : b.scope === "org"
-                        ? "creditBalanceOrgDescription"
-                        : "creditBalancePersonalDescription",
-                  )}
-                  scopeBadge={t(
-                    isCarryover
-                      ? "creditBalanceCarryoverBadge"
-                      : b.scope === "org"
-                        ? "creditBalanceOrgBadge"
-                        : "creditBalancePersonalBadge",
-                  )}
-                  locale={locale}
-                />
-              );
-            })}
-          </div>
-        );
-      })()}
+      {creditBalances.length > 0 && (
+        // Trust backend ordering: it returns rows in the order it wants them
+        // displayed (org-first for ORG_MEMBER upgraders per rule 16). Plain
+        // personal/org labels stay accurate regardless of why both rows
+        // appear, so we don't second-guess scope semantics in the client.
+        <div className="space-y-4">
+          {creditBalances.map((b) => (
+            <CreditBalanceCard
+              key={b.scope}
+              eyebrowLabel={t("creditBalanceLabel")}
+              balance={b.balance}
+              unitLabel={t("credits")}
+              description={t(
+                b.scope === "org"
+                  ? "creditBalanceOrgDescription"
+                  : "creditBalancePersonalDescription",
+              )}
+              scopeBadge={t(
+                b.scope === "org"
+                  ? "creditBalanceOrgBadge"
+                  : "creditBalancePersonalBadge",
+              )}
+              locale={locale}
+            />
+          ))}
+        </div>
+      )}
 
       {isTeamSubscription && !teamCanManage && !personalSubscription ? (
         <p className="text-sm text-gray-500">{t("teamPlanReadonly")}</p>
