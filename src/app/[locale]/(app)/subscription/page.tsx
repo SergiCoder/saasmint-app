@@ -24,6 +24,10 @@ import {
 } from "@/app/[locale]/_lib/pricingInterval";
 import { translatePlanName } from "@/lib/i18n/planTranslation";
 import { PLAN_TIER_PRO } from "@/domain/models/Plan";
+import {
+  findPersonalSubscription,
+  findTeamSubscription,
+} from "@/domain/models/Subscription";
 
 interface BillingPageProps {
   params: Promise<{ locale: string }>;
@@ -63,10 +67,8 @@ export default async function BillingPage({
   ] = await Promise.all([getSubscriptionPageData(user), getCreditBalance()]);
 
   const hasOrg = userOrgs.length > 0;
-  const personalSubscription =
-    subscriptions.find((s) => s.plan.context === "personal") ?? null;
-  const teamSubscription =
-    subscriptions.find((s) => s.plan.context === "team") ?? null;
+  const personalSubscription = findPersonalSubscription(subscriptions);
+  const teamSubscription = findTeamSubscription(subscriptions);
   const isConcurrent = subscriptions.length > 1;
   // URL ?interval=... wins; otherwise default to whichever active sub has a
   // yearly cadence so the relevant tab is pre-selected on first visit.

@@ -5,6 +5,7 @@ import {
   subscriptionGateway,
 } from "@/infrastructure/registry";
 import { AuthError } from "@/domain/errors/AuthError";
+import { findPersonalSubscription } from "@/domain/models/Subscription";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
 import { declineInvitation } from "@/app/actions/invitation";
@@ -43,9 +44,8 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
     }),
   ]);
 
-  const showConcurrentBillingNotice = subscriptions.some(
-    (s) => s.plan.context === "personal",
-  );
+  const showConcurrentBillingNotice =
+    findPersonalSubscription(subscriptions) !== null;
 
   return (
     <div className="mx-auto max-w-md space-y-6 py-12">
