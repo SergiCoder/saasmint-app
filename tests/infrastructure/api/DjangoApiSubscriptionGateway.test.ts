@@ -230,6 +230,33 @@ describe("DjangoApiSubscriptionGateway", () => {
         { method: "DELETE" },
       );
     });
+
+    it("appends ?context=team when targeting the team sub", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      await gateway.cancelSubscription("team");
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/?context=team",
+        { method: "DELETE" },
+      );
+    });
+
+    it("silently drops a tampered context value (defense-in-depth whitelist)", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      // RPC payload is untrusted: a malicious caller could try to inject path
+      // characters or extra params. The gateway whitelist must drop anything
+      // that isn't exactly "personal" or "team".
+      await gateway.cancelSubscription(
+        "team&admin=1" as unknown as "team",
+      );
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/",
+        { method: "DELETE" },
+      );
+    });
   });
 
   describe("resumeSubscription", () => {
@@ -260,6 +287,20 @@ describe("DjangoApiSubscriptionGateway", () => {
         },
       );
     });
+
+    it("appends ?context=personal when targeting the personal sub", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      await gateway.resumeSubscription("personal");
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/?context=personal",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ cancel_at_period_end: false }),
+        },
+      );
+    });
   });
 
   describe("updateSeats", () => {
@@ -282,6 +323,20 @@ describe("DjangoApiSubscriptionGateway", () => {
       expect(mockApiFetchVoid).toHaveBeenCalledWith(
         "/billing/subscriptions/me/?context=team",
         { method: "PATCH", body: JSON.stringify({ quantity: 5 }) },
+      );
+    });
+
+    it("drops a tampered context value rather than emitting it (whitelist)", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      await gateway.updateSeats(
+        3,
+        "personal'); DROP TABLE--" as unknown as "personal",
+      );
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/",
+        { method: "PATCH", body: JSON.stringify({ quantity: 3 }) },
       );
     });
   });
