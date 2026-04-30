@@ -56,28 +56,27 @@ export function ProductsCheckoutSection({
             {pickerLabel}
           </legend>
           <div className="mt-1 flex flex-wrap gap-4">
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
-              <input
-                type="radio"
-                name="product-checkout-context"
-                value="personal"
-                checked={selected === "personal"}
-                onChange={() => setSelected("personal")}
-                className="h-4 w-4 cursor-pointer"
-              />
-              {personalOptionLabel}
-            </label>
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
-              <input
-                type="radio"
-                name="product-checkout-context"
-                value="team"
-                checked={selected === "team"}
-                onChange={() => setSelected("team")}
-                className="h-4 w-4 cursor-pointer"
-              />
-              {teamOptionLabel}
-            </label>
+            {(
+              [
+                ["personal", personalOptionLabel],
+                ["team", teamOptionLabel],
+              ] as const
+            ).map(([value, label]) => (
+              <label
+                key={value}
+                className="flex cursor-pointer items-center gap-2 text-sm text-gray-700"
+              >
+                <input
+                  type="radio"
+                  name="product-checkout-context"
+                  value={value}
+                  checked={selected === value}
+                  onChange={() => setSelected(value)}
+                  className="h-4 w-4 cursor-pointer"
+                />
+                {label}
+              </label>
+            ))}
           </div>
         </fieldset>
       )}
