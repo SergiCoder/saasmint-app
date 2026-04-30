@@ -46,12 +46,16 @@ describe("getOAuthRedirectUrl", () => {
     );
   });
 
-  it("never includes an account_type query param", () => {
-    // Backend ignores account_type as of the org_already_owned rename — the
-    // frontend must not send it, since stripping it client-side is the only
-    // way to surface a regression if a future caller tries to reintroduce it.
-    const url = new URL(getOAuthRedirectUrl("google"));
-    expect(url.searchParams.has("account_type")).toBe(false);
-    expect(url.search).toBe("");
-  });
+  it.each(OAUTH_PROVIDERS)(
+    "never includes an account_type query param (%s)",
+    (provider) => {
+      // Backend ignores account_type as of the org_already_owned rename — the
+      // frontend must not send it for any provider, since stripping it
+      // client-side is the only way to surface a regression if a future
+      // caller tries to reintroduce it.
+      const url = new URL(getOAuthRedirectUrl(provider));
+      expect(url.searchParams.has("account_type")).toBe(false);
+      expect(url.search).toBe("");
+    },
+  );
 });

@@ -147,6 +147,26 @@ describe("UserSchema", () => {
       ).not.toThrow();
     }
   });
+
+  it("accepts a payload that lacks accountType (forward-compat with the dropped field)", () => {
+    // The accountType field was removed from User/UserSchema. Backends on the
+    // matching version no longer send it; the schema must accept the leaner
+    // payload without complaining.
+    expect(() => UserSchema.parse(validUser)).not.toThrow();
+    const parsed = UserSchema.parse(validUser);
+    expect(parsed).not.toHaveProperty("accountType");
+  });
+
+  it("strips an unexpected accountType field from older backend responses", () => {
+    // Backward-compat: a server that still returns accountType (mid-rollout
+    // or a stale instance) must not break parsing — Zod's default strips
+    // unknown keys so the field is silently dropped.
+    const parsed = UserSchema.parse({
+      ...validUser,
+      accountType: "personal",
+    });
+    expect(parsed).not.toHaveProperty("accountType");
+  });
 });
 
 describe("OrgSchema", () => {
