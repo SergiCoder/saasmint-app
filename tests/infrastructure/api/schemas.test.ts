@@ -18,7 +18,6 @@ const validUser = {
   email: "alice@example.com",
   fullName: "Alice",
   avatarUrl: null,
-  accountType: "personal",
   preferredLocale: "en",
   preferredCurrency: "USD",
   phonePrefix: null,
@@ -116,20 +115,6 @@ const validSubscription = {
 describe("UserSchema", () => {
   it("accepts a valid user", () => {
     expect(() => UserSchema.parse(validUser)).not.toThrow();
-  });
-
-  it("accepts the org_member account type", () => {
-    const parsed = UserSchema.parse({
-      ...validUser,
-      accountType: "org_member",
-    });
-    expect(parsed.accountType).toBe("org_member");
-  });
-
-  it("rejects an unknown accountType", () => {
-    expect(() =>
-      UserSchema.parse({ ...validUser, accountType: "admin" }),
-    ).toThrow();
   });
 
   it("rejects an unknown registrationMethod", () => {
