@@ -51,11 +51,17 @@ export function ProductsCheckoutSection({
   return (
     <div className="space-y-4">
       {showPicker && (
-        <fieldset className="rounded-lg border border-gray-200 bg-white p-4">
-          <legend className="px-1 text-sm font-medium text-gray-700">
+        <fieldset className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          {/* Keep `legend` in the DOM for screen readers (it's the
+            accessible name for the radio group), but visually render the
+            label as a card heading so the picker matches the product
+            cards sitting next to it instead of looking like a stray form
+            field. */}
+          <legend className="sr-only">{pickerLabel}</legend>
+          <h3 aria-hidden="true" className="font-semibold text-gray-900">
             {pickerLabel}
-          </legend>
-          <div className="mt-1 flex flex-wrap gap-4">
+          </h3>
+          <div className="mt-3 flex flex-wrap gap-4">
             {(
               [
                 ["personal", personalOptionLabel],
