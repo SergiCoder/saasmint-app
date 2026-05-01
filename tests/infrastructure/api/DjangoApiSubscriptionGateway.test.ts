@@ -346,6 +346,99 @@ describe("DjangoApiSubscriptionGateway", () => {
     });
   });
 
+  describe("releaseScheduledChange", () => {
+    it("sends DELETE /billing/subscriptions/me/scheduled-change/ without context when omitted", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      await gateway.releaseScheduledChange();
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/scheduled-change/",
+        { method: "DELETE" },
+      );
+    });
+
+    it("appends ?context=personal when targeting the personal sub", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      await gateway.releaseScheduledChange("personal");
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/scheduled-change/?context=personal",
+        { method: "DELETE" },
+      );
+    });
+
+    it("appends ?context=team when targeting the team sub", async () => {
+      mockApiFetchVoid.mockResolvedValue(undefined);
+
+      await gateway.releaseScheduledChange("team");
+
+      expect(mockApiFetchVoid).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/scheduled-change/?context=team",
+        { method: "DELETE" },
+      );
+    });
+  });
+
+  describe("listSubscriptions — scheduledPlan field", () => {
+    it("parses a populated scheduledPlan and applies price defaults", async () => {
+      const rowWithSchedule = {
+        ...samplePersonalRow,
+        scheduled_plan: {
+          id: "p_basic",
+          name: "Basic",
+          description: "Basic plan",
+          context: "personal",
+          tier: 2,
+          interval: "month",
+          price: { id: "pp_basic", amount: 900 },
+        },
+        scheduled_change_at: "2024-03-01T00:00:00Z",
+      };
+
+      mockApiFetch.mockResolvedValue({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [rowWithSchedule],
+      });
+
+      const result = await gateway.listSubscriptions();
+
+      expect(result).toHaveLength(1);
+      const sub = result[0]!;
+      expect(sub.scheduledChangeAt).toBe("2024-03-01T00:00:00Z");
+      expect(sub.scheduledPlan).toMatchObject({
+        id: "p_basic",
+        name: "Basic",
+        context: "personal",
+        tier: 2,
+        interval: "month",
+        price: {
+          id: "pp_basic",
+          amount: 900,
+          displayAmount: 9,
+          currency: "usd",
+        },
+      });
+    });
+
+    it("preserves scheduledPlan=null when the field is null in the response", async () => {
+      mockApiFetch.mockResolvedValue({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [samplePersonalRow],
+      });
+
+      const result = await gateway.listSubscriptions();
+
+      expect(result[0]!.scheduledPlan).toBeNull();
+      expect(result[0]!.scheduledChangeAt).toBeNull();
+    });
+  });
+
   describe("updateSeats", () => {
     it("sends PATCH /billing/subscriptions/me/ with quantity", async () => {
       mockApiFetchVoid.mockResolvedValue(undefined);
