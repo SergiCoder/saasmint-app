@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
+import { BillingPortalButton } from "./_components/BillingPortalButton";
 import { CheckoutButton } from "./_components/CheckoutButton";
 import { TeamCheckoutButton } from "./_components/TeamCheckoutButton";
 import { CurrentSubscriptionCard } from "./_components/CurrentSubscriptionCard";
@@ -91,6 +92,9 @@ export default async function BillingPage({
   const isTeamSubscription = teamSubscription !== null;
   const teamCanManage =
     teamSubscription !== null && canManageById[teamSubscription.id] === true;
+  const personalCanManage =
+    personalSubscription !== null &&
+    canManageById[personalSubscription.id] === true;
 
   const { planNames, planDescriptions } = buildPlanTranslations(plans, tPlans);
 
@@ -127,7 +131,43 @@ export default async function BillingPage({
       if (!plan.price) return null;
       if (!isUpgrade) return null;
       const highlighted = plan.tier === PLAN_TIER_PRO;
+      // Upgrades for an existing in-context subscription go through the
+      // Stripe Billing Portal, not Checkout. Reasons:
+      //   1) Backend rule 8 unconditionally 409s a second team checkout for
+      //      a user who already owns an org, so the only legal way to move
+      //      a team-basic owner to team-pro is via the portal.
+      //   2) The portal is Stripe's canonical "change plan" surface — it
+      //      handles proration, swaps the subscription item in place, and
+      //      fires `customer.subscription.updated` so the existing webhook
+      //      keeps the row in sync. Posting a fresh personal Checkout for
+      //      a different price would create a parallel personal sub.
+      // For a non-billing team member viewing a higher tier we show nothing
+      // — they can't action the upgrade and the portal would 403.
+      const hasSubInContext = isTeam
+        ? teamSubscription !== null
+        : personalSubscription !== null;
+      const canManageInContext = isTeam ? teamCanManage : personalCanManage;
+      if (hasSubInContext) {
+        if (!canManageInContext) return null;
+        // Pin context whenever we know it; required for concurrent billers
+        // (rule 5) and harmless for single-sub callers since it matches the
+        // backend default routing.
+        const portalContext = isTeam ? "team" : "personal";
+        return (
+          <BillingPortalButton
+            context={portalContext}
+            highlighted={highlighted}
+            fullWidth
+          >
+            {ctaLabel}
+          </BillingPortalButton>
+        );
+      }
       if (isTeam) {
+        // First-time team checkout: rule 8 guards against starting a second
+        // team subscription when the user already owns an org. Without an
+        // org we let the standard team-checkout flow (with the org-name
+        // form) run.
         if (hasOrg) return null;
         return (
           <TeamCheckoutButton
