@@ -7,11 +7,12 @@ import {
   orgGateway,
 } from "@/infrastructure/registry";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
-import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
 import { GetStartedButton } from "./_components/GetStartedButton";
 import { CheckoutButton } from "@/app/[locale]/(app)/subscription/_components/CheckoutButton";
 import { TeamCheckoutButton } from "@/app/[locale]/(app)/subscription/_components/TeamCheckoutButton";
-import { startCheckout, startProductCheckout } from "@/app/actions/billing";
+import { ProductsCheckoutSection } from "@/app/[locale]/(app)/subscription/_components/ProductsCheckoutSection";
+import { getOrgMembers } from "@/app/[locale]/(app)/_data/getOrgMembers";
+import { startCheckout } from "@/app/actions/billing";
 import { getOptionalUser } from "../_data/getOptionalUser";
 import {
   buildPlanCardGroups,
@@ -89,7 +90,19 @@ export default async function PricingPage({ params, searchParams }: Props) {
   ]);
 
   const hasOrg = userOrgs.length > 0;
+  const isConcurrent = subscriptions.length > 1;
   const currentPlans = subscriptions.map((s) => s.plan);
+
+  // Resolve org-owner flag only when both signals that gate the picker are
+  // already true (signed-in user with concurrent personal+team subs). Skips
+  // the orgMembers roundtrip in every other case — most page renders.
+  const firstOrg = userOrgs.at(0);
+  const isCurrentUserOrgOwner =
+    user && isConcurrent && firstOrg
+      ? (await getOrgMembers(firstOrg.id)).some(
+          (m) => m.user.id === user.id && m.role === "owner",
+        )
+      : false;
 
   const allPlans = [...SYNTHETIC_FREE_PLANS, ...plans];
   const { planNames, planDescriptions } = buildPlanTranslations(
@@ -218,24 +231,26 @@ export default async function PricingPage({ params, searchParams }: Props) {
         )}
       </div>
 
-      <ProductsGrid
-        className="mt-16"
-        title={t("products")}
-        products={products}
-        productNames={buildProductTranslations(products, tProducts)}
-        creditsLabel={t("credits")}
-        locale={locale}
-        renderCta={(product) =>
-          product.price && (
-            <CheckoutButton
-              action={startProductCheckout}
-              field={{ name: "productPriceId", value: product.price.id }}
-            >
-              {t("buy")}
-            </CheckoutButton>
-          )
-        }
-      />
+      <div className="mt-16">
+        <ProductsCheckoutSection
+          title={t("products")}
+          products={products}
+          productNames={buildProductTranslations(products, tProducts)}
+          creditsLabel={t("credits")}
+          buyLabel={t("buy")}
+          locale={locale}
+          // Picker is only shown for the rule-5b case: an org owner who kept
+          // their personal subscription alongside the team plan and therefore
+          // has two Stripe customers the credits could land on. Mirrors the
+          // gate on /subscription so both surfaces behave identically.
+          showPicker={isCurrentUserOrgOwner && isConcurrent}
+          pickerLabel={t("productCheckoutContextLabel")}
+          personalOptionLabel={t("productCheckoutContextPersonal")}
+          teamOptionLabel={t("productCheckoutContextTeam", {
+            orgName: userOrgs.at(0)?.name ?? "",
+          })}
+        />
+      </div>
     </div>
   );
 }
