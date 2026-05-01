@@ -7,14 +7,11 @@ import {
 } from "@/infrastructure/registry";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { GetStartedButton } from "./_components/GetStartedButton";
-import { BillingPortalButton } from "@/app/[locale]/(app)/subscription/_components/BillingPortalButton";
-import { CheckoutButton } from "@/app/[locale]/(app)/subscription/_components/CheckoutButton";
-import { TeamCheckoutButton } from "@/app/[locale]/(app)/subscription/_components/TeamCheckoutButton";
 import { ProductsCheckoutSection } from "@/app/[locale]/(app)/subscription/_components/ProductsCheckoutSection";
+import { renderPlanUpgradeCta } from "@/app/[locale]/(app)/subscription/_lib/renderPlanUpgradeCta";
 import { getOrgMembers } from "@/app/[locale]/(app)/_data/getOrgMembers";
 import { getUserOrgs } from "@/app/[locale]/(app)/_data/getUserOrgs";
 import { canManageBilling } from "@/app/[locale]/(app)/subscription/_data/canManageBilling";
-import { startCheckout } from "@/app/actions/billing";
 import { getOptionalUser } from "../_data/getOptionalUser";
 import {
   buildPlanCardGroups,
@@ -177,53 +174,17 @@ export default async function PricingPage({ params, searchParams }: Props) {
         );
       }
       if (isCurrent) return null;
-      if (!isUpgrade) return null;
-      // Same routing matrix as /subscription so the two surfaces stay
-      // coherent. Plan changes for an existing in-context subscription
-      // go through the Stripe Customer Portal (canonical change-plan
-      // surface). Backend rule 8 unconditionally 409s a second team
-      // checkout for an org owner, so portal is the only legal path
-      // there too. First-time checkouts keep using Checkout.
-      const hasSubInContext = isTeam
-        ? teamSubscription !== null
-        : personalSubscription !== null;
-      const canManageInContext = isTeam ? teamCanManage : personalCanManage;
-      if (hasSubInContext) {
-        if (!canManageInContext) return null;
-        const portalContext = isTeam ? "team" : "personal";
-        return (
-          <BillingPortalButton
-            context={portalContext}
-            highlighted={highlighted}
-            fullWidth
-          >
-            {ctaLabel}
-          </BillingPortalButton>
-        );
-      }
-      if (isTeam) {
-        // First-time team checkout: rule 8 hides the CTA when the user
-        // already owns an org but doesn't yet have a team sub on it,
-        // since posting a fresh team checkout would 409.
-        if (hasOrg) return null;
-        return (
-          <TeamCheckoutButton
-            planPriceId={plan.price.id}
-            highlighted={highlighted}
-          >
-            {ctaLabel}
-          </TeamCheckoutButton>
-        );
-      }
-      return (
-        <CheckoutButton
-          action={startCheckout}
-          field={{ name: "planPriceId", value: plan.price.id }}
-          highlighted={highlighted}
-        >
-          {ctaLabel}
-        </CheckoutButton>
-      );
+      return renderPlanUpgradeCta({
+        plan,
+        isUpgrade,
+        isTeam,
+        ctaLabel,
+        hasOrg,
+        personalSubscription,
+        teamSubscription,
+        personalCanManage,
+        teamCanManage,
+      });
     },
   });
 
