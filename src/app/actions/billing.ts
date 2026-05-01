@@ -152,6 +152,8 @@ export async function openBillingPortal(formData?: FormData) {
   // personal" click into the team portal. Single-context callers omit it.
   const context = formData ? parseContext(formData) : undefined;
   const flow = formData ? parseFlow(formData) : undefined;
+  // `flow` is only set when `formData` is — but TS still needs the explicit
+  // narrowing here since `formData` is the optional outer parameter.
   const planPriceId =
     flow && formData ? getString(formData, "planPriceId") : undefined;
   let url: string | null = null;

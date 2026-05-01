@@ -145,14 +145,16 @@ export async function CurrentSubscriptionCard({
       : t("currentPersonalPlan")
     : t("currentPlan");
 
+  const scheduledChangeDate = subscription.scheduledChangeAt
+    ? new Date(subscription.scheduledChangeAt)
+    : null;
   const scheduledChangeDisplay =
-    isScheduledDowngrade && subscription.scheduledChangeAt
-      ? (() => {
-          const d = new Date(subscription.scheduledChangeAt);
-          return !Number.isNaN(d.getTime())
-            ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(d)
-            : "";
-        })()
+    isScheduledDowngrade &&
+    scheduledChangeDate &&
+    !Number.isNaN(scheduledChangeDate.getTime())
+      ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+          scheduledChangeDate,
+        )
       : "";
   const scheduledPlanName =
     isScheduledDowngrade && scheduledPlan
