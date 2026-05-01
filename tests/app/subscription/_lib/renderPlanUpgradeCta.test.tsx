@@ -51,8 +51,10 @@ function makeSubscription(context: "personal" | "team"): Subscription {
 
 const defaultOpts = {
   isUpgrade: true,
+  isCurrent: false,
   isTeam: false,
-  ctaLabel: "Upgrade",
+  upgradeLabel: "Upgrade",
+  changePlanLabel: "Change plan",
   hasOrg: false,
   personalSubscription: null,
   teamSubscription: null,
