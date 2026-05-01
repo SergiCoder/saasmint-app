@@ -36,6 +36,8 @@ const samplePersonalRow = {
   current_period_end: "2024-02-01T00:00:00Z",
   cancel_at: null,
   canceled_at: null,
+  scheduled_plan: null,
+  scheduled_change_at: null,
   created_at: "2024-01-01T00:00:00Z",
 };
 
@@ -57,6 +59,8 @@ const sampleTeamRow = {
   current_period_end: "2024-02-01T00:00:00Z",
   cancel_at: null,
   canceled_at: null,
+  scheduled_plan: null,
+  scheduled_change_at: null,
   created_at: "2024-01-01T00:00:00Z",
 };
 
@@ -78,6 +82,8 @@ const expectedPersonal = {
   currentPeriodEnd: "2024-02-01T00:00:00Z",
   cancelAt: null,
   canceledAt: null,
+  scheduledPlan: null,
+  scheduledChangeAt: null,
   createdAt: "2024-01-01T00:00:00Z",
 };
 

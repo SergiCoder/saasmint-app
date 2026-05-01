@@ -224,6 +224,25 @@ export async function resumeSubscription(
   return ok();
 }
 
+/**
+ * Release a pending deferred plan change so the current plan keeps running.
+ * Backend is idempotent — calling this when no schedule exists is a no-op.
+ */
+export async function releaseScheduledChange(
+  context?: SubscriptionContext,
+): Promise<ActionResult> {
+  const safeContext = normalizeContext(context);
+  try {
+    await assertCanManageBilling(safeContext);
+    await subscriptionGateway.releaseScheduledChange(safeContext);
+  } catch (err) {
+    console.error("Failed to release scheduled plan change", err);
+    return toActionError(err);
+  }
+  revalidatePath("/subscription", "layout");
+  return ok();
+}
+
 export async function updateSeats(
   _prevState: unknown,
   formData: FormData,
