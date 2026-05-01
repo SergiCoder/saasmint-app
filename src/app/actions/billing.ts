@@ -9,7 +9,10 @@ import {
   MAX_SEATS,
   type Subscription,
 } from "@/domain/models/Subscription";
-import type { SubscriptionContext } from "@/application/ports/ISubscriptionGateway";
+import type {
+  BillingPortalFlow,
+  SubscriptionContext,
+} from "@/application/ports/ISubscriptionGateway";
 import {
   authGateway,
   productGateway,
@@ -148,12 +151,17 @@ export async function openBillingPortal(formData?: FormData) {
   // ("team" for org members, "personal" otherwise) would route a "manage
   // personal" click into the team portal. Single-context callers omit it.
   const context = formData ? parseContext(formData) : undefined;
+  const flow = formData ? parseFlow(formData) : undefined;
+  const planPriceId =
+    flow && formData ? getString(formData, "planPriceId") : undefined;
   let url: string | null = null;
   try {
     await assertCanManageBilling(context);
     const session = await subscriptionGateway.createBillingPortalSession({
       returnUrl: `${APP_ORIGIN}/subscription`,
       ...(context ? { context } : {}),
+      ...(flow ? { flow } : {}),
+      ...(planPriceId ? { planPriceId } : {}),
     });
     assertTrustedRedirect(session.url);
     url = session.url;
@@ -177,6 +185,11 @@ function normalizeContext(value: unknown): SubscriptionContext | undefined {
 
 function parseContext(formData: FormData): SubscriptionContext | undefined {
   return normalizeContext(getString(formData, "context"));
+}
+
+function parseFlow(formData: FormData): BillingPortalFlow | undefined {
+  const value = getString(formData, "flow");
+  return value === "subscription_update_confirm" ? value : undefined;
 }
 
 /** Schedule the subscription to end at the current period's close. */

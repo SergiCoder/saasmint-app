@@ -14,6 +14,13 @@ export interface CheckoutSessionInput {
   cancelUrl: string;
 }
 
+/**
+ * Portal deep-link flow. Currently the only supported value;
+ * lands the user on Stripe's plan-switch confirmation screen for
+ * `planPriceId`.
+ */
+export type BillingPortalFlow = "subscription_update_confirm";
+
 export interface BillingPortalInput {
   returnUrl: string;
   /**
@@ -24,6 +31,16 @@ export interface BillingPortalInput {
    * callers can omit it.
    */
   context?: SubscriptionContext;
+  /**
+   * Deep-link the portal into a focused flow. Omit for the default landing
+   * (current subscription / payment / invoices). Pair with `planPriceId`.
+   */
+  flow?: BillingPortalFlow;
+  /**
+   * Target `PlanPrice.id` for `flow=subscription_update_confirm`. Ignored
+   * when `flow` is unset.
+   */
+  planPriceId?: string;
 }
 
 /**

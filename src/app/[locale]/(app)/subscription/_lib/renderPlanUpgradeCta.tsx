@@ -56,6 +56,8 @@ export function renderPlanUpgradeCta({
         context={portalContext}
         highlighted={highlighted}
         fullWidth
+        flow="subscription_update_confirm"
+        planPriceId={plan.price.id}
       >
         {ctaLabel}
       </BillingPortalButton>
