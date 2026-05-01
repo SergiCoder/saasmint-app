@@ -4,14 +4,16 @@ import {
   planGateway,
   productGateway,
   subscriptionGateway,
-  orgGateway,
 } from "@/infrastructure/registry";
 import { PricingSection } from "@/presentation/components/organisms/PricingSection";
 import { GetStartedButton } from "./_components/GetStartedButton";
+import { BillingPortalButton } from "@/app/[locale]/(app)/subscription/_components/BillingPortalButton";
 import { CheckoutButton } from "@/app/[locale]/(app)/subscription/_components/CheckoutButton";
 import { TeamCheckoutButton } from "@/app/[locale]/(app)/subscription/_components/TeamCheckoutButton";
 import { ProductsCheckoutSection } from "@/app/[locale]/(app)/subscription/_components/ProductsCheckoutSection";
 import { getOrgMembers } from "@/app/[locale]/(app)/_data/getOrgMembers";
+import { getUserOrgs } from "@/app/[locale]/(app)/_data/getUserOrgs";
+import { canManageBilling } from "@/app/[locale]/(app)/subscription/_data/canManageBilling";
 import { startCheckout } from "@/app/actions/billing";
 import { getOptionalUser } from "../_data/getOptionalUser";
 import {
@@ -27,7 +29,11 @@ import {
 import type { Plan } from "@/domain/models/Plan";
 import { PLAN_TIER_FREE, PLAN_TIER_PRO } from "@/domain/models/Plan";
 import type { Product } from "@/domain/models/Product";
-import type { Subscription } from "@/domain/models/Subscription";
+import {
+  findPersonalSubscription,
+  findTeamSubscription,
+  type Subscription,
+} from "@/domain/models/Subscription";
 
 /**
  * Backend v0.7.0 stopped exposing the personal-free plan row (free = absence
@@ -86,12 +92,33 @@ export default async function PricingPage({ params, searchParams }: Props) {
     user
       ? productGateway.listProducts(currency).catch((): Product[] => [])
       : Promise.resolve([] as Product[]),
-    user ? orgGateway.listUserOrgs().catch(() => []) : Promise.resolve([]),
+    user ? getUserOrgs() : Promise.resolve([]),
   ]);
 
   const hasOrg = userOrgs.length > 0;
   const isConcurrent = subscriptions.length > 1;
   const currentPlans = subscriptions.map((s) => s.plan);
+
+  const personalSubscription = findPersonalSubscription(subscriptions);
+  const teamSubscription = findTeamSubscription(subscriptions);
+
+  // Per-context billing-management flags drive whether the upgrade CTA on a
+  // higher-tier card routes to the Stripe Customer Portal (the canonical
+  // change-plan surface) or stays hidden (non-billing org members can't
+  // action a team upgrade). Personal subs are always manageable by their
+  // owner; team subs only by the org's billing member.
+  // canManageBilling() shares React.cache with /subscription, so resolving
+  // both contexts here is free when the user only happens to land on
+  // /pricing first. Both calls run concurrently; either side resolves to
+  // false when the user has no sub in that context (cheap default).
+  const [personalCanManage, teamCanManage] = await Promise.all([
+    user && personalSubscription
+      ? canManageBilling(user, personalSubscription)
+      : Promise.resolve(false),
+    user && teamSubscription
+      ? canManageBilling(user, teamSubscription)
+      : Promise.resolve(false),
+  ]);
 
   // Resolve org-owner flag only when both signals that gate the picker are
   // already true (signed-in user with concurrent personal+team subs). Skips
@@ -151,7 +178,33 @@ export default async function PricingPage({ params, searchParams }: Props) {
       }
       if (isCurrent) return null;
       if (!isUpgrade) return null;
+      // Same routing matrix as /subscription so the two surfaces stay
+      // coherent. Plan changes for an existing in-context subscription
+      // go through the Stripe Customer Portal (canonical change-plan
+      // surface). Backend rule 8 unconditionally 409s a second team
+      // checkout for an org owner, so portal is the only legal path
+      // there too. First-time checkouts keep using Checkout.
+      const hasSubInContext = isTeam
+        ? teamSubscription !== null
+        : personalSubscription !== null;
+      const canManageInContext = isTeam ? teamCanManage : personalCanManage;
+      if (hasSubInContext) {
+        if (!canManageInContext) return null;
+        const portalContext = isTeam ? "team" : "personal";
+        return (
+          <BillingPortalButton
+            context={portalContext}
+            highlighted={highlighted}
+            fullWidth
+          >
+            {ctaLabel}
+          </BillingPortalButton>
+        );
+      }
       if (isTeam) {
+        // First-time team checkout: rule 8 hides the CTA when the user
+        // already owns an org but doesn't yet have a team sub on it,
+        // since posting a fresh team checkout would 409.
         if (hasOrg) return null;
         return (
           <TeamCheckoutButton
