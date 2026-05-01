@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { ProductsGrid } from "@/presentation/components/organisms/ProductsGrid";
 import type { Product } from "@/domain/models/Product";
+import type { SubscriptionContext } from "@/application/ports/ISubscriptionGateway";
 import { CheckoutButton } from "./CheckoutButton";
 import { startProductCheckout } from "@/app/actions/billing";
-
-type CheckoutContext = "personal" | "team";
 
 interface ProductsCheckoutSectionProps {
   title: string;
@@ -44,7 +43,7 @@ export function ProductsCheckoutSection({
   // for org members. The picker only renders when `showPicker` is true; for
   // everyone else the unused state value is irrelevant because we don't
   // forward `context` to the action.
-  const [selected, setSelected] = useState<CheckoutContext>("team");
+  const [selected, setSelected] = useState<SubscriptionContext>("team");
 
   if (products.length === 0) return null;
 
