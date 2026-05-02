@@ -204,12 +204,18 @@ export async function CurrentSubscriptionCard({
   const isActivelyRenewing =
     !isFullyCanceled && !isScheduledToCancel && !isScheduledDowngrade;
   const hasUpgradeCtas = upgradeCtas.length > 0;
-  // Third state: actively renewing. Promote Cancel renewal + upgrade CTAs
-  // into a neutral banner so they're discoverable even when no warning/info
-  // banner is showing. Without this, Cancel renewal lives only as a small
-  // inline link on the date row and can be missed entirely.
+  // Active-renewal banner only fires when there are upgrade CTAs to show.
+  // On Pro (no higher tier) the banner would be a mostly-empty box with
+  // a stranded Cancel renewal button — drop it and fall back to the
+  // inline date-row link, which integrates cleanly with the renewal date.
   const showActiveRenewalBanner =
-    isActivelyRenewing && canManage && (hasUpgradeCtas || cancelRenewalAction);
+    isActivelyRenewing && canManage && hasUpgradeCtas;
+  // Inline date-row Cancel renewal: shown for actively-renewing subs that
+  // don't get the banner treatment (i.e. top-tier subs with no upgrades).
+  const dateAction =
+    isActivelyRenewing && canManage && !hasUpgradeCtas
+      ? cancelRenewalAction
+      : null;
 
   let banner: React.ReactNode = null;
   if (isScheduledToCancel && canManage) {
@@ -288,6 +294,7 @@ export async function CurrentSubscriptionCard({
       periodEndLocale={locale}
       periodEndLabel={showDateRow ? dateLabel : undefined}
       headerAction={headerAction ?? undefined}
+      dateAction={dateAction ?? undefined}
       banner={banner ?? undefined}
       footer={
         isTeam && !canManage && teamOwnerName
