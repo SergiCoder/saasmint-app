@@ -155,9 +155,9 @@ vi.mock("@/presentation/components/organisms/SubscriptionCard", async () => {
           String(props.planName ?? ""),
         ),
         React.createElement(
-          "span",
+          "div",
           { "data-testid": "subtitle" },
-          String(props.subtitle ?? ""),
+          props.subtitle as React.ReactNode,
         ),
         React.createElement(
           "span",
@@ -170,14 +170,14 @@ vi.mock("@/presentation/components/organisms/SubscriptionCard", async () => {
           String(props.periodEndLabel ?? ""),
         ),
         React.createElement(
-          "span",
-          { "data-testid": "cancel-at-period-end" },
-          String(props.cancelAtPeriodEnd ?? ""),
+          "div",
+          { "data-testid": "header-action" },
+          props.headerAction as React.ReactNode,
         ),
         React.createElement(
-          "span",
-          { "data-testid": "cancel-label" },
-          String(props.cancelLabel ?? ""),
+          "div",
+          { "data-testid": "date-action" },
+          props.dateAction as React.ReactNode,
         ),
         React.createElement(
           "span",
@@ -188,11 +188,6 @@ vi.mock("@/presentation/components/organisms/SubscriptionCard", async () => {
           "div",
           { "data-testid": "banner" },
           props.banner as React.ReactNode,
-        ),
-        React.createElement(
-          "div",
-          { "data-testid": "actions" },
-          props.actions as React.ReactNode,
         ),
       ),
   };
@@ -256,10 +251,7 @@ describe("CurrentSubscriptionCard", () => {
     expect(screen.getByTestId("period-end-label")).toHaveTextContent(
       "renewsOn",
     );
-    expect(screen.getByTestId("cancel-at-period-end")).toHaveTextContent(
-      "false",
-    );
-    // BillingPortal + CancelRenewal rendered inside actions.
+    // BillingPortal goes in headerAction, CancelRenewal in dateAction.
     expect(screen.getByTestId("billing-portal")).toBeInTheDocument();
     expect(screen.getByTestId("cancel-renewal")).toBeInTheDocument();
     expect(screen.queryByTestId("resume")).not.toBeInTheDocument();
@@ -279,17 +271,14 @@ describe("CurrentSubscriptionCard", () => {
       teamOwnerName: null,
     });
 
-    expect(screen.getByTestId("period-end-iso")).toHaveTextContent(
-      "2026-02-01T00:00:00.000Z",
-    );
-    expect(screen.getByTestId("period-end-label")).toHaveTextContent(
-      "cancelsOn",
-    );
-    expect(screen.getByTestId("cancel-at-period-end")).toHaveTextContent(
-      "true",
-    );
+    // Date row is suppressed — the cancel banner's headline already states
+    // "Cancels on {date}", so the date row would just repeat it.
+    expect(screen.getByTestId("period-end-iso")).toHaveTextContent("");
+    expect(screen.getByTestId("period-end-label")).toHaveTextContent("");
+    // Resume lives inside the cancel banner; cancel-renewal disappears.
     expect(screen.getByTestId("resume")).toBeInTheDocument();
     expect(screen.queryByTestId("cancel-renewal")).not.toBeInTheDocument();
+    expect(screen.getByTestId("alert-banner")).toBeInTheDocument();
   });
 
   it("renders 'Ends on' with the canceledAt date and no manage actions for a fully-canceled sub", async () => {
@@ -312,18 +301,16 @@ describe("CurrentSubscriptionCard", () => {
       "2026-02-01T00:00:00.000Z",
     );
     expect(screen.getByTestId("period-end-label")).toHaveTextContent("endsOn");
-    expect(screen.getByTestId("cancel-at-period-end")).toHaveTextContent(
-      "false",
-    );
     expect(screen.queryByTestId("resume")).not.toBeInTheDocument();
     expect(screen.queryByTestId("cancel-renewal")).not.toBeInTheDocument();
     expect(screen.queryByTestId("billing-portal")).not.toBeInTheDocument();
   });
 
-  it("uses cancelAt for the date row even when it differs from currentPeriodEnd", async () => {
-    // Stripe Dahlia ships `cancel_at` independently of `current_period_end`,
-    // so we display the actual scheduled cutover instead of the period-end
-    // proxy that the old heuristic relied on.
+  it("uses cancelAt (not currentPeriodEnd) in the cancel banner when both differ", async () => {
+    // Stripe Dahlia ships `cancel_at` independently of `current_period_end`.
+    // The cancel banner quotes the actual scheduled cutover (`cancelAt`),
+    // not the period-end proxy the old heuristic relied on. The date row
+    // itself is suppressed in this state — the banner owns the cutover date.
     await renderCard({
       subscription: makeSub({
         cancelAt: "2026-03-15T00:00:00Z",
@@ -335,9 +322,11 @@ describe("CurrentSubscriptionCard", () => {
       teamOwnerName: null,
     });
 
-    expect(screen.getByTestId("period-end-iso")).toHaveTextContent(
-      "2026-03-15T00:00:00.000Z",
-    );
+    // Banner headline interpolates the locale-formatted cancelAt date
+    // (March 15, 2026 in en), not the currentPeriodEnd (April 1, 2026).
+    const banner = screen.getByTestId("alert-banner").textContent ?? "";
+    expect(banner).toMatch(/March 15, 2026/);
+    expect(banner).not.toMatch(/April 1, 2026/);
   });
 
   it("omits period-end details when currentPeriodEnd is an unparseable string", async () => {
@@ -373,12 +362,14 @@ describe("CurrentSubscriptionCard", () => {
       teamOwnerName: "Alice",
     });
 
+    // i18n stub echoes "seatsOfMax 5 100" (key + appended params), then
+    // " · billedYearly" interval label.
     expect(screen.getByTestId("subtitle")).toHaveTextContent(
-      "5 seats · billedYearly",
+      /seatsOfMax:count=5,max=100\s*·\s*billedYearly/,
     );
   });
 
-  it("uses the singular seat label when team quantity is 1", async () => {
+  it("renders the seats-of-max label even when team quantity is 1", async () => {
     await renderCard({
       subscription: makeSub({
         plan: {
@@ -399,7 +390,7 @@ describe("CurrentSubscriptionCard", () => {
     });
 
     expect(screen.getByTestId("subtitle")).toHaveTextContent(
-      "1 seat · billedMonthly",
+      /seatsOfMax:count=1,max=100\s*·\s*billedMonthly/,
     );
   });
 
@@ -717,7 +708,7 @@ describe("CurrentSubscriptionCard", () => {
       expect(banner.textContent).toContain("scheduledDowngradeBody");
     });
 
-    it("does NOT render the downgrade banner when cancelAt is also set (cancel takes priority)", async () => {
+    it("renders the cancel banner instead of the downgrade banner when both are set (cancel takes priority)", async () => {
       await renderCard({
         subscription: makeSub({
           scheduledPlan,
@@ -730,11 +721,12 @@ describe("CurrentSubscriptionCard", () => {
         teamOwnerName: null,
       });
 
-      expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
+      // The cancel banner is rendered (yellow/warning) and owns the Resume
+      // action — the downgrade banner's release-button is suppressed.
+      expect(screen.getByTestId("alert-banner")).toBeInTheDocument();
       expect(
         screen.queryByTestId("release-scheduled-change"),
       ).not.toBeInTheDocument();
-      // Resume button shown because cancelAt is set.
       expect(screen.getByTestId("resume")).toBeInTheDocument();
     });
 
