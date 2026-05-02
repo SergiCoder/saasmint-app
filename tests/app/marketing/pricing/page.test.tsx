@@ -294,16 +294,23 @@ describe("Marketing PricingPage — synthetic free plan", () => {
     expect(link).toHaveAttribute("href", "/signup");
   });
 
-  it("suppresses the Free plan CTA for signed-in users (no downgrade CTA convention)", async () => {
+  it("renders a 'Current Plan' label (no actionable CTA) on the Free card for a signed-in user with no paid personal sub", async () => {
+    // The synthetic Free plan ID never matches a real subscription ID, so
+    // `isCurrent` is false from buildPlanCardGroups' perspective. Page-level
+    // logic recognises "signed-in + no paid personal sub + Free card" as the
+    // user's effective current plan and surfaces the label without offering
+    // a sign-up link.
     mockGetOptionalUser.mockResolvedValue(makeUser());
 
     await renderPage();
 
     const freeGroup = screen.getByTestId("group-personal-1");
-    // Both monthly and yearly variants render with no CTA element.
-    expect(freeGroup).toHaveAttribute("data-has-monthly-cta", "false");
-    expect(freeGroup).toHaveAttribute("data-has-yearly-cta", "false");
+    expect(freeGroup).toHaveAttribute("data-has-monthly-cta", "true");
+    expect(freeGroup).toHaveAttribute("data-has-yearly-cta", "true");
+    // Non-actionable label — no link, no button.
     expect(freeGroup.querySelector("a")).toBeNull();
+    expect(freeGroup.querySelector("button")).toBeNull();
+    expect(freeGroup.textContent).toMatch(/currentPlan/);
   });
 
   it("calls subscriptionGateway.listSubscriptions for signed-in users (envelope-based fetch)", async () => {
