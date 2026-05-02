@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Nuværende personligt abonnement",
     "currentTeamPlan": "Nuværende team-abonnement",
     "upgrade": "Opgrader",
+    "upgradeTo": "Opgrader til {plan}",
     "cancel": "Abonnementet annulleres ved periodens udløb",
     "cancelRenewal": "Annuller fornyelse",
     "cancelRenewalTitle": "Annuller fornyelse?",

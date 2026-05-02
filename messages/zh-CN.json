@@ -184,6 +184,7 @@
     "currentPersonalPlan": "当前个人计划",
     "currentTeamPlan": "当前团队计划",
     "upgrade": "升级",
+    "upgradeTo": "升级到 {plan}",
     "cancel": "订阅将在当前周期结束时取消",
     "cancelRenewal": "取消续订",
     "cancelRenewalTitle": "取消续订？",

@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Mevcut kişisel plan",
     "currentTeamPlan": "Mevcut takım planı",
     "upgrade": "Yükselt",
+    "upgradeTo": "{plan} planına yükselt",
     "cancel": "Abonelik dönem sonunda iptal edilecek",
     "cancelRenewal": "Yenilemeyi iptal et",
     "cancelRenewalTitle": "Yenileme iptal edilsin mi?",

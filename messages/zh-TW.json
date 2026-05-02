@@ -184,6 +184,7 @@
     "currentPersonalPlan": "目前個人方案",
     "currentTeamPlan": "目前團隊方案",
     "upgrade": "升級",
+    "upgradeTo": "升級到 {plan}",
     "cancel": "訂閱將在當前週期結束時取消",
     "cancelRenewal": "取消續訂",
     "cancelRenewalTitle": "取消續訂？",

@@ -747,7 +747,14 @@ describe("CurrentSubscriptionCard", () => {
         teamOwnerName: null,
       });
 
-      expect(screen.queryByTestId("alert-banner")).not.toBeInTheDocument();
+      // The active-renewal banner (variant=neutral) is allowed in this
+      // state — what matters is that the downgrade-specific banner and
+      // its release control are absent.
+      const banner = screen.queryByTestId("alert-banner");
+      if (banner) {
+        expect(banner.getAttribute("data-variant")).not.toBe("info");
+        expect(banner.textContent).not.toContain("scheduledDowngradeHeadline");
+      }
       expect(
         screen.queryByTestId("release-scheduled-change"),
       ).not.toBeInTheDocument();

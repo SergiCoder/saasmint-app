@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Huidig persoonlijk abonnement",
     "currentTeamPlan": "Huidig teamabonnement",
     "upgrade": "Upgraden",
+    "upgradeTo": "Upgraden naar {plan}",
     "cancel": "Abonnement wordt opgezegd aan het einde van de periode",
     "cancelRenewal": "Verlenging annuleren",
     "cancelRenewalTitle": "Verlenging annuleren?",

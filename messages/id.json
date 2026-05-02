@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Paket pribadi saat ini",
     "currentTeamPlan": "Paket tim saat ini",
     "upgrade": "Tingkatkan",
+    "upgradeTo": "Tingkatkan ke {plan}",
     "cancel": "Langganan akan dibatalkan pada akhir periode",
     "cancelRenewal": "Batalkan perpanjangan",
     "cancelRenewalTitle": "Batalkan perpanjangan?",

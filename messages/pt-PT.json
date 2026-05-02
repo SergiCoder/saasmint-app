@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Plano pessoal atual",
     "currentTeamPlan": "Plano de equipa atual",
     "upgrade": "Atualizar",
+    "upgradeTo": "Atualizar para {plan}",
     "cancel": "A subscrição será cancelada no final do período",
     "cancelRenewal": "Cancelar renovação",
     "cancelRenewalTitle": "Cancelar renovação?",

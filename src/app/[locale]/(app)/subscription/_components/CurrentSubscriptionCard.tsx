@@ -27,6 +27,13 @@ interface CurrentSubscriptionCardProps {
    * cancel/resume so the right sub is targeted. Single-sub callers can omit it.
    */
   isConcurrent?: boolean;
+  /**
+   * Upgrade CTAs for higher-tier plans in this subscription's context.
+   * Rendered in the active-renewing banner alongside Cancel renewal so
+   * upgrade paths are reachable without scrolling to the plan grid.
+   * Empty/omitted on Pro (no higher tier) or for non-billing members.
+   */
+  upgradeCtas?: React.ReactNode[];
 }
 
 /**
@@ -45,6 +52,7 @@ export async function CurrentSubscriptionCard({
   teamOwnerName,
   teamOrgSlug,
   isConcurrent = false,
+  upgradeCtas = [],
 }: CurrentSubscriptionCardProps) {
   const [t, tPlans] = await Promise.all([
     getTranslations("billing"),
@@ -160,16 +168,10 @@ export async function CurrentSubscriptionCard({
       </BillingPortalButton>
     ) : null;
 
-  // Date-row inline action: only the actively-renewing state shows
-  // "Cancel renewal" here; scheduled-cancel and scheduled-downgrade move
-  // their actions into the banner below so the date row stays uncluttered.
-  const dateAction =
-    !isScheduledDowngrade && !isScheduledToCancel && !isFullyCanceled
-      ? cancelRenewalAction
-      : null;
-
-  // Banner content. Mutually exclusive: cancel banner takes precedence over
-  // downgrade banner (Stripe releases the downgrade schedule on cancel).
+  // Banner content. Mutually exclusive: cancel banner > downgrade banner >
+  // active-renewal banner. Cancel takes precedence over downgrade because
+  // Stripe releases the schedule on cancel; downgrade takes precedence over
+  // active-renewal because both states already host Cancel renewal.
   const scheduledChangeDate = subscription.scheduledChangeAt
     ? new Date(subscription.scheduledChangeAt)
     : null;
@@ -198,6 +200,16 @@ export async function CurrentSubscriptionCard({
           cancelAtDate,
         )
       : "";
+
+  const isActivelyRenewing =
+    !isFullyCanceled && !isScheduledToCancel && !isScheduledDowngrade;
+  const hasUpgradeCtas = upgradeCtas.length > 0;
+  // Third state: actively renewing. Promote Cancel renewal + upgrade CTAs
+  // into a neutral banner so they're discoverable even when no warning/info
+  // banner is showing. Without this, Cancel renewal lives only as a small
+  // inline link on the date row and can be missed entirely.
+  const showActiveRenewalBanner =
+    isActivelyRenewing && canManage && (hasUpgradeCtas || cancelRenewalAction);
 
   let banner: React.ReactNode = null;
   if (isScheduledToCancel && canManage) {
@@ -240,13 +252,30 @@ export async function CurrentSubscriptionCard({
         </div>
       </AlertBanner>
     );
+  } else if (showActiveRenewalBanner) {
+    banner = (
+      <AlertBanner variant="neutral">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            {upgradeCtas.map((cta, i) => (
+              <span key={i}>{cta}</span>
+            ))}
+          </div>
+          {cancelRenewalAction && (
+            <div className="flex flex-shrink-0 items-center">
+              {cancelRenewalAction}
+            </div>
+          )}
+        </div>
+      </AlertBanner>
+    );
   }
 
-  // When a banner is rendered, its headline already includes the cutover
-  // date ("Cancels on …" / "Switching to … on …"), making the date row
-  // redundant. Suppress the date row in that case so the card reads as one
-  // statement instead of repeating the same date twice.
-  const showDateRow = hasValidDate && !banner;
+  // The cancel/downgrade banners restate the cutover date in their
+  // headline, so suppressing the date row keeps the card from repeating
+  // itself. The active-renewal banner does NOT mention the renewal date,
+  // so we keep the date row visible alongside it.
+  const showDateRow = hasValidDate && (!banner || showActiveRenewalBanner);
 
   return (
     <SubscriptionCard
@@ -259,7 +288,6 @@ export async function CurrentSubscriptionCard({
       periodEndLocale={locale}
       periodEndLabel={showDateRow ? dateLabel : undefined}
       headerAction={headerAction ?? undefined}
-      dateAction={dateAction ?? undefined}
       banner={banner ?? undefined}
       footer={
         isTeam && !canManage && teamOwnerName

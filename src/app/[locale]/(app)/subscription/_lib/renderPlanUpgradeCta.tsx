@@ -32,6 +32,12 @@ interface RenderPlanUpgradeCtaOptions {
   tBilling: (key: any, values?: Record<string, string | number>) => string;
   /** `useTranslations("plans")` — for the target plan's localised name. */
   tPlans: (key: never) => string;
+  /**
+   * Render the CTA button at full width (default `true`, matches the plan
+   * grid layout). Set `false` for inline / banner usage where the button
+   * should hug its label width.
+   */
+  fullWidth?: boolean;
 }
 
 /**
@@ -60,6 +66,7 @@ export function renderPlanUpgradeCta({
   locale,
   tBilling,
   tPlans,
+  fullWidth = true,
 }: RenderPlanUpgradeCtaOptions): React.ReactNode {
   if (!plan.price) return null;
   if (isCurrent) return null;
@@ -140,7 +147,7 @@ export function renderPlanUpgradeCta({
         isDeferred={isDeferred}
         context={portalContext}
         highlighted={highlighted}
-        fullWidth
+        fullWidth={fullWidth}
         confirmTitle={confirmTitle}
         confirmBody={confirmBody}
         confirmAction={tBilling("changePlanConfirmAction")}

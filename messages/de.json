@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Aktueller persönlicher Tarif",
     "currentTeamPlan": "Aktueller Team-Tarif",
     "upgrade": "Upgraden",
+    "upgradeTo": "Auf {plan} upgraden",
     "cancel": "Abo wird zum Ende der Laufzeit gekündigt",
     "cancelRenewal": "Verlängerung kündigen",
     "cancelRenewalTitle": "Verlängerung kündigen?",

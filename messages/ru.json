@@ -184,6 +184,7 @@
     "currentPersonalPlan": "Текущий личный тариф",
     "currentTeamPlan": "Текущий тариф для команды",
     "upgrade": "Улучшить",
+    "upgradeTo": "Перейти на {plan}",
     "cancel": "Подписка будет отменена в конце периода",
     "cancelRenewal": "Отменить продление",
     "cancelRenewalTitle": "Отменить продление?",

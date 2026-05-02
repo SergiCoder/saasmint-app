@@ -184,6 +184,7 @@
     "currentPersonalPlan": "الخطة الشخصية الحالية",
     "currentTeamPlan": "خطة الفريق الحالية",
     "upgrade": "ترقية",
+    "upgradeTo": "الترقية إلى {plan}",
     "cancel": "سيتم إلغاء الاشتراك في نهاية الفترة",
     "cancelRenewal": "إلغاء التجديد",
     "cancelRenewalTitle": "إلغاء التجديد؟",

@@ -184,6 +184,7 @@
     "currentPersonalPlan": "現在の個人プラン",
     "currentTeamPlan": "現在のチームプラン",
     "upgrade": "アップグレード",
+    "upgradeTo": "{plan}にアップグレード",
     "cancel": "サブスクリプションは期間終了時に解約されます",
     "cancelRenewal": "更新をキャンセル",
     "cancelRenewalTitle": "更新をキャンセルしますか？",
