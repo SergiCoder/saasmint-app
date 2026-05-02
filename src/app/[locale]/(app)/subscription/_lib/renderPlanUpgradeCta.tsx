@@ -70,12 +70,30 @@ export function renderPlanUpgradeCta({
   const canManageInContext = isTeam ? teamCanManage : personalCanManage;
 
   if (hasSubInContext) {
+    // A schedule already targets this plan — render a non-actionable
+    // "Scheduled — {date}" label so the user can see at a glance which
+    // plan they're switching to. The undo control lives on the current
+    // plan card's banner ("Keep {currentPlan}"); rendering another CTA
+    // here would confuse "switch" with "undo switch". This branch fires
+    // regardless of canManage so non-billing members still see the
+    // pending change on the right card.
+    if (subInContext.scheduledPlan?.id === plan.id) {
+      const cutoverIso = subInContext.scheduledChangeAt;
+      const cutover = cutoverIso ? new Date(cutoverIso) : null;
+      const cutoverDisplay =
+        cutover && !Number.isNaN(cutover.getTime())
+          ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+              cutover,
+            )
+          : "";
+      return (
+        <p className="text-primary-700 text-center text-sm font-medium">
+          {tBilling("scheduledPlanLabel", { date: cutoverDisplay })}
+        </p>
+      );
+    }
     // Non-billing members can't action a plan change; the action would 403.
     if (!canManageInContext) return null;
-    // A schedule already targets this plan — the subscription banner owns
-    // the "Keep current plan" cancel-action; rendering another CTA here
-    // would confuse "switch" with "undo switch".
-    if (subInContext.scheduledPlan?.id === plan.id) return null;
     // Pin context; required for concurrent billers (rule 5) and harmless for
     // single-sub callers since it matches the backend default routing.
     const portalContext = isTeam ? "team" : "personal";

@@ -175,7 +175,12 @@ describe("renderPlanUpgradeCta — personal change-plan via in-app confirm", () 
     expect(result).toBeNull();
   });
 
-  it("returns null when a schedule already targets this exact plan", () => {
+  it("renders a 'Scheduled' status label (no actionable CTA) when a schedule already targets this exact plan", () => {
+    // The undo lives on the *current* plan card's banner ("Keep current
+    // plan"); rendering a Switch button here would be a confusing second
+    // way to undo. Instead, the target card gets a non-actionable
+    // "Scheduled — {date}" label so the user sees which plan they're
+    // moving to.
     const plan = makePlan({
       id: "personal-basic",
       context: "personal",
@@ -193,7 +198,12 @@ describe("renderPlanUpgradeCta — personal change-plan via in-app confirm", () 
       personalSubscription: sub,
       personalCanManage: true,
     });
-    expect(result).toBeNull();
+    const { container } = render(<>{result}</>);
+    // Echo-format from the test stub: `key:date=<formatted>`.
+    expect(container.textContent).toMatch(/scheduledPlanLabel/);
+    // No interactive control on the scheduled-target card.
+    expect(container.querySelector("button")).toBeNull();
+    expect(container.querySelector("a")).toBeNull();
   });
 });
 
