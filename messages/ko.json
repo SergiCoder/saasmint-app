@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "확인하려면 {name}을(를) 입력하세요",
     "deleteOrgDialogCancel": "취소",
     "deleteOrgDialogSubmit": "조직 영구 삭제",
-    "deleteOrgDialogMismatch": "조직 이름이 일치하지 않습니다."
+    "deleteOrgDialogMismatch": "조직 이름이 일치하지 않습니다.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "로딩 중...",

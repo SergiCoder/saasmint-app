@@ -341,7 +341,8 @@
     "deleteOrgDialogLabel": "Type {name} to confirm",
     "deleteOrgDialogCancel": "Cancel",
     "deleteOrgDialogSubmit": "Permanently delete organization",
-    "deleteOrgDialogMismatch": "Organization name does not match."
+    "deleteOrgDialogMismatch": "Organization name does not match.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "invitation": {
     "title": "You've been invited",

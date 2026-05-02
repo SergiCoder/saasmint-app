@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "確認のため {name} を入力してください",
     "deleteOrgDialogCancel": "キャンセル",
     "deleteOrgDialogSubmit": "組織を完全に削除",
-    "deleteOrgDialogMismatch": "組織名が一致しません。"
+    "deleteOrgDialogMismatch": "組織名が一致しません。",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "読み込み中...",

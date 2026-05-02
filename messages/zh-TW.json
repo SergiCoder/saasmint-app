@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "輸入 {name} 以確認",
     "deleteOrgDialogCancel": "取消",
     "deleteOrgDialogSubmit": "永久刪除組織",
-    "deleteOrgDialogMismatch": "組織名稱不相符。"
+    "deleteOrgDialogMismatch": "組織名稱不相符。",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "載入中...",

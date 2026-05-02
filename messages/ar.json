@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "اكتب {name} للتأكيد",
     "deleteOrgDialogCancel": "إلغاء",
     "deleteOrgDialogSubmit": "حذف المنظمة نهائيًا",
-    "deleteOrgDialogMismatch": "اسم المنظمة غير متطابق."
+    "deleteOrgDialogMismatch": "اسم المنظمة غير متطابق.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "جارٍ التحميل...",

@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "Введите {name} для подтверждения",
     "deleteOrgDialogCancel": "Отмена",
     "deleteOrgDialogSubmit": "Удалить организацию навсегда",
-    "deleteOrgDialogMismatch": "Название организации не совпадает."
+    "deleteOrgDialogMismatch": "Название организации не совпадает.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "Загрузка...",

@@ -14,9 +14,24 @@ import {
 interface SeatManagerProps {
   currentSeats: number;
   usedSeats: number;
+  /**
+   * Localised name of a plan-switch that's scheduled to apply at period end
+   * (a previously-initiated downgrade). When both this and
+   * `scheduledChangeDate` are set, the success toast appends a reminder
+   * that the *plan* change is still pending — without ever implying the
+   * just-submitted *seat* change was deferred (it's always immediate).
+   */
+  scheduledPlanName?: string | null;
+  /** Pre-formatted localised date for the pending plan switch. */
+  scheduledChangeDate?: string | null;
 }
 
-export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
+export function SeatManager({
+  currentSeats,
+  usedSeats,
+  scheduledPlanName = null,
+  scheduledChangeDate = null,
+}: SeatManagerProps) {
   const t = useTranslations("org");
   const tCommon = useTranslations("common");
   const translateError = useActionErrorMessage();
@@ -71,7 +86,12 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
       )}
       {state?.ok && (
         <AlertBanner variant="success" className="mb-4">
-          {t("seatsUpdated")}
+          {scheduledPlanName && scheduledChangeDate
+            ? t("seatsUpdatedWithPendingPlanChange", {
+                plan: scheduledPlanName,
+                date: scheduledChangeDate,
+              })
+            : t("seatsUpdated")}
         </AlertBanner>
       )}
       <div className="flex items-center gap-3">

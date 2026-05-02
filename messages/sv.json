@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "Skriv {name} för att bekräfta",
     "deleteOrgDialogCancel": "Avbryt",
     "deleteOrgDialogSubmit": "Ta bort organisation permanent",
-    "deleteOrgDialogMismatch": "Organisationens namn stämmer inte."
+    "deleteOrgDialogMismatch": "Organisationens namn stämmer inte.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "Laddar...",

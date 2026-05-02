@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "Onaylamak için {name} yazın",
     "deleteOrgDialogCancel": "İptal",
     "deleteOrgDialogSubmit": "Organizasyonu kalıcı olarak sil",
-    "deleteOrgDialogMismatch": "Organizasyon adı eşleşmiyor."
+    "deleteOrgDialogMismatch": "Organizasyon adı eşleşmiyor.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "Yükleniyor...",

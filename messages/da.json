@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "Skriv {name} for at bekræfte",
     "deleteOrgDialogCancel": "Annullér",
     "deleteOrgDialogSubmit": "Slet organisation permanent",
-    "deleteOrgDialogMismatch": "Organisationens navn stemmer ikke overens."
+    "deleteOrgDialogMismatch": "Organisationens navn stemmer ikke overens.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "Indlæser...",

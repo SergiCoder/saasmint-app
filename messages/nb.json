@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "Skriv {name} for å bekrefte",
     "deleteOrgDialogCancel": "Avbryt",
     "deleteOrgDialogSubmit": "Slett organisasjon permanent",
-    "deleteOrgDialogMismatch": "Organisasjonsnavnet stemmer ikke."
+    "deleteOrgDialogMismatch": "Organisasjonsnavnet stemmer ikke.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "Laster...",

@@ -338,7 +338,8 @@
     "deleteOrgDialogLabel": "Escreva {name} para confirmar",
     "deleteOrgDialogCancel": "Cancelar",
     "deleteOrgDialogSubmit": "Eliminar organização permanentemente",
-    "deleteOrgDialogMismatch": "O nome da organização não corresponde."
+    "deleteOrgDialogMismatch": "O nome da organização não corresponde.",
+    "seatsUpdatedWithPendingPlanChange": "Seats updated. Note: still scheduled to switch to {plan} on {date}."
   },
   "common": {
     "loading": "A carregar...",
