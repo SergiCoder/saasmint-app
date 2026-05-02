@@ -234,7 +234,13 @@
     "teamPlanReadonly": "チームのサブスクリプションは組織オーナーが管理しています。",
     "checkout": "お支払い",
     "personalSubAutoCancelNotice": "個人サブスクリプションは、このチームプランの請求が開始される {date} に終了します。それまで個人機能はご利用いただけます。",
-    "keepPersonalSubscription": "チームプランと並行して個人サブスクリプションを継続する。"
+    "keepPersonalSubscription": "チームプランと並行して個人サブスクリプションを継続する。",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "設定",
@@ -365,7 +371,8 @@
     "unsupported_image": "サポートされていない画像形式です",
     "message_required": "メッセージを入力してください。",
     "message_too_long": "メッセージが長すぎます（最大5000文字）。",
-    "HTTP_429": "リクエストが多すぎます。しばらくしてから再度お試しください。"
+    "HTTP_429": "リクエストが多すぎます。しばらくしてから再度お試しください。",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "お問い合わせ",

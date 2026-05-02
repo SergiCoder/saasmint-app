@@ -252,6 +252,34 @@ vi.mock(
 );
 
 vi.mock(
+  "@/app/[locale]/(app)/subscription/_components/ChangePlanButton",
+  async () => {
+    const React = await import("react");
+    return {
+      ChangePlanButton: ({
+        children,
+        context,
+        isDeferred,
+      }: {
+        children: React.ReactNode;
+        context?: "personal" | "team";
+        isDeferred?: boolean;
+      }) =>
+        React.createElement(
+          "button",
+          {
+            type: "button",
+            "data-cta": "change-plan",
+            "data-context": context ?? "",
+            "data-deferred": isDeferred ? "true" : "false",
+          },
+          children,
+        ),
+    };
+  },
+);
+
+vi.mock(
   "@/app/[locale]/(app)/subscription/_components/CancelRenewalButton",
   async () => {
     const React = await import("react");
@@ -739,7 +767,7 @@ describe("BillingPage (subscription/page)", () => {
       };
     }
 
-    it("renders a portal-routing CTA on the team-pro card for an existing team-basic subscriber (regression: button was missing)", async () => {
+    it("renders a change-plan CTA on the team-pro card for an existing team-basic subscriber (regression: button was missing)", async () => {
       mockGetSubscriptions.mockResolvedValueOnce([
         makeSub("sub_p", "personal", 2),
         makeSub("sub_t", "team", 2),
@@ -754,23 +782,24 @@ describe("BillingPage (subscription/page)", () => {
 
       await renderPage({});
 
-      // Team-pro card: actionable upgrade CTA wired to the billing portal
-      // with `?context=team`. Backend rule 8 would 409 a fresh team checkout
-      // here; portal is the only legal upgrade route.
+      // Team-pro card: actionable upgrade CTA wired to the in-app
+      // change-plan dialog with `context=team`. Backend rule 8 would 409 a
+      // fresh team checkout here; PATCH /subscriptions/me/ is the only
+      // legal change-plan route.
       const teamProCta = screen
         .getByTestId("plan-team-3-monthly")
         .querySelector("[data-cta]") as HTMLElement | null;
       expect(teamProCta).not.toBeNull();
-      expect(teamProCta?.getAttribute("data-cta")).toBe("portal");
+      expect(teamProCta?.getAttribute("data-cta")).toBe("change-plan");
       expect(teamProCta?.getAttribute("data-context")).toBe("team");
 
-      // Personal-pro card stays on the same portal route — Stripe handles
-      // proration in place; posting a fresh personal Checkout would create
-      // a parallel sub.
+      // Personal-pro card stays on the same in-app change-plan route —
+      // backend prorates upgrades in place; a fresh personal Checkout would
+      // create a parallel sub.
       const personalProCta = screen
         .getByTestId("plan-personal-3-monthly")
         .querySelector("[data-cta]") as HTMLElement | null;
-      expect(personalProCta?.getAttribute("data-cta")).toBe("portal");
+      expect(personalProCta?.getAttribute("data-cta")).toBe("change-plan");
       expect(personalProCta?.getAttribute("data-context")).toBe("personal");
     });
 

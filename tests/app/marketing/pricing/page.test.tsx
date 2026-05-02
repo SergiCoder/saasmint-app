@@ -167,6 +167,32 @@ vi.mock(
   }),
 );
 
+vi.mock(
+  "@/app/[locale]/(app)/subscription/_components/ChangePlanButton",
+  () => ({
+    ChangePlanButton: ({
+      children,
+      context,
+      isDeferred,
+    }: {
+      children: React.ReactNode;
+      context?: "personal" | "team";
+      isDeferred?: boolean;
+    }) =>
+      React.createElement(
+        "button",
+        {
+          "data-testid": "change-plan-button",
+          "data-cta": "change-plan",
+          "data-context": context ?? "",
+          "data-deferred": isDeferred ? "true" : "false",
+          type: "button",
+        },
+        children,
+      ),
+  }),
+);
+
 // --- Import under test (after mocks) -------------------------------------
 
 const { default: PricingPage } =
@@ -529,13 +555,13 @@ describe("Marketing PricingPage — upgrade CTA routing", () => {
     const teamProCta = screen
       .getByTestId("group-team-3")
       .querySelector("[data-cta]") as HTMLElement | null;
-    expect(teamProCta?.getAttribute("data-cta")).toBe("portal");
+    expect(teamProCta?.getAttribute("data-cta")).toBe("change-plan");
     expect(teamProCta?.getAttribute("data-context")).toBe("team");
 
     const personalProCta = screen
       .getByTestId("group-personal-3")
       .querySelector("[data-cta]") as HTMLElement | null;
-    expect(personalProCta?.getAttribute("data-cta")).toBe("portal");
+    expect(personalProCta?.getAttribute("data-cta")).toBe("change-plan");
     expect(personalProCta?.getAttribute("data-context")).toBe("personal");
   });
 
@@ -561,12 +587,12 @@ describe("Marketing PricingPage — upgrade CTA routing", () => {
     const teamProSlot = screen.getByTestId("group-team-3");
     expect(teamProSlot.querySelector("[data-cta]")).toBeNull();
 
-    // Personal upgrade still routes through the portal — that's the
-    // user's own sub.
+    // Personal upgrade still routes through the in-app change-plan
+    // dialog — that's the user's own sub.
     const personalProCta = screen
       .getByTestId("group-personal-3")
       .querySelector("[data-cta]") as HTMLElement | null;
-    expect(personalProCta?.getAttribute("data-cta")).toBe("portal");
+    expect(personalProCta?.getAttribute("data-cta")).toBe("change-plan");
   });
 
   it("uses the first-time team-checkout CTA when a signed-in user has no team sub and no org", async () => {

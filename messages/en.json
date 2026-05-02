@@ -237,7 +237,13 @@
     "keepPersonalSubscription": "Keep my personal subscription running alongside the team plan.",
     "scheduledDowngradeHeadline": "Downgrading to {plan} on {date}",
     "scheduledDowngradeBody": "You'll keep all {plan} features until then.",
-    "keepCurrentPlan": "Keep {plan}"
+    "keepCurrentPlan": "Keep {plan}",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Profile",
@@ -408,7 +414,8 @@
     "unsupported_image": "Unsupported image type",
     "message_required": "Please include a message.",
     "message_too_long": "Message is too long (max 5000 characters).",
-    "HTTP_429": "Too many requests. Please try again later."
+    "HTTP_429": "Too many requests. Please try again later.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Contact us",

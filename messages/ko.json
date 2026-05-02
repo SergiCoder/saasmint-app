@@ -234,7 +234,13 @@
     "teamPlanReadonly": "팀 구독은 조직 소유자가 관리합니다.",
     "checkout": "결제",
     "personalSubAutoCancelNotice": "이 팀 플랜의 청구가 시작되는 {date}에 개인 구독이 종료됩니다. 그때까지 개인 기능을 계속 사용할 수 있습니다.",
-    "keepPersonalSubscription": "팀 플랜과 함께 개인 구독을 계속 유지합니다."
+    "keepPersonalSubscription": "팀 플랜과 함께 개인 구독을 계속 유지합니다.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "설정",
@@ -365,7 +371,8 @@
     "unsupported_image": "지원되지 않는 이미지 형식입니다",
     "message_required": "메시지를 입력해 주세요.",
     "message_too_long": "메시지가 너무 깁니다 (최대 5000자).",
-    "HTTP_429": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요."
+    "HTTP_429": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "문의하기",

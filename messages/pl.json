@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Subskrypcja Twojego zespołu jest zarządzana przez właściciela organizacji.",
     "checkout": "Płatność",
     "personalSubAutoCancelNotice": "Twoja subskrypcja osobista zakończy się {date}, gdy ten plan zespołowy rozpocznie naliczanie. Do tego czasu zachowasz funkcje osobiste.",
-    "keepPersonalSubscription": "Zachowaj moją subskrypcję osobistą równolegle z planem zespołowym."
+    "keepPersonalSubscription": "Zachowaj moją subskrypcję osobistą równolegle z planem zespołowym.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Ustawienia",
@@ -365,7 +371,8 @@
     "unsupported_image": "Nieobsługiwany typ obrazu",
     "message_required": "Dołącz wiadomość.",
     "message_too_long": "Wiadomość jest za długa (maks. 5000 znaków).",
-    "HTTP_429": "Zbyt wiele żądań. Spróbuj ponownie później."
+    "HTTP_429": "Zbyt wiele żądań. Spróbuj ponownie później.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Kontakt",

@@ -234,7 +234,13 @@
     "teamPlanReadonly": "A subscrição da sua equipa é gerida pelo proprietário da organização.",
     "checkout": "Pagamento",
     "personalSubAutoCancelNotice": "A sua subscrição pessoal terminará a {date} quando este plano de equipa começar a ser cobrado. Manterá as funcionalidades pessoais até essa data.",
-    "keepPersonalSubscription": "Manter a minha subscrição pessoal ativa juntamente com o plano de equipa."
+    "keepPersonalSubscription": "Manter a minha subscrição pessoal ativa juntamente com o plano de equipa.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Definições",
@@ -365,7 +371,8 @@
     "unsupported_image": "Tipo de imagem não suportado",
     "message_required": "Por favor, inclua uma mensagem.",
     "message_too_long": "A mensagem é demasiado longa (máx. 5000 caracteres).",
-    "HTTP_429": "Demasiadas tentativas. Tente novamente mais tarde."
+    "HTTP_429": "Demasiadas tentativas. Tente novamente mais tarde.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Contacte-nos",

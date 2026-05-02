@@ -234,7 +234,13 @@
     "teamPlanReadonly": "L'abbonamento del tuo team è gestito dal proprietario dell'organizzazione.",
     "checkout": "Pagamento",
     "personalSubAutoCancelNotice": "Il tuo abbonamento personale terminerà il {date} quando inizierà la fatturazione di questo piano team. Manterrai le funzionalità personali fino ad allora.",
-    "keepPersonalSubscription": "Mantieni attivo il mio abbonamento personale insieme al piano team."
+    "keepPersonalSubscription": "Mantieni attivo il mio abbonamento personale insieme al piano team.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Impostazioni",
@@ -365,7 +371,8 @@
     "unsupported_image": "Tipo di immagine non supportato",
     "message_required": "Includi un messaggio.",
     "message_too_long": "Il messaggio è troppo lungo (max 5000 caratteri).",
-    "HTTP_429": "Troppe richieste. Riprova più tardi."
+    "HTTP_429": "Troppe richieste. Riprova più tardi.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Contattaci",

@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Подписка вашей команды управляется владельцем организации.",
     "checkout": "Оплата",
     "personalSubAutoCancelNotice": "Ваша личная подписка завершится {date}, когда начнётся оплата этого тарифа для команды. До этого момента вы сохраните личные возможности.",
-    "keepPersonalSubscription": "Сохранить мою личную подписку параллельно с тарифом для команды."
+    "keepPersonalSubscription": "Сохранить мою личную подписку параллельно с тарифом для команды.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Настройки",
@@ -365,7 +371,8 @@
     "unsupported_image": "Неподдерживаемый тип изображения",
     "message_required": "Пожалуйста, добавьте сообщение.",
     "message_too_long": "Сообщение слишком длинное (макс. 5000 символов).",
-    "HTTP_429": "Слишком много запросов. Попробуйте позже."
+    "HTTP_429": "Слишком много запросов. Попробуйте позже.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Связаться с нами",

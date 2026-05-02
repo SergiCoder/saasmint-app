@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Het teamabonnement wordt beheerd door de eigenaar van de organisatie.",
     "checkout": "Afrekenen",
     "personalSubAutoCancelNotice": "Uw persoonlijke abonnement eindigt op {date} wanneer dit teamplan in rekening wordt gebracht. Tot die tijd behoudt u de persoonlijke functies.",
-    "keepPersonalSubscription": "Mijn persoonlijke abonnement naast het teamplan laten doorlopen."
+    "keepPersonalSubscription": "Mijn persoonlijke abonnement naast het teamplan laten doorlopen.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Instellingen",
@@ -365,7 +371,8 @@
     "unsupported_image": "Niet-ondersteund afbeeldingstype",
     "message_required": "Voeg een bericht toe.",
     "message_too_long": "Bericht is te lang (max. 5000 tekens).",
-    "HTTP_429": "Te veel verzoeken. Probeer het later opnieuw."
+    "HTTP_429": "Te veel verzoeken. Probeer het later opnieuw.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Contact",

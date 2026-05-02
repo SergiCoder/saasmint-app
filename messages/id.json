@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Langganan tim Anda dikelola oleh pemilik organisasi.",
     "checkout": "Pembayaran",
     "personalSubAutoCancelNotice": "Langganan pribadi Anda akan berakhir pada {date} saat paket tim ini mulai ditagih. Anda akan tetap memiliki fitur pribadi hingga saat itu.",
-    "keepPersonalSubscription": "Pertahankan langganan pribadi saya berjalan bersama paket tim."
+    "keepPersonalSubscription": "Pertahankan langganan pribadi saya berjalan bersama paket tim.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Pengaturan",
@@ -365,7 +371,8 @@
     "unsupported_image": "Tipe gambar tidak didukung",
     "message_required": "Mohon sertakan pesan.",
     "message_too_long": "Pesan terlalu panjang (maks. 5000 karakter).",
-    "HTTP_429": "Terlalu banyak permintaan. Silakan coba lagi nanti."
+    "HTTP_429": "Terlalu banyak permintaan. Silakan coba lagi nanti.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Hubungi kami",

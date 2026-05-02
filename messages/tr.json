@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Ekip aboneliğiniz kuruluş sahibi tarafından yönetilmektedir.",
     "checkout": "Ödeme",
     "personalSubAutoCancelNotice": "Bu takım planı faturalandırılmaya başladığında kişisel aboneliğiniz {date} tarihinde sona erecek. O tarihe kadar kişisel özellikleri kullanmaya devam edeceksiniz.",
-    "keepPersonalSubscription": "Kişisel aboneliğimi takım planıyla birlikte çalışır durumda tut."
+    "keepPersonalSubscription": "Kişisel aboneliğimi takım planıyla birlikte çalışır durumda tut.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Ayarlar",
@@ -365,7 +371,8 @@
     "unsupported_image": "Desteklenmeyen görsel türü",
     "message_required": "Lütfen bir mesaj ekleyin.",
     "message_too_long": "Mesaj çok uzun (maks. 5000 karakter).",
-    "HTTP_429": "Çok fazla istek. Lütfen daha sonra tekrar deneyin."
+    "HTTP_429": "Çok fazla istek. Lütfen daha sonra tekrar deneyin.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Bize ulaşın",

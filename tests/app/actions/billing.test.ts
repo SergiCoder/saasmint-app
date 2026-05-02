@@ -424,36 +424,15 @@ describe("billing server actions", () => {
       });
     });
 
-    it("forwards flow + planPriceId for a deep-link upgrade", async () => {
-      // The upgrade CTA on /subscription deep-links the portal into Stripe's
-      // plan-switch confirm screen instead of the portal home — needs both
-      // flow=subscription_update_confirm and the target plan_price_id.
-      mockCreateBillingPortalSession.mockResolvedValue({
-        url: "https://billing.stripe.com/portal_upgrade",
-      });
-      const formData = new FormData();
-      formData.set("flow", "subscription_update_confirm");
-      formData.set("planPriceId", "price_pro_monthly");
-
-      await expect(openBillingPortal(formData)).rejects.toThrow(
-        "NEXT_REDIRECT",
-      );
-
-      expect(mockCreateBillingPortalSession).toHaveBeenCalledWith({
-        returnUrl: `${APP_URL}/subscription`,
-        flow: "subscription_update_confirm",
-        planPriceId: "price_pro_monthly",
-      });
-    });
-
-    it("drops an unknown flow value and ignores planPriceId", async () => {
-      // Server actions are RPCs — only the literal union is forwarded so a
-      // hostile caller can't smuggle other Stripe portal flows.
+    it("never forwards flow or planPriceId — portal is now vanilla manage-billing only", async () => {
+      // Backend removed deep-link plan-switch support; the portal is reduced
+      // to payment method / invoices / cancel. `openBillingPortal` must drop
+      // any `flow` or `planPriceId` form fields a caller might still send.
       mockCreateBillingPortalSession.mockResolvedValue({
         url: "https://billing.stripe.com/portal_default",
       });
       const formData = new FormData();
-      formData.set("flow", "subscription_cancel");
+      formData.set("flow", "subscription_update_confirm");
       formData.set("planPriceId", "price_pro_monthly");
 
       await expect(openBillingPortal(formData)).rejects.toThrow(

@@ -234,7 +234,13 @@
     "teamPlanReadonly": "您的团队订阅由组织所有者管理。",
     "checkout": "结账",
     "personalSubAutoCancelNotice": "您的个人订阅将在 {date} 结束，届时此团队计划开始计费。在此之前您将保留个人功能。",
-    "keepPersonalSubscription": "保留我的个人订阅与团队计划并行。"
+    "keepPersonalSubscription": "保留我的个人订阅与团队计划并行。",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "设置",
@@ -365,7 +371,8 @@
     "unsupported_image": "不支持的图片类型",
     "message_required": "请输入消息内容。",
     "message_too_long": "消息过长（最多 5000 个字符）。",
-    "HTTP_429": "请求过多，请稍后再试。"
+    "HTTP_429": "请求过多，请稍后再试。",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "联系我们",

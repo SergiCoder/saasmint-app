@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Ihr Team-Abonnement wird vom Organisationsinhaber verwaltet.",
     "checkout": "Bezahlen",
     "personalSubAutoCancelNotice": "Ihr persönliches Abonnement endet am {date}, wenn die Abrechnung für diesen Teamplan beginnt. Bis dahin behalten Sie die persönlichen Funktionen.",
-    "keepPersonalSubscription": "Mein persönliches Abonnement parallel zum Teamplan weiterlaufen lassen."
+    "keepPersonalSubscription": "Mein persönliches Abonnement parallel zum Teamplan weiterlaufen lassen.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Einstellungen",
@@ -365,7 +371,8 @@
     "unsupported_image": "Nicht unterstützter Bildtyp",
     "message_required": "Bitte fügen Sie eine Nachricht hinzu.",
     "message_too_long": "Die Nachricht ist zu lang (max. 5000 Zeichen).",
-    "HTTP_429": "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
+    "HTTP_429": "Zu viele Anfragen. Bitte versuchen Sie es später erneut.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Kontakt",

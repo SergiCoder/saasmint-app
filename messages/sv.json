@@ -234,7 +234,13 @@
     "teamPlanReadonly": "Ditt teamprenumeration hanteras av organisationens ägare.",
     "checkout": "Betalning",
     "personalSubAutoCancelNotice": "Din personliga prenumeration upphör den {date} när detta team-abonnemang börjar faktureras. Du behåller de personliga funktionerna fram till dess.",
-    "keepPersonalSubscription": "Behåll min personliga prenumeration parallellt med team-abonnemanget."
+    "keepPersonalSubscription": "Behåll min personliga prenumeration parallellt med team-abonnemanget.",
+    "changePlanConfirmTitleImmediate": "Switch to {plan}?",
+    "changePlanConfirmTitleDeferred": "Switch to {plan} at period end?",
+    "changePlanConfirmBodyImmediate": "Your plan will switch to {plan} ({price}) immediately. We'll prorate the difference on your next invoice.",
+    "changePlanConfirmBodyDeferred": "You'll keep your current plan until {date}, then switch to {plan} ({price}). You can undo this any time before then.",
+    "changePlanConfirmAction": "Confirm switch",
+    "changePlanConfirmDismiss": "Cancel"
   },
   "profile": {
     "title": "Inställningar",
@@ -365,7 +371,8 @@
     "unsupported_image": "Bildtypen stöds inte",
     "message_required": "Inkludera ett meddelande.",
     "message_too_long": "Meddelandet är för långt (max 5000 tecken).",
-    "HTTP_429": "För många förfrågningar. Försök igen senare."
+    "HTTP_429": "För många förfrågningar. Försök igen senare.",
+    "already_on_plan": "You're already on this plan."
   },
   "contact": {
     "title": "Kontakta oss",
