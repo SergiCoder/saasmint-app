@@ -17,8 +17,7 @@ interface CurrentSubscriptionCardProps {
   /**
    * Set to `true` when the user has both a personal and a team subscription
    * (rule 5 concurrent billing). Drives explicit `?context=` plumbing on
-   * cancel/resume so the right sub is targeted, and lets the eyebrow label
-   * disambiguate the cards visually. Single-sub callers can omit it.
+   * cancel/resume so the right sub is targeted. Single-sub callers can omit it.
    */
   isConcurrent?: boolean;
 }
@@ -138,12 +137,9 @@ export async function CurrentSubscriptionCard({
     )
   ) : null;
 
-  // Disambiguate the card eyebrow when the user has both subs side-by-side.
-  const eyebrowLabel = isConcurrent
-    ? isTeam
-      ? t("currentTeamPlan")
-      : t("currentPersonalPlan")
-    : t("currentPlan");
+  const eyebrowLabel = isTeam
+    ? t("currentTeamPlan")
+    : t("currentPersonalPlan");
 
   const scheduledChangeDate = subscription.scheduledChangeAt
     ? new Date(subscription.scheduledChangeAt)

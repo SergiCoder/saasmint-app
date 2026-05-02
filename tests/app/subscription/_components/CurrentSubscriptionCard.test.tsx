@@ -524,7 +524,7 @@ describe("CurrentSubscriptionCard", () => {
   });
 
   describe("isConcurrent (rule 5 — concurrent personal+team billing)", () => {
-    it("uses the generic currentPlan eyebrow when not concurrent", async () => {
+    it("uses the personal eyebrow even when not concurrent", async () => {
       await renderCard({
         subscription: makeSub(),
         locale: "en",
@@ -534,7 +534,7 @@ describe("CurrentSubscriptionCard", () => {
       });
 
       expect(screen.getByTestId("eyebrow-label")).toHaveTextContent(
-        "currentPlan",
+        "currentPersonalPlan",
       );
     });
 
