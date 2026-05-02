@@ -1,7 +1,14 @@
 "use client";
 
-import { useActionState, useRef, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/i18n/navigation";
 import { updateSeats } from "@/app/actions/billing";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
 import { Button } from "@/presentation/components/atoms/Button";
@@ -34,11 +41,22 @@ export function SeatManager({
 }: SeatManagerProps) {
   const t = useTranslations("org");
   const tCommon = useTranslations("common");
+  const router = useRouter();
   const translateError = useActionErrorMessage();
   const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [seats, setSeats] = useState(currentSeats);
   const [state, formAction] = useActionState(updateSeats, null);
   const [isPending, startTransition] = useTransition();
+
+  // The server action calls revalidatePath, which marks the layout cache
+  // stale, but the client must trigger router.refresh() for Next.js to
+  // re-fetch and re-render — without it, the page header keeps showing
+  // the old "Members N / OLD spots" until the user reloads manually.
+  useEffect(() => {
+    if (state?.ok) {
+      router.refresh();
+    }
+  }, [state, router]);
 
   const canDecrease = seats > usedSeats;
   // No client-side upper bound — backend enforces (1–10000 per Stripe
