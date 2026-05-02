@@ -186,6 +186,9 @@ export default async function PricingPage({ params, searchParams }: Props) {
         teamSubscription,
         personalCanManage,
         teamCanManage,
+        locale,
+        tBilling: t,
+        tPlans,
       });
     },
   });

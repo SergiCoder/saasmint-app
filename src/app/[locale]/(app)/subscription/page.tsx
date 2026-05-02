@@ -136,6 +136,9 @@ export default async function BillingPage({
         teamSubscription,
         personalCanManage,
         teamCanManage,
+        locale,
+        tBilling: t,
+        tPlans,
       });
     },
   });

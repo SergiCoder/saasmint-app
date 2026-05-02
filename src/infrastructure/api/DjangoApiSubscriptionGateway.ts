@@ -11,6 +11,7 @@ import { contextQuery } from "./contextQuery";
 import {
   CheckoutSessionResponseSchema,
   SubscriptionListResponseSchema,
+  SubscriptionSchema,
 } from "./schemas";
 
 export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
@@ -64,6 +65,29 @@ export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
       },
     );
     return CheckoutSessionResponseSchema.parse(raw);
+  }
+
+  async changePlan(
+    planPriceId: string,
+    context?: SubscriptionContext,
+  ): Promise<Subscription> {
+    const raw = await apiFetch<Record<string, unknown>>(
+      `/billing/subscriptions/me/${contextQuery(context)}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ plan_price_id: planPriceId }),
+      },
+    );
+    const camel = keysToCamel(raw) as Record<string, unknown>;
+    const plan = camel.plan;
+    if (plan && typeof plan === "object") {
+      applyPriceDefaults(plan as Record<string, unknown>);
+    }
+    const scheduledPlan = camel.scheduledPlan;
+    if (scheduledPlan && typeof scheduledPlan === "object") {
+      applyPriceDefaults(scheduledPlan as Record<string, unknown>);
+    }
+    return SubscriptionSchema.parse(camel);
   }
 
   async cancelSubscription(context?: SubscriptionContext): Promise<void> {

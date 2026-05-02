@@ -1,7 +1,9 @@
 import type { Plan } from "@/domain/models/Plan";
 import { PLAN_TIER_PRO } from "@/domain/models/Plan";
 import type { Subscription } from "@/domain/models/Subscription";
-import { BillingPortalButton } from "../_components/BillingPortalButton";
+import { translatePlanName } from "@/lib/i18n/planTranslation";
+import { formatCurrency } from "@/lib/formatCurrency";
+import { ChangePlanButton } from "../_components/ChangePlanButton";
 import { CheckoutButton } from "../_components/CheckoutButton";
 import { TeamCheckoutButton } from "../_components/TeamCheckoutButton";
 import { startCheckout } from "@/app/actions/billing";
@@ -18,17 +20,30 @@ interface RenderPlanUpgradeCtaOptions {
   teamSubscription: Subscription | null;
   personalCanManage: boolean;
   teamCanManage: boolean;
+  locale: string;
+  /**
+   * `getTranslations("billing")` from next-intl. Widened to a structural
+   * shape the typed translator is assignable to — keys read here:
+   * `changePlanConfirmTitleImmediate`, `changePlanConfirmTitleDeferred`,
+   * `changePlanConfirmBodyImmediate`, `changePlanConfirmBodyDeferred`,
+   * `changePlanConfirmAction`, `changePlanConfirmDismiss`.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tBilling: (key: any, values?: Record<string, string | number>) => string;
+  /** `useTranslations("plans")` — for the target plan's localised name. */
+  tPlans: (key: never) => string;
 }
 
 /**
  * Shared routing matrix for plan-change CTAs used on both /subscription and
- * /pricing. Same-context upgrades and downgrades route to the Stripe Billing
- * Portal (canonical change-plan surface — backend defers downgrades to period
- * end automatically). First-time purchases use Checkout. Backend rule 8
- * unconditionally 409s a second team checkout for an org owner, so the portal
- * is the only legal change-plan path there. Returns `null` when the user has
- * already scheduled a change to this exact plan — the subscription card's
- * downgrade banner offers the "Keep current plan" action instead.
+ * /pricing. Same-context upgrades and downgrades route to an in-app confirm
+ * dialog that calls `PATCH /subscriptions/me/`. Backend applies upgrades
+ * immediately and defers downgrades to period end. First-time purchases use
+ * Checkout. Backend rule 8 unconditionally 409s a second team checkout for
+ * an org owner, so the in-app PATCH is the only legal change-plan path
+ * there. Returns `null` when the user has already scheduled a change to
+ * this exact plan — the subscription card's downgrade banner offers the
+ * "Keep current plan" action instead.
  */
 export function renderPlanUpgradeCta({
   plan,
@@ -42,6 +57,9 @@ export function renderPlanUpgradeCta({
   teamSubscription,
   personalCanManage,
   teamCanManage,
+  locale,
+  tBilling,
+  tPlans,
 }: RenderPlanUpgradeCtaOptions): React.ReactNode {
   if (!plan.price) return null;
   if (isCurrent) return null;
@@ -52,7 +70,7 @@ export function renderPlanUpgradeCta({
   const canManageInContext = isTeam ? teamCanManage : personalCanManage;
 
   if (hasSubInContext) {
-    // Non-billing members can't action a plan change; the portal would 403.
+    // Non-billing members can't action a plan change; the action would 403.
     if (!canManageInContext) return null;
     // A schedule already targets this plan — the subscription banner owns
     // the "Keep current plan" cancel-action; rendering another CTA here
@@ -61,16 +79,57 @@ export function renderPlanUpgradeCta({
     // Pin context; required for concurrent billers (rule 5) and harmless for
     // single-sub callers since it matches the backend default routing.
     const portalContext = isTeam ? "team" : "personal";
+    // Detect deferred (downgrade) by comparing target price to current price.
+    // Backend uses the same comparison: `target.amount < current.amount` →
+    // SubscriptionSchedule, else immediate proration.
+    const currentAmount = subInContext.plan.price?.amount ?? 0;
+    const isDeferred = plan.price.amount < currentAmount;
+
+    const targetPlanName = translatePlanName(tPlans, plan);
+    const targetPriceFormatted = formatCurrency(
+      plan.price.displayAmount,
+      plan.price.currency,
+      locale,
+    );
+    const periodEndDate = new Date(subInContext.currentPeriodEnd);
+    const periodEndDisplay = !Number.isNaN(periodEndDate.getTime())
+      ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+          periodEndDate,
+        )
+      : "";
+
+    const confirmTitle = isDeferred
+      ? tBilling("changePlanConfirmTitleDeferred", {
+          plan: targetPlanName,
+        })
+      : tBilling("changePlanConfirmTitleImmediate", {
+          plan: targetPlanName,
+        });
+    const confirmBody = isDeferred
+      ? tBilling("changePlanConfirmBodyDeferred", {
+          plan: targetPlanName,
+          price: targetPriceFormatted,
+          date: periodEndDisplay,
+        })
+      : tBilling("changePlanConfirmBodyImmediate", {
+          plan: targetPlanName,
+          price: targetPriceFormatted,
+        });
+
     return (
-      <BillingPortalButton
+      <ChangePlanButton
+        planPriceId={plan.price.id}
+        isDeferred={isDeferred}
         context={portalContext}
         highlighted={highlighted}
         fullWidth
-        flow="subscription_update_confirm"
-        planPriceId={plan.price.id}
+        confirmTitle={confirmTitle}
+        confirmBody={confirmBody}
+        confirmAction={tBilling("changePlanConfirmAction")}
+        confirmDismiss={tBilling("changePlanConfirmDismiss")}
       >
         {isUpgrade ? upgradeLabel : changePlanLabel}
-      </BillingPortalButton>
+      </ChangePlanButton>
     );
   }
 
