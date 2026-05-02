@@ -232,7 +232,6 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Hanteras av {name}",
-    "teamPlanReadonly": "Ditt teamprenumeration hanteras av organisationens ägare.",
     "checkout": "Betalning",
     "personalSubAutoCancelNotice": "Din personliga prenumeration upphör den {date} när detta team-abonnemang börjar faktureras. Du behåller de personliga funktionerna fram till dess.",
     "keepPersonalSubscription": "Behåll min personliga prenumeration parallellt med team-abonnemanget.",

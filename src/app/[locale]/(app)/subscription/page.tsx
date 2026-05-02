@@ -85,7 +85,6 @@ export default async function BillingPage({
     ? "year"
     : "month";
   const selectedInterval = parseIntervalParam(query.interval, defaultInterval);
-  const isTeamSubscription = teamSubscription !== null;
   const teamCanManage =
     teamSubscription !== null && canManageById[teamSubscription.id] === true;
   const personalCanManage =
@@ -255,9 +254,7 @@ export default async function BillingPage({
         </div>
       )}
 
-      {isTeamSubscription && !teamCanManage && !personalSubscription ? (
-        <p className="text-sm text-gray-500">{t("teamPlanReadonly")}</p>
-      ) : groups.length === 0 ? (
+      {groups.length === 0 ? (
         <p className="text-sm text-gray-500">{t("changePlan")}</p>
       ) : (
         <>

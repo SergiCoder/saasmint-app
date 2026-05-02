@@ -232,7 +232,6 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "Zarządzane przez {name}",
-    "teamPlanReadonly": "Subskrypcja Twojego zespołu jest zarządzana przez właściciela organizacji.",
     "checkout": "Płatność",
     "personalSubAutoCancelNotice": "Twoja subskrypcja osobista zakończy się {date}, gdy ten plan zespołowy rozpocznie naliczanie. Do tego czasu zachowasz funkcje osobiste.",
     "keepPersonalSubscription": "Zachowaj moją subskrypcję osobistą równolegle z planem zespołowym.",

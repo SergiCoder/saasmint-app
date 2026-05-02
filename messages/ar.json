@@ -232,7 +232,6 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "تتم الإدارة بواسطة {name}",
-    "teamPlanReadonly": "يتم إدارة اشتراك فريقك بواسطة مالك المؤسسة.",
     "checkout": "الدفع",
     "personalSubAutoCancelNotice": "سينتهي اشتراكك الشخصي في {date} عندما تبدأ فوترة خطة الفريق هذه. ستحتفظ بالميزات الشخصية حتى ذلك الحين.",
     "keepPersonalSubscription": "احتفظ باشتراكي الشخصي جنبًا إلى جنب مع خطة الفريق.",

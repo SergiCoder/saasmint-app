@@ -232,7 +232,6 @@
     "teamCheckout": "Team checkout",
     "checkoutError": "Failed to start checkout. Please try again.",
     "managedBy": "{name} tarafından yönetiliyor",
-    "teamPlanReadonly": "Ekip aboneliğiniz kuruluş sahibi tarafından yönetilmektedir.",
     "checkout": "Ödeme",
     "personalSubAutoCancelNotice": "Bu takım planı faturalandırılmaya başladığında kişisel aboneliğiniz {date} tarihinde sona erecek. O tarihe kadar kişisel özellikleri kullanmaya devam edeceksiniz.",
     "keepPersonalSubscription": "Kişisel aboneliğimi takım planıyla birlikte çalışır durumda tut.",
