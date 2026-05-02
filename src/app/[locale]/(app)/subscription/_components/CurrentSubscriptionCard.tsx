@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { MAX_SEATS, type Subscription } from "@/domain/models/Subscription";
+import type { Subscription } from "@/domain/models/Subscription";
 import { Link } from "@/lib/i18n/navigation";
 import { translatePlanName } from "@/lib/i18n/planTranslation";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
@@ -93,7 +93,10 @@ export async function CurrentSubscriptionCard({
         ? t("billedMonthly")
         : undefined;
   const seatsText = isTeam
-    ? t("seatsOfMax", { count: subscription.quantity, max: MAX_SEATS })
+    ? t("seatsOfMax", {
+        count: subscription.seatsUsed,
+        max: subscription.seatLimit,
+      })
     : null;
   const seatsNode =
     seatsText && isTeam && teamOrgSlug ? (

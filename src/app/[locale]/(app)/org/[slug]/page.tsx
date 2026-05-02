@@ -45,7 +45,7 @@ export default async function OrgDetailPage({ params }: OrgDetailPageProps) {
 
   const teamSubscription = findTeamSubscription(subscriptions);
   const isTeamSubscription = teamSubscription !== null;
-  const totalSpots = teamSubscription?.quantity ?? null;
+  const totalSpots = teamSubscription?.seatLimit ?? null;
 
   const me = members.find((m) => m.user.id === user.id);
   const isOwner = me?.role === "owner";

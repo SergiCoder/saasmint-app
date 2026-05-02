@@ -10,7 +10,6 @@ import {
   ConfirmDialog,
   type ConfirmDialogHandle,
 } from "@/presentation/components/molecules/ConfirmDialog";
-import { MAX_SEATS } from "@/domain/models/Subscription";
 
 interface SeatManagerProps {
   currentSeats: number;
@@ -27,7 +26,8 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
   const [isPending, startTransition] = useTransition();
 
   const canDecrease = seats > usedSeats;
-  const canIncrease = seats < MAX_SEATS;
+  // No client-side upper bound — backend enforces (1–10000 per Stripe
+  // pricing rules). Submitting over the cap surfaces a server error.
   const hasChanged = seats !== currentSeats;
   const isDecreasing = seats < currentSeats;
 
@@ -38,7 +38,9 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
 
   const submitSeats = () => {
     const formData = new FormData();
-    formData.set("quantity", String(seats));
+    // Backend renamed the wire field from `quantity` to `seat_limit`
+    // (v0.8.0); the action keysToSnake's the camelCase form field name.
+    formData.set("seatLimit", String(seats));
     // Seats only exist on team subs; pin the context so a concurrent-billing
     // user doesn't accidentally hit the personal sub.
     formData.set("context", "team");
@@ -89,7 +91,7 @@ export function SeatManager({ currentSeats, usedSeats }: SeatManagerProps) {
           <button
             type="button"
             onClick={() => setSeats((s) => s + 1)}
-            disabled={!canIncrease || isPending}
+            disabled={isPending}
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t("addSeat")}
           >

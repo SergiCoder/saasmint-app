@@ -6,7 +6,6 @@ import { BillingError } from "@/domain/errors/BillingError";
 import {
   findPersonalSubscription,
   findTeamSubscription,
-  MAX_SEATS,
   type Subscription,
 } from "@/domain/models/Subscription";
 import type { SubscriptionContext } from "@/application/ports/ISubscriptionGateway";
@@ -114,11 +113,11 @@ export async function startCheckout(
   const planPriceId = getString(formData, "planPriceId");
   if (!planPriceId) return fail("invalid_input");
 
-  const rawQuantity = getInt(formData, "quantity");
-  const quantity =
-    rawQuantity && rawQuantity > 0
-      ? Math.min(rawQuantity, MAX_SEATS)
-      : undefined;
+  // Form field name `seatLimit` mirrors the new backend wire field
+  // (`seat_limit`, renamed from `quantity` in v0.8.0). Backend enforces
+  // bounds (1–10000); the action just forwards a positive integer.
+  const rawSeatLimit = getInt(formData, "seatLimit");
+  const seatLimit = rawSeatLimit && rawSeatLimit > 0 ? rawSeatLimit : undefined;
   const orgName = getNonEmptyString(formData, "orgName");
   const keepPersonalSubscription =
     formData.get("keepPersonalSubscription") === "on";
@@ -127,7 +126,7 @@ export async function startCheckout(
   try {
     const session = await subscriptionGateway.createCheckoutSession({
       planPriceId,
-      ...(quantity ? { quantity } : {}),
+      ...(seatLimit ? { seatLimit } : {}),
       ...(orgName ? { orgName, keepPersonalSubscription } : {}),
       successUrl: `${APP_ORIGIN}/subscription?status=success`,
       cancelUrl: `${APP_ORIGIN}/subscription`,
@@ -261,15 +260,18 @@ export async function updateSeats(
   _prevState: unknown,
   formData: FormData,
 ): Promise<ActionResult> {
-  const quantity = getInt(formData, "quantity");
-  if (quantity === undefined || quantity < 1 || quantity > MAX_SEATS) {
+  // Form field name `seatLimit` matches the new backend wire field. Lower
+  // bound 1 stays client-side because submitting 0/negative is a UI bug;
+  // upper bound is the backend's call (no hard-coded constant on FE).
+  const seatLimit = getInt(formData, "seatLimit");
+  if (seatLimit === undefined || seatLimit < 1) {
     return fail("invalid_seat_count");
   }
   const context = parseContext(formData);
 
   try {
     await assertCanManageBilling(context);
-    await subscriptionGateway.updateSeats(quantity, context);
+    await subscriptionGateway.updateSeats(seatLimit, context);
   } catch (err) {
     console.error("Failed to update seats", err);
     return toActionError(err);

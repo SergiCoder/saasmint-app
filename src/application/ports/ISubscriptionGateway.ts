@@ -2,7 +2,8 @@ import type { Subscription } from "@/domain/models/Subscription";
 
 export interface CheckoutSessionInput {
   planPriceId: string;
-  quantity?: number;
+  /** Team-only: purchased seat count. Renamed from `quantity` in backend v0.8.0. */
+  seatLimit?: number;
   orgName?: string;
   /**
    * Team-context only: when the caller has an active personal subscription,
@@ -67,6 +68,6 @@ export interface ISubscriptionGateway {
    * other mutating subscription endpoints.
    */
   releaseScheduledChange(context?: SubscriptionContext): Promise<void>;
-  /** Update the seat count on a team subscription. */
-  updateSeats(quantity: number, context?: SubscriptionContext): Promise<void>;
+  /** Update the purchased seat count on a team subscription. */
+  updateSeats(seatLimit: number, context?: SubscriptionContext): Promise<void>;
 }

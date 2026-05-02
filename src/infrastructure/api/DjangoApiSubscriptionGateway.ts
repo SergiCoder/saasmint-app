@@ -111,12 +111,12 @@ export class DjangoApiSubscriptionGateway implements ISubscriptionGateway {
   }
 
   async updateSeats(
-    quantity: number,
+    seatLimit: number,
     context?: SubscriptionContext,
   ): Promise<void> {
     await apiFetchVoid(`/billing/subscriptions/me/${contextQuery(context)}`, {
       method: "PATCH",
-      body: JSON.stringify({ quantity }),
+      body: JSON.stringify({ seat_limit: seatLimit }),
     });
   }
 }

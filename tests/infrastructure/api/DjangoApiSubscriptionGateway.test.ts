@@ -30,7 +30,8 @@ const samplePersonalRow = {
     interval: "month",
     price: { id: "pp1", amount: 1900 },
   },
-  quantity: 1,
+  seatLimit: 1,
+  seatsUsed: 1,
   trial_ends_at: null,
   current_period_start: "2024-01-01T00:00:00Z",
   current_period_end: "2024-02-01T00:00:00Z",
@@ -53,7 +54,8 @@ const sampleTeamRow = {
     interval: "month",
     price: { id: "tp1", amount: 4900 },
   },
-  quantity: 5,
+  seatLimit: 5,
+  seatsUsed: 1,
   trial_ends_at: null,
   current_period_start: "2024-01-01T00:00:00Z",
   current_period_end: "2024-02-01T00:00:00Z",
@@ -76,7 +78,8 @@ const expectedPersonal = {
     interval: "month",
     price: { id: "pp1", amount: 1900, displayAmount: 19, currency: "usd" },
   },
-  quantity: 1,
+  seatLimit: 1,
+  seatsUsed: 1,
   trialEndsAt: null,
   currentPeriodStart: "2024-01-01T00:00:00Z",
   currentPeriodEnd: "2024-02-01T00:00:00Z",
@@ -179,12 +182,12 @@ describe("DjangoApiSubscriptionGateway", () => {
       expect(result).toEqual(response);
     });
 
-    it("includes quantity in snake_case body when provided", async () => {
+    it("includes seatLimit in snake_case body when provided", async () => {
       mockApiFetch.mockResolvedValue({ url: "https://checkout.stripe.com/x" });
 
       await gateway.createCheckoutSession({
         planPriceId: "price_team",
-        quantity: 5,
+        seatLimit: 5,
         successUrl: `${APP_URL}/billing?status=success`,
         cancelUrl: `${APP_URL}/billing`,
       });
@@ -193,7 +196,7 @@ describe("DjangoApiSubscriptionGateway", () => {
         "/billing/checkout-sessions/",
         expect.objectContaining({
           method: "POST",
-          body: expect.stringContaining('"quantity":5'),
+          body: expect.stringContaining('"seat_limit":5'),
         }),
       );
     });
@@ -440,14 +443,14 @@ describe("DjangoApiSubscriptionGateway", () => {
   });
 
   describe("updateSeats", () => {
-    it("sends PATCH /billing/subscriptions/me/ with quantity", async () => {
+    it("sends PATCH /billing/subscriptions/me/ with seat_limit", async () => {
       mockApiFetchVoid.mockResolvedValue(undefined);
 
       await gateway.updateSeats(5);
 
       expect(mockApiFetchVoid).toHaveBeenCalledWith(
         "/billing/subscriptions/me/",
-        { method: "PATCH", body: JSON.stringify({ quantity: 5 }) },
+        { method: "PATCH", body: JSON.stringify({ seat_limit: 5 }) },
       );
     });
 
@@ -458,7 +461,7 @@ describe("DjangoApiSubscriptionGateway", () => {
 
       expect(mockApiFetchVoid).toHaveBeenCalledWith(
         "/billing/subscriptions/me/?context=team",
-        { method: "PATCH", body: JSON.stringify({ quantity: 5 }) },
+        { method: "PATCH", body: JSON.stringify({ seat_limit: 5 }) },
       );
     });
 
@@ -472,7 +475,7 @@ describe("DjangoApiSubscriptionGateway", () => {
 
       expect(mockApiFetchVoid).toHaveBeenCalledWith(
         "/billing/subscriptions/me/",
-        { method: "PATCH", body: JSON.stringify({ quantity: 3 }) },
+        { method: "PATCH", body: JSON.stringify({ seat_limit: 3 }) },
       );
     });
   });

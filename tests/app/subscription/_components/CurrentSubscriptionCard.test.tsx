@@ -208,7 +208,8 @@ function makeSub(overrides: Partial<Subscription> = {}): Subscription {
       interval: "month",
       price: null,
     },
-    quantity: 1,
+    seatLimit: 1,
+    seatsUsed: 1,
     trialEndsAt: null,
     currentPeriodStart: "2026-01-01T00:00:00Z",
     currentPeriodEnd: "2026-02-01T00:00:00Z",
@@ -354,7 +355,8 @@ describe("CurrentSubscriptionCard", () => {
           interval: "year",
           price: null,
         },
-        quantity: 5,
+        seatLimit: 5,
+        seatsUsed: 1,
       }),
       locale: "en",
       planName: "Team Pro",
@@ -362,10 +364,10 @@ describe("CurrentSubscriptionCard", () => {
       teamOwnerName: "Alice",
     });
 
-    // i18n stub echoes "seatsOfMax 5 100" (key + appended params), then
-    // " · billedYearly" interval label.
+    // i18n stub echoes "seatsOfMax:count=N,max=M" — count = seatsUsed,
+    // max = seatLimit (both backend-driven).
     expect(screen.getByTestId("subtitle")).toHaveTextContent(
-      /seatsOfMax:count=5,max=100\s*·\s*billedYearly/,
+      /seatsOfMax:count=1,max=5\s*·\s*billedYearly/,
     );
   });
 
@@ -381,7 +383,8 @@ describe("CurrentSubscriptionCard", () => {
           interval: "month",
           price: null,
         },
-        quantity: 1,
+        seatLimit: 1,
+        seatsUsed: 1,
       }),
       locale: "en",
       planName: "Team Pro",
@@ -390,7 +393,7 @@ describe("CurrentSubscriptionCard", () => {
     });
 
     expect(screen.getByTestId("subtitle")).toHaveTextContent(
-      /seatsOfMax:count=1,max=100\s*·\s*billedMonthly/,
+      /seatsOfMax:count=1,max=1\s*·\s*billedMonthly/,
     );
   });
 
@@ -406,7 +409,8 @@ describe("CurrentSubscriptionCard", () => {
           interval: "month",
           price: null,
         },
-        quantity: 3,
+        seatLimit: 3,
+        seatsUsed: 1,
       }),
       locale: "en",
       planName: "Team Pro",
@@ -434,7 +438,8 @@ describe("CurrentSubscriptionCard", () => {
           interval: "month",
           price: null,
         },
-        quantity: 3,
+        seatLimit: 3,
+        seatsUsed: 1,
       }),
       locale: "en",
       planName: "Team Pro",
@@ -457,7 +462,8 @@ describe("CurrentSubscriptionCard", () => {
           interval: "month",
           price: null,
         },
-        quantity: 3,
+        seatLimit: 3,
+        seatsUsed: 1,
       }),
       locale: "en",
       planName: "Team Pro",
@@ -561,7 +567,8 @@ describe("CurrentSubscriptionCard", () => {
             interval: "month",
             price: null,
           },
-          quantity: 3,
+          seatLimit: 3,
+          seatsUsed: 1,
         }),
         locale: "en",
         planName: "Team Pro",
@@ -603,7 +610,8 @@ describe("CurrentSubscriptionCard", () => {
             interval: "month",
             price: null,
           },
-          quantity: 3,
+          seatLimit: 3,
+          seatsUsed: 1,
         }),
         locale: "en",
         planName: "Team Pro",
