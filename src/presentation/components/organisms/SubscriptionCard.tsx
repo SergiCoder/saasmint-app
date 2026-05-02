@@ -25,6 +25,13 @@ export interface SubscriptionCardProps {
   cancelLabel?: string;
   footer?: string;
   actions?: React.ReactNode;
+  /**
+   * Optional in-card banner rendered above the actions row (e.g. scheduled
+   * downgrade notice). The caller controls the banner's own styling so a
+   * single card can host info / warning / error variants without the
+   * organism encoding any of them.
+   */
+  banner?: React.ReactNode;
   className?: string;
 }
 
@@ -41,6 +48,7 @@ export function SubscriptionCard({
   cancelLabel,
   footer,
   actions,
+  banner,
   className = "",
 }: SubscriptionCardProps) {
   return (
@@ -81,6 +89,8 @@ export function SubscriptionCard({
       )}
 
       {footer && <p className="mt-4 text-sm text-gray-500">{footer}</p>}
+
+      {banner && <div className="mt-6">{banner}</div>}
 
       {actions && <div className="mt-6 flex gap-3">{actions}</div>}
     </div>

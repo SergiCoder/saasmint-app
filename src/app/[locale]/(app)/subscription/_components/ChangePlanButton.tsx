@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useRouter } from "@/lib/i18n/navigation";
 import { changePlan } from "@/app/actions/billing";
 import type { SubscriptionContext } from "@/application/ports/ISubscriptionGateway";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
@@ -42,6 +43,7 @@ export function ChangePlanButton({
   confirmDismiss,
   context,
 }: ChangePlanButtonProps) {
+  const router = useRouter();
   const translateError = useActionErrorMessage();
   const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [isPending, startTransition] = useTransition();
@@ -57,6 +59,10 @@ export function ChangePlanButton({
       const result = await changePlan(planPriceId, context);
       if (result.ok) {
         confirmRef.current?.close();
+        // Action calls revalidatePath, but a Server Component re-render only
+        // happens once the client triggers it — without router.refresh the
+        // user sees stale plan data until they reload manually.
+        router.refresh();
       } else {
         setError(translateError(result));
       }

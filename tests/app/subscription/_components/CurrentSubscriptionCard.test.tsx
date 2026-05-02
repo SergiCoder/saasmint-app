@@ -186,6 +186,11 @@ vi.mock("@/presentation/components/organisms/SubscriptionCard", async () => {
         ),
         React.createElement(
           "div",
+          { "data-testid": "banner" },
+          props.banner as React.ReactNode,
+        ),
+        React.createElement(
+          "div",
           { "data-testid": "actions" },
           props.actions as React.ReactNode,
         ),

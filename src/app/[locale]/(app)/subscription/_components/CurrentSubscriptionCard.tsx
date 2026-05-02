@@ -137,9 +137,7 @@ export async function CurrentSubscriptionCard({
     )
   ) : null;
 
-  const eyebrowLabel = isTeam
-    ? t("currentTeamPlan")
-    : t("currentPersonalPlan");
+  const eyebrowLabel = isTeam ? t("currentTeamPlan") : t("currentPersonalPlan");
 
   const scheduledChangeDate = subscription.scheduledChangeAt
     ? new Date(subscription.scheduledChangeAt)
@@ -179,7 +177,7 @@ export async function CurrentSubscriptionCard({
       </AlertBanner>
     ) : null;
 
-  const card = (
+  return (
     <SubscriptionCard
       eyebrowLabel={eyebrowLabel}
       planName={planName}
@@ -196,6 +194,7 @@ export async function CurrentSubscriptionCard({
           ? t("managedBy", { name: teamOwnerName })
           : undefined
       }
+      banner={downgradeBanner ?? undefined}
       actions={
         canManage && manageAction ? (
           <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2">
@@ -207,13 +206,5 @@ export async function CurrentSubscriptionCard({
         ) : undefined
       }
     />
-  );
-
-  if (!downgradeBanner) return card;
-  return (
-    <div className="space-y-3">
-      {downgradeBanner}
-      {card}
-    </div>
   );
 }
