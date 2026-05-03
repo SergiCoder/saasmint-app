@@ -112,7 +112,7 @@ Route-specific clients in co-located `_components/`; shared server fetchers in `
 - App Router only — no `pages/`.
 - No raw `fetch` in components — go through a server action or `_data/` fetcher.
 - Auth: Django JWT in `Authorization: Bearer` (read from HTTP-only cookie).
-- Payments: Stripe-hosted surfaces only — no embedded forms. First-time subscriptions use Checkout; plan upgrades for existing subscribers route through the Stripe Billing Portal (`openBillingPortal` action, `BillingPortalButton` component).
+- Payments: Stripe-hosted surfaces only — no embedded forms. First-time subscriptions use Checkout; plan changes for existing subscribers use `changePlan` server action (`PATCH /billing/subscriptions/me/`) — upgrades apply immediately, downgrades defer to period end. The Billing Portal (`openBillingPortal` action, `BillingPortalButton` component) is for payment method management and invoices only.
 - All user-facing strings through next-intl.
 - Brand color: teal `#0D9488` (`primary-600`).
 - TS `strict`, `noUncheckedIndexedAccess`, `noImplicitReturns`, `noFallthroughCasesInSwitch` — narrow indexed access instead of using `!`.
