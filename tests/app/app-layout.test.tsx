@@ -38,17 +38,6 @@ vi.mock("@/lib/pathname", () => ({
   getPathnameWithoutLocale: () => mockGetPathnameWithoutLocale(),
 }));
 
-// Cookie store: layout writes NEXT_LOCALE so post-logout anonymous nav
-// starts on the user's preferred locale.
-const mockCookieGet = vi.fn<(name: string) => { value: string } | undefined>();
-const mockCookieSet = vi.fn();
-vi.mock("next/headers", () => ({
-  cookies: async () => ({
-    get: (name: string) => mockCookieGet(name),
-    set: (...args: unknown[]) => mockCookieSet(...args),
-  }),
-}));
-
 const mockGetCurrentUser = vi.fn<() => Promise<User>>();
 vi.mock("@/app/[locale]/(app)/_data/getCurrentUser", () => ({
   getCurrentUser: () => mockGetCurrentUser(),
@@ -291,35 +280,5 @@ describe("(app)/layout", () => {
     await renderLayout("en");
 
     expect(redirectMock).not.toHaveBeenCalled();
-  });
-
-  it("writes NEXT_LOCALE cookie when missing, mirroring the user's preferredLocale", async () => {
-    mockCookieGet.mockReturnValue(undefined);
-    mockGetCurrentUser.mockResolvedValue(makeUser({ preferredLocale: "en" }));
-
-    await renderLayout("en");
-
-    expect(mockCookieSet).toHaveBeenCalledWith(
-      "NEXT_LOCALE",
-      "en",
-      expect.objectContaining({ path: "/", sameSite: "lax" }),
-    );
-  });
-
-  it("does not rewrite NEXT_LOCALE cookie when it already matches preferredLocale", async () => {
-    mockCookieGet.mockReturnValue({ value: "en" });
-    mockGetCurrentUser.mockResolvedValue(makeUser({ preferredLocale: "en" }));
-
-    await renderLayout("en");
-
-    expect(mockCookieSet).not.toHaveBeenCalled();
-  });
-
-  it("does not write NEXT_LOCALE cookie when user has no preferredLocale", async () => {
-    mockGetCurrentUser.mockResolvedValue(makeUser({ preferredLocale: "" }));
-
-    await renderLayout("en");
-
-    expect(mockCookieSet).not.toHaveBeenCalled();
   });
 });

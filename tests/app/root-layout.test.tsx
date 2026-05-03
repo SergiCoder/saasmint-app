@@ -13,14 +13,12 @@ vi.mock("@/lib/pathname", () => ({
   getLocale: () => getLocaleMock(),
 }));
 
-import { isLocale, routing } from "@/lib/i18n/routing";
 import RootLayout from "@/app/layout";
 
-async function renderRoot(pathname: string): Promise<void> {
-  // Resolve the locale the same way getLocale() does so callers can pass
-  // full pathnames and the fallback-to-default behaviour is preserved.
-  const segment = pathname.split("/")[1] ?? "";
-  const locale = isLocale(segment) ? segment : routing.defaultLocale;
+// getLocale() is mocked, so the helper takes the locale directly. Locale
+// resolution from a pathname is covered by the unit tests for getLocale()
+// in tests/lib/pathname.test.ts.
+async function renderRoot(locale = "en"): Promise<void> {
   getLocaleMock.mockResolvedValueOnce(locale);
   const element = await RootLayout({ children: "body-content" });
   render(element as React.ReactElement);
@@ -32,37 +30,30 @@ describe("RootLayout", () => {
     getLocaleMock.mockResolvedValue("en");
   });
 
-  it("derives lang from the pathname locale prefix and renders LTR", async () => {
-    await renderRoot("/en/dashboard");
+  it("renders lang='en' and dir='ltr' for a Western locale", async () => {
+    await renderRoot("en");
 
     expect(document.documentElement.getAttribute("lang")).toBe("en");
     expect(document.documentElement.getAttribute("dir")).toBe("ltr");
     expect(document.body.textContent).toContain("body-content");
   });
 
-  it("renders dir='rtl' for an Arabic pathname", async () => {
-    await renderRoot("/ar/dashboard");
+  it("renders dir='rtl' for Arabic", async () => {
+    await renderRoot("ar");
 
     expect(document.documentElement.getAttribute("lang")).toBe("ar");
     expect(document.documentElement.getAttribute("dir")).toBe("rtl");
   });
 
-  it("recognises multi-segment locales such as pt-BR", async () => {
-    await renderRoot("/pt-BR");
+  it("renders multi-segment locales such as pt-BR", async () => {
+    await renderRoot("pt-BR");
 
     expect(document.documentElement.getAttribute("lang")).toBe("pt-BR");
     expect(document.documentElement.getAttribute("dir")).toBe("ltr");
   });
 
-  it("falls back to the default locale when the prefix is unknown", async () => {
-    await renderRoot("/unknown/path");
-
-    expect(document.documentElement.getAttribute("lang")).toBe("en");
-    expect(document.documentElement.getAttribute("dir")).toBe("ltr");
-  });
-
   it("applies the inter font variable to the body", async () => {
-    await renderRoot("/en");
+    await renderRoot();
 
     expect(document.body.className).toContain("font-inter-var");
   });

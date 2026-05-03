@@ -8,7 +8,6 @@ import { SignOutButton } from "../_components/SignOutButton";
 import { getCurrentUser } from "./_data/getCurrentUser";
 import { getSubscriptions } from "./_data/getSubscriptions";
 import { getUserOrgs } from "./_data/getUserOrgs";
-import { syncLocaleCookie } from "@/app/actions/user";
 
 interface AppLayoutRouteProps {
   children: React.ReactNode;
@@ -36,25 +35,19 @@ export default async function AppLayoutRoute({
     getUserOrgs(),
   ]);
 
-  // Evaluate once — used by both the redirect guard and the cookie-sync below.
-  const preferredLocale =
-    user.preferredLocale && isLocale(user.preferredLocale)
-      ? user.preferredLocale
-      : null;
-
   // If the user has a preferred locale that differs from the current URL,
   // redirect server-side before we render. Saves a client-side flash.
-  if (preferredLocale && preferredLocale !== locale) {
+  // next-intl's middleware syncs the NEXT_LOCALE cookie on the redirect
+  // target, so we don't need a separate cookie write here — and we cannot
+  // do one anyway: cookies().set() throws outside Server Action / Route
+  // Handler contexts (a layout render is neither).
+  if (
+    user.preferredLocale &&
+    user.preferredLocale !== locale &&
+    isLocale(user.preferredLocale)
+  ) {
     const pathname = await getPathnameWithoutLocale();
-    redirect({ href: pathname, locale: preferredLocale });
-  }
-
-  // Sync NEXT_LOCALE so future anonymous visits (after logout) start on the
-  // user's preferred locale. Delegated to a Server Action because Next.js 15+
-  // only allows cookies().set() inside Server Actions or Route Handlers — not
-  // in Server Component render functions.
-  if (preferredLocale) {
-    await syncLocaleCookie(preferredLocale);
+    redirect({ href: pathname, locale: user.preferredLocale });
   }
 
   const hasOrg =
