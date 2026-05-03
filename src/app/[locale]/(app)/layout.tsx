@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AppLayout } from "@/presentation/components/templates/AppLayout";
 import { redirect } from "@/lib/i18n/navigation";
@@ -9,12 +8,7 @@ import { SignOutButton } from "../_components/SignOutButton";
 import { getCurrentUser } from "./_data/getCurrentUser";
 import { getSubscriptions } from "./_data/getSubscriptions";
 import { getUserOrgs } from "./_data/getUserOrgs";
-
-// next-intl persists the active locale on a `NEXT_LOCALE` cookie. Mirror the
-// authenticated user's preferred locale onto that cookie so post-logout
-// anonymous navigation lands on their language without re-detection.
-const NEXT_LOCALE_COOKIE = "NEXT_LOCALE";
-const NEXT_LOCALE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+import { syncLocaleCookie } from "@/app/actions/user";
 
 interface AppLayoutRouteProps {
   children: React.ReactNode;
@@ -42,29 +36,25 @@ export default async function AppLayoutRoute({
     getUserOrgs(),
   ]);
 
+  // Evaluate once — used by both the redirect guard and the cookie-sync below.
+  const preferredLocale =
+    user.preferredLocale && isLocale(user.preferredLocale)
+      ? user.preferredLocale
+      : null;
+
   // If the user has a preferred locale that differs from the current URL,
   // redirect server-side before we render. Saves a client-side flash.
-  if (
-    user.preferredLocale &&
-    user.preferredLocale !== locale &&
-    isLocale(user.preferredLocale)
-  ) {
+  if (preferredLocale && preferredLocale !== locale) {
     const pathname = await getPathnameWithoutLocale();
-    redirect({ href: pathname, locale: user.preferredLocale });
+    redirect({ href: pathname, locale: preferredLocale });
   }
 
   // Sync NEXT_LOCALE so future anonymous visits (after logout) start on the
-  // user's preferred locale. Only writes when the cookie is missing or
-  // stale, to avoid an unnecessary Set-Cookie on every render.
-  if (user.preferredLocale && isLocale(user.preferredLocale)) {
-    const cookieStore = await cookies();
-    if (cookieStore.get(NEXT_LOCALE_COOKIE)?.value !== user.preferredLocale) {
-      cookieStore.set(NEXT_LOCALE_COOKIE, user.preferredLocale, {
-        path: "/",
-        sameSite: "lax",
-        maxAge: NEXT_LOCALE_MAX_AGE,
-      });
-    }
+  // user's preferred locale. Delegated to a Server Action because Next.js 15+
+  // only allows cookies().set() inside Server Actions or Route Handlers — not
+  // in Server Component render functions.
+  if (preferredLocale) {
+    await syncLocaleCookie(preferredLocale);
   }
 
   const hasOrg =
