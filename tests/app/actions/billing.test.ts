@@ -22,6 +22,7 @@ const mockResumeSubscription = vi.fn();
 const mockUpdateSeats = vi.fn();
 const mockCreateProductCheckoutSession = vi.fn();
 const mockReleaseScheduledChange = vi.fn();
+const mockChangePlan = vi.fn();
 
 vi.mock("@/infrastructure/registry", () => ({
   authGateway: { getCurrentUser: mockGetCurrentUser },
@@ -33,6 +34,7 @@ vi.mock("@/infrastructure/registry", () => ({
     resumeSubscription: mockResumeSubscription,
     updateSeats: mockUpdateSeats,
     releaseScheduledChange: mockReleaseScheduledChange,
+    changePlan: mockChangePlan,
   },
   productGateway: {
     createCheckoutSession: mockCreateProductCheckoutSession,
@@ -53,6 +55,7 @@ let cancelRenewal: typeof import("@/app/actions/billing").cancelRenewal;
 let resumeSubscription: typeof import("@/app/actions/billing").resumeSubscription;
 let updateSeats: typeof import("@/app/actions/billing").updateSeats;
 let releaseScheduledChange: typeof import("@/app/actions/billing").releaseScheduledChange;
+let changePlan: typeof import("@/app/actions/billing").changePlan;
 
 beforeEach(async () => {
   vi.clearAllMocks();
@@ -64,6 +67,7 @@ beforeEach(async () => {
   resumeSubscription = mod.resumeSubscription;
   updateSeats = mod.updateSeats;
   releaseScheduledChange = mod.releaseScheduledChange;
+  changePlan = mod.changePlan;
 });
 
 describe("billing server actions", () => {
@@ -874,6 +878,166 @@ describe("billing server actions", () => {
       const result = await updateSeats(undefined, fd);
       expect(result).toEqual({ ok: false, code: "context_required" });
       expect(mockUpdateSeats).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("changePlan", () => {
+    const user = { id: "u1" };
+    const subscription = {
+      id: "s1",
+      plan: { context: "personal" },
+      scheduledChangeAt: null,
+    };
+
+    beforeEach(() => {
+      mockGetCurrentUser.mockResolvedValue(user);
+      mockListSubscriptions.mockResolvedValue([subscription]);
+      mockCanManageBilling.mockResolvedValue(true);
+    });
+
+    it("returns invalid_input when planPriceId is falsy", async () => {
+      const result = await changePlan("");
+      expect(result).toEqual({ ok: false, code: "invalid_input" });
+      expect(mockChangePlan).not.toHaveBeenCalled();
+    });
+
+    it("calls changePlan gateway with planPriceId and revalidates on success", async () => {
+      mockChangePlan.mockResolvedValueOnce({
+        ...subscription,
+        scheduledChangeAt: null,
+      });
+
+      const result = await changePlan("price_pro_monthly");
+
+      expect(mockChangePlan).toHaveBeenCalledWith(
+        "price_pro_monthly",
+        undefined,
+      );
+      expect(mockRevalidatePath).toHaveBeenCalledWith(
+        "/subscription",
+        "layout",
+      );
+      expect(result).toEqual({ ok: true, data: { deferred: false } });
+    });
+
+    it("returns deferred=true when the response has a scheduledChangeAt (downgrade)", async () => {
+      mockChangePlan.mockResolvedValueOnce({
+        ...subscription,
+        scheduledChangeAt: "2024-02-01T00:00:00Z",
+      });
+
+      const result = await changePlan("price_basic_monthly");
+
+      expect(result).toEqual({ ok: true, data: { deferred: true } });
+    });
+
+    it("forwards context=personal to assertCanManageBilling and the gateway", async () => {
+      const personalSub = {
+        id: "sub_p",
+        plan: { context: "personal" },
+        scheduledChangeAt: null,
+      };
+      const teamSub = {
+        id: "sub_t",
+        plan: { context: "team" },
+        scheduledChangeAt: null,
+      };
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockChangePlan.mockResolvedValueOnce(personalSub);
+
+      const result = await changePlan("price_basic", "personal");
+
+      expect(mockCanManageBilling).toHaveBeenCalledWith(user, personalSub);
+      expect(mockChangePlan).toHaveBeenCalledWith("price_basic", "personal");
+      expect(result.ok).toBe(true);
+    });
+
+    it("forwards context=team to the gateway", async () => {
+      const personalSub = {
+        id: "sub_p",
+        plan: { context: "personal" },
+        scheduledChangeAt: null,
+      };
+      const teamSub = {
+        id: "sub_t",
+        plan: { context: "team" },
+        scheduledChangeAt: null,
+      };
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+      mockChangePlan.mockResolvedValueOnce(teamSub);
+
+      await changePlan("price_team_pro", "team");
+
+      expect(mockCanManageBilling).toHaveBeenCalledWith(user, teamSub);
+      expect(mockChangePlan).toHaveBeenCalledWith("price_team_pro", "team");
+    });
+
+    it("normalizes a tampered context arg to undefined", async () => {
+      mockChangePlan.mockResolvedValueOnce(subscription);
+
+      await changePlan("price_pro", "../admin" as unknown as "personal");
+
+      expect(mockChangePlan).toHaveBeenCalledWith("price_pro", undefined);
+    });
+
+    it("returns not_billing_member when caller cannot manage billing", async () => {
+      mockCanManageBilling.mockResolvedValue(false);
+
+      const result = await changePlan("price_pro_monthly");
+
+      expect(result).toEqual({ ok: false, code: "not_billing_member" });
+      expect(mockChangePlan).not.toHaveBeenCalled();
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("returns no_subscription when no subscription exists", async () => {
+      mockListSubscriptions.mockResolvedValue([]);
+
+      const result = await changePlan("price_pro_monthly");
+
+      expect(result).toEqual({ ok: false, code: "no_subscription" });
+      expect(mockChangePlan).not.toHaveBeenCalled();
+    });
+
+    it("returns context_required when both subs exist and no context is supplied", async () => {
+      const personalSub = {
+        id: "sub_p",
+        plan: { context: "personal" },
+        scheduledChangeAt: null,
+      };
+      const teamSub = {
+        id: "sub_t",
+        plan: { context: "team" },
+        scheduledChangeAt: null,
+      };
+      mockListSubscriptions.mockResolvedValue([personalSub, teamSub]);
+
+      const result = await changePlan("price_pro_monthly");
+
+      expect(result).toEqual({ ok: false, code: "context_required" });
+      expect(mockChangePlan).not.toHaveBeenCalled();
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("does not revalidate when the gateway throws", async () => {
+      mockChangePlan.mockRejectedValueOnce(new Error("network failure"));
+
+      const result = await changePlan("price_pro_monthly");
+
+      expect(result).toEqual({ ok: false, code: "unknown_error" });
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
+    });
+
+    it("maps an ApiError 409 code to the error envelope", async () => {
+      const { ApiError } = await import("@/domain/errors/ApiError");
+      mockChangePlan.mockRejectedValueOnce(
+        new ApiError(409, { code: "already_on_plan" }),
+      );
+
+      const result = await changePlan("price_current");
+
+      expect(result).toEqual({ ok: false, code: "already_on_plan" });
+      expect(mockRevalidatePath).not.toHaveBeenCalled();
     });
   });
 });

@@ -479,4 +479,114 @@ describe("DjangoApiSubscriptionGateway", () => {
       );
     });
   });
+
+  describe("changePlan", () => {
+    it("sends PATCH /billing/subscriptions/me/ with plan_price_id and returns the updated subscription", async () => {
+      mockApiFetch.mockResolvedValue({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [samplePersonalRow],
+        // changePlan returns a single row, not a list — mirror what the gateway expects
+        ...samplePersonalRow,
+      });
+
+      // changePlan uses apiFetch (not apiFetchVoid) so mock the raw row response
+      mockApiFetch.mockResolvedValueOnce(samplePersonalRow);
+
+      const result = await gateway.changePlan("price_pro_monthly");
+
+      expect(mockApiFetch).toHaveBeenCalledWith("/billing/subscriptions/me/", {
+        method: "PATCH",
+        body: JSON.stringify({ plan_price_id: "price_pro_monthly" }),
+      });
+      expect(result).toMatchObject({ id: "s1", plan: { context: "personal" } });
+    });
+
+    it("appends ?context=personal when targeting the personal sub", async () => {
+      mockApiFetch.mockResolvedValueOnce(samplePersonalRow);
+
+      await gateway.changePlan("price_basic", "personal");
+
+      expect(mockApiFetch).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/?context=personal",
+        expect.objectContaining({
+          method: "PATCH",
+          body: JSON.stringify({ plan_price_id: "price_basic" }),
+        }),
+      );
+    });
+
+    it("appends ?context=team when targeting the team sub", async () => {
+      mockApiFetch.mockResolvedValueOnce(sampleTeamRow);
+
+      await gateway.changePlan("price_team_pro", "team");
+
+      expect(mockApiFetch).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/?context=team",
+        expect.objectContaining({
+          method: "PATCH",
+          body: JSON.stringify({ plan_price_id: "price_team_pro" }),
+        }),
+      );
+    });
+
+    it("applies price defaults to the returned plan", async () => {
+      mockApiFetch.mockResolvedValueOnce(samplePersonalRow);
+
+      const result = await gateway.changePlan("price_pro_monthly");
+
+      // price defaults: displayAmount = amount / 100, currency = "usd"
+      expect(result.plan.price).toEqual({
+        id: "pp1",
+        amount: 1900,
+        displayAmount: 19,
+        currency: "usd",
+      });
+    });
+
+    it("applies price defaults to scheduledPlan when a deferred downgrade is returned", async () => {
+      const rowWithSchedule = {
+        ...samplePersonalRow,
+        scheduled_plan: {
+          id: "p_basic",
+          name: "Basic",
+          description: "Basic plan",
+          context: "personal",
+          tier: 2,
+          interval: "month",
+          price: { id: "pp_basic", amount: 900 },
+        },
+        scheduled_change_at: "2024-02-01T00:00:00Z",
+      };
+      mockApiFetch.mockResolvedValueOnce(rowWithSchedule);
+
+      const result = await gateway.changePlan("price_basic");
+
+      expect(result.scheduledChangeAt).toBe("2024-02-01T00:00:00Z");
+      expect(result.scheduledPlan).toMatchObject({
+        id: "p_basic",
+        price: {
+          id: "pp_basic",
+          amount: 900,
+          displayAmount: 9,
+          currency: "usd",
+        },
+      });
+    });
+
+    it("silently drops a tampered context value (injection guard)", async () => {
+      mockApiFetch.mockResolvedValueOnce(samplePersonalRow);
+
+      await gateway.changePlan(
+        "price_pro",
+        "team&admin=1" as unknown as "team",
+      );
+
+      expect(mockApiFetch).toHaveBeenCalledWith(
+        "/billing/subscriptions/me/",
+        expect.objectContaining({ method: "PATCH" }),
+      );
+    });
+  });
 });
