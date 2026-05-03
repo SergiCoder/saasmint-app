@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { AuthError } from "@/domain/errors/AuthError";
 import { authGateway, userGateway } from "@/infrastructure/registry";
@@ -100,30 +99,6 @@ export async function updatePreferredLocale(locale: string): Promise<void> {
     await userGateway.updateProfile({ preferredLocale: locale });
   } catch {
     // Not authenticated or update failed — silently ignore
-  }
-}
-
-const NEXT_LOCALE_COOKIE = "NEXT_LOCALE";
-const NEXT_LOCALE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
-
-/**
- * Writes the `NEXT_LOCALE` cookie so post-logout anonymous navigation lands
- * on the authenticated user's preferred locale without re-detection.
- * Must be a Server Action (not inline Server Component logic) because
- * Next.js 15+ only allows `cookies().set()` inside Server Actions and
- * Route Handlers.
- */
-export async function syncLocaleCookie(locale: string): Promise<void> {
-  if (!(routing.locales as readonly string[]).includes(locale)) {
-    return;
-  }
-  const cookieStore = await cookies();
-  if (cookieStore.get(NEXT_LOCALE_COOKIE)?.value !== locale) {
-    cookieStore.set(NEXT_LOCALE_COOKIE, locale, {
-      path: "/",
-      sameSite: "lax",
-      maxAge: NEXT_LOCALE_MAX_AGE,
-    });
   }
 }
 

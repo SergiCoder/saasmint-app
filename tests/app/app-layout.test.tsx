@@ -38,17 +38,6 @@ vi.mock("@/lib/pathname", () => ({
   getPathnameWithoutLocale: () => mockGetPathnameWithoutLocale(),
 }));
 
-// Cookie store: layout writes NEXT_LOCALE so post-logout anonymous nav
-// starts on the user's preferred locale.
-const mockCookieGet = vi.fn<(name: string) => { value: string } | undefined>();
-const mockCookieSet = vi.fn();
-vi.mock("next/headers", () => ({
-  cookies: async () => ({
-    get: (name: string) => mockCookieGet(name),
-    set: (...args: unknown[]) => mockCookieSet(...args),
-  }),
-}));
-
 const mockGetCurrentUser = vi.fn<() => Promise<User>>();
 vi.mock("@/app/[locale]/(app)/_data/getCurrentUser", () => ({
   getCurrentUser: () => mockGetCurrentUser(),
