@@ -83,6 +83,16 @@ describe("getLocale", () => {
     await expect(getLocale()).resolves.toBe("es");
   });
 
+  it("falls back to the default locale when the header returns an empty string", async () => {
+    // An empty-string header value makes getPathname() return "" (not the "/"
+    // fallback), so pathname.split("/")[1] is undefined — the ?? "" guard
+    // kicks in and isLocale("") is false, so we fall back to defaultLocale.
+    mockGet.mockImplementation((name: string) =>
+      name === "x-pathname" ? "" : null,
+    );
+    await expect(getLocale()).resolves.toBe("en");
+  });
+
   it("returns hyphenated locales correctly", async () => {
     mockGet.mockReturnValue("/pt-BR/profile");
     await expect(getLocale()).resolves.toBe("pt-BR");

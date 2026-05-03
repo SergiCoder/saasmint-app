@@ -189,6 +189,30 @@ describe("auth server actions", () => {
       expect(mockRedirect).toHaveBeenCalledWith("/en/dashboard");
     });
 
+    it("redirects to /dashboard and logs when planGateway.listPlans throws during plan resolution", async () => {
+      // resolvePlanRouting swallows catalog outages so sign-in still succeeds
+      // as a personal flow, but logs the failure server-side.
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+      });
+      mockListPlans.mockRejectedValue(new Error("catalog unavailable"));
+
+      const formData = new FormData();
+      formData.set("email", "user@example.com");
+      formData.set("password", "secret123");
+      formData.set("plan", "price_pro_monthly");
+
+      await expect(signIn(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(vi.mocked(console.error)).toHaveBeenCalledWith(
+        "resolvePlanRouting failed",
+        expect.any(Error),
+      );
+      expect(mockRedirect).toHaveBeenCalledWith("/en/dashboard");
+    });
+
     it("redirects to team checkout when plan resolves to a team plan", async () => {
       mockPublicApiFetch.mockResolvedValue({
         access_token: "tok_abc",
