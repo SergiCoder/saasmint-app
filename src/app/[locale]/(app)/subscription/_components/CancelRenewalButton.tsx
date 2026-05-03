@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useRouter } from "@/lib/i18n/navigation";
 import { cancelRenewal } from "@/app/actions/billing";
 import type { SubscriptionContext } from "@/application/ports/ISubscriptionGateway";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
@@ -32,6 +33,7 @@ export function CancelRenewalButton({
   confirmDismiss,
   context,
 }: CancelRenewalButtonProps) {
+  const router = useRouter();
   const translateError = useActionErrorMessage();
   const confirmRef = useRef<ConfirmDialogHandle>(null);
   const [isPending, startTransition] = useTransition();
@@ -47,6 +49,11 @@ export function CancelRenewalButton({
       const result = await cancelRenewal(context);
       if (result.ok) {
         confirmRef.current?.close();
+        // Action calls revalidatePath, but a Server Component re-render only
+        // happens once the client triggers it — without router.refresh the
+        // card keeps showing the active-renewal state instead of transitioning
+        // to the scheduled-cancel banner.
+        router.refresh();
       } else {
         setError(translateError(result));
       }

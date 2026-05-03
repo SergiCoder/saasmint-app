@@ -9,6 +9,12 @@ import { CancelRenewalButton } from "./CancelRenewalButton";
 import { ReleaseScheduledChangeButton } from "./ReleaseScheduledChangeButton";
 import { ResumeSubscriptionButton } from "./ResumeSubscriptionButton";
 
+function formatLongDate(date: Date, locale: string): string {
+  return !Number.isNaN(date.getTime())
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(date)
+    : "";
+}
+
 interface CurrentSubscriptionCardProps {
   subscription: Subscription;
   locale: string;
@@ -107,7 +113,7 @@ export async function CurrentSubscriptionCard({
       })
     : null;
   const seatsNode =
-    seatsText && isTeam && teamOrgSlug ? (
+    seatsText && teamOrgSlug ? (
       <Link
         href={`/org/${teamOrgSlug}`}
         className="text-primary-600 hover:text-primary-700 underline-offset-2 hover:underline"
@@ -130,11 +136,7 @@ export async function CurrentSubscriptionCard({
   // take effect for a live cancel-renewal click), not `cancel_at` — which
   // is unset until the user clicks the very button the dialog gates.
   const periodEndDate = new Date(subscription.currentPeriodEnd);
-  const periodEndDisplay = !Number.isNaN(periodEndDate.getTime())
-    ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-        periodEndDate,
-      )
-    : "";
+  const periodEndDisplay = formatLongDate(periodEndDate, locale);
 
   const cancelRenewalAction =
     canManage && !isScheduledToCancel && !isFullyCanceled ? (
@@ -176,12 +178,8 @@ export async function CurrentSubscriptionCard({
     ? new Date(subscription.scheduledChangeAt)
     : null;
   const scheduledChangeDisplay =
-    isScheduledDowngrade &&
-    scheduledChangeDate &&
-    !Number.isNaN(scheduledChangeDate.getTime())
-      ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-          scheduledChangeDate,
-        )
+    isScheduledDowngrade && scheduledChangeDate
+      ? formatLongDate(scheduledChangeDate, locale)
       : "";
   const scheduledPlanName =
     isScheduledDowngrade && scheduledPlan
@@ -194,12 +192,9 @@ export async function CurrentSubscriptionCard({
   const cancelAtDate = subscription.cancelAt
     ? new Date(subscription.cancelAt)
     : null;
-  const cancelAtDisplay =
-    cancelAtDate && !Number.isNaN(cancelAtDate.getTime())
-      ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-          cancelAtDate,
-        )
-      : "";
+  const cancelAtDisplay = cancelAtDate
+    ? formatLongDate(cancelAtDate, locale)
+    : "";
 
   const isActivelyRenewing =
     !isFullyCanceled && !isScheduledToCancel && !isScheduledDowngrade;

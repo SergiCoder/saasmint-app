@@ -86,7 +86,7 @@ export function ChangePlanButton({
         body={confirmBody}
         confirmLabel={confirmAction}
         cancelLabel={confirmDismiss}
-        variant={isDeferred ? "primary" : "primary"}
+        variant="primary"
         loading={isPending}
         onConfirm={confirm}
         onClose={() => setError(null)}

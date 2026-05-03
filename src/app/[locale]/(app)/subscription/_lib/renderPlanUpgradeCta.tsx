@@ -8,6 +8,12 @@ import { CheckoutButton } from "../_components/CheckoutButton";
 import { TeamCheckoutButton } from "../_components/TeamCheckoutButton";
 import { startCheckout } from "@/app/actions/billing";
 
+function formatLongDate(date: Date, locale: string): string {
+  return !Number.isNaN(date.getTime())
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(date)
+    : "";
+}
+
 interface RenderPlanUpgradeCtaOptions {
   plan: Plan;
   isUpgrade: boolean;
@@ -87,12 +93,7 @@ export function renderPlanUpgradeCta({
     if (subInContext.scheduledPlan?.id === plan.id) {
       const cutoverIso = subInContext.scheduledChangeAt;
       const cutover = cutoverIso ? new Date(cutoverIso) : null;
-      const cutoverDisplay =
-        cutover && !Number.isNaN(cutover.getTime())
-          ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-              cutover,
-            )
-          : "";
+      const cutoverDisplay = cutover ? formatLongDate(cutover, locale) : "";
       return (
         <p className="text-primary-700 text-center text-sm font-medium">
           {tBilling("scheduledPlanLabel", { date: cutoverDisplay })}
@@ -117,11 +118,7 @@ export function renderPlanUpgradeCta({
       locale,
     );
     const periodEndDate = new Date(subInContext.currentPeriodEnd);
-    const periodEndDisplay = !Number.isNaN(periodEndDate.getTime())
-      ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-          periodEndDate,
-        )
-      : "";
+    const periodEndDisplay = formatLongDate(periodEndDate, locale);
 
     const confirmTitle = isDeferred
       ? tBilling("changePlanConfirmTitleDeferred", {
