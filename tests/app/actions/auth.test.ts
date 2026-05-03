@@ -44,8 +44,6 @@ vi.mock("@/infrastructure/registry", () => ({
 // locale via getLocale() to build locale-prefixed redirects.
 vi.mock("@/lib/pathname", () => ({
   getLocale: vi.fn().mockResolvedValue("en"),
-  getPathname: vi.fn().mockResolvedValue("/en/login"),
-  getPathnameWithoutLocale: vi.fn().mockResolvedValue("/login"),
 }));
 
 let signIn: typeof import("@/app/actions/auth").signIn;
