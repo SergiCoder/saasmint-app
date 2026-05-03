@@ -1,6 +1,10 @@
 import { headers } from "next/headers";
-import { isLocale, routing, stripLocalePrefix } from "@/lib/i18n/routing";
-import type { Locale } from "@/lib/i18n/routing";
+import {
+  isLocale,
+  routing,
+  stripLocalePrefix,
+  type Locale,
+} from "@/lib/i18n/routing";
 
 export const PATHNAME_HEADER = "x-pathname";
 
