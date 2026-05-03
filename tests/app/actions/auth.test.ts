@@ -40,6 +40,14 @@ vi.mock("@/infrastructure/registry", () => ({
   planGateway: { listPlans: mockListPlans },
 }));
 
+// Default: tests run as if the request came from /en/* — actions read the
+// locale via getLocale() to build locale-prefixed redirects.
+vi.mock("@/lib/pathname", () => ({
+  getLocale: vi.fn().mockResolvedValue("en"),
+  getPathname: vi.fn().mockResolvedValue("/en/login"),
+  getPathnameWithoutLocale: vi.fn().mockResolvedValue("/login"),
+}));
+
 let signIn: typeof import("@/app/actions/auth").signIn;
 let signUp: typeof import("@/app/actions/auth").signUp;
 let signOut: typeof import("@/app/actions/auth").signOut;
@@ -109,7 +117,7 @@ describe("auth server actions", () => {
         }),
       });
       expect(mockSetAuthCookies).toHaveBeenCalledWith("tok_abc", "ref_abc");
-      expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
+      expect(mockRedirect).toHaveBeenCalledWith("/en/dashboard");
     });
 
     it("returns ApiError envelope with detail when login fails", async () => {
@@ -159,7 +167,7 @@ describe("auth server actions", () => {
         "NEXT_REDIRECT",
       );
       expect(mockRedirect).toHaveBeenCalledWith(
-        "/subscription/checkout?plan=price_pro_monthly",
+        "/en/subscription/checkout?plan=price_pro_monthly",
       );
     });
 
@@ -180,7 +188,7 @@ describe("auth server actions", () => {
       await expect(signIn(undefined, formData)).rejects.toThrow(
         "NEXT_REDIRECT",
       );
-      expect(mockRedirect).toHaveBeenCalledWith("/dashboard");
+      expect(mockRedirect).toHaveBeenCalledWith("/en/dashboard");
     });
 
     it("redirects to team checkout when plan resolves to a team plan", async () => {
@@ -198,7 +206,7 @@ describe("auth server actions", () => {
         "NEXT_REDIRECT",
       );
       expect(mockRedirect).toHaveBeenCalledWith(
-        "/subscription/team-checkout?plan=price_team_pro",
+        "/en/subscription/team-checkout?plan=price_team_pro",
       );
     });
 
@@ -245,7 +253,7 @@ describe("auth server actions", () => {
           full_name: "Jane Doe",
         }),
       });
-      expect(mockRedirect).toHaveBeenCalledWith("/login?registered=true");
+      expect(mockRedirect).toHaveBeenCalledWith("/en/login?registered=true");
     });
 
     it("returns ApiError envelope with detail when registration fails", async () => {
@@ -298,7 +306,7 @@ describe("auth server actions", () => {
         "/auth/register/",
         expect.objectContaining({ method: "POST" }),
       );
-      expect(mockRedirect).toHaveBeenCalledWith("/login?registered=true");
+      expect(mockRedirect).toHaveBeenCalledWith("/en/login?registered=true");
     });
 
     it("uses /auth/register/ for team plans and remembers the team checkout context", async () => {
@@ -323,7 +331,7 @@ describe("auth server actions", () => {
       );
       expect(mockSetPendingPlan).toHaveBeenCalledWith("price_team_pro", true);
       expect(mockRedirect).toHaveBeenCalledWith(
-        "/login?registered=true&plan=price_team_pro&context=team",
+        "/en/login?registered=true&plan=price_team_pro&context=team",
       );
     });
 
@@ -647,7 +655,7 @@ describe("auth server actions", () => {
 
       await expect(signOut()).rejects.toThrow("NEXT_REDIRECT");
       expect(mockSignOut).toHaveBeenCalledOnce();
-      expect(mockRedirect).toHaveBeenCalledWith("/login");
+      expect(mockRedirect).toHaveBeenCalledWith("/en/login");
     });
 
     it("clears cookies and redirects when gateway throws", async () => {
@@ -655,7 +663,7 @@ describe("auth server actions", () => {
 
       await expect(signOut()).rejects.toThrow("NEXT_REDIRECT");
       expect(mockClearAuthCookies).toHaveBeenCalledOnce();
-      expect(mockRedirect).toHaveBeenCalledWith("/login");
+      expect(mockRedirect).toHaveBeenCalledWith("/en/login");
     });
   });
 
@@ -673,11 +681,11 @@ describe("auth server actions", () => {
       // redirect lands on /subscription/team-checkout.
       const result = await startOAuth(
         "github",
-        "/subscription/team-checkout?plan=price_team_pro",
+        "/en/subscription/team-checkout?plan=price_team_pro",
       );
 
       expect(mockSetOAuthFlowCookies).toHaveBeenCalledWith(
-        "/subscription/team-checkout?plan=price_team_pro",
+        "/en/subscription/team-checkout?plan=price_team_pro",
       );
       expect(new URL(result.redirectUrl).search).toBe("");
     });
