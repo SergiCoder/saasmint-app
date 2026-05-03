@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Locale } from "@/lib/i18n/routing";
 
 vi.mock("next/font/google", () => ({
   Inter: () => ({ variable: "font-inter-var" }),
@@ -7,7 +8,7 @@ vi.mock("next/font/google", () => ({
 
 vi.mock("../../src/app/globals.css", () => ({}));
 
-const getLocaleMock = vi.fn<() => Promise<string>>(async () => "en");
+const getLocaleMock = vi.fn<() => Promise<Locale>>(async () => "en");
 
 vi.mock("@/lib/pathname", () => ({
   getLocale: () => getLocaleMock(),
@@ -18,7 +19,7 @@ import RootLayout from "@/app/layout";
 // getLocale() is mocked, so the helper takes the locale directly. Locale
 // resolution from a pathname is covered by the unit tests for getLocale()
 // in tests/lib/pathname.test.ts.
-async function renderRoot(locale = "en"): Promise<void> {
+async function renderRoot(locale: Locale = "en"): Promise<void> {
   getLocaleMock.mockResolvedValueOnce(locale);
   const element = await RootLayout({ children: "body-content" });
   render(element as React.ReactElement);
