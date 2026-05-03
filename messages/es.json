@@ -87,6 +87,7 @@
       "noAccount": "¿No tienes una cuenta?",
       "register": "Regístrate",
       "registered": "¡Cuenta creada! Revisa tu correo para verificar tu cuenta.",
+      "invited": "¡Te has unido al equipo! Revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
       "accountDeleted": "Tu cuenta ha sido eliminada. Lamentamos verte partir.",
       "errorNoSession": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
       "errorEmailNotVerified": "Verifica tu dirección de correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.",

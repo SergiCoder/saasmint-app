@@ -87,6 +87,7 @@
       "noAccount": "Har du inget konto?",
       "register": "Registrera dig",
       "registered": "Konto skapat! Kontrollera din e-post för att verifiera ditt konto.",
+      "invited": "Du har gått med i teamet! Kontrollera din e-post för att verifiera ditt konto innan du loggar in.",
       "accountDeleted": "Ditt konto har raderats. Vi är ledsna att se dig gå.",
       "errorNoSession": "Din session har löpt ut. Logga in igen.",
       "errorEmailNotVerified": "Verifiera din e-postadress innan du loggar in. Kontrollera din inkorg.",

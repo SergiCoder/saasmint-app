@@ -87,6 +87,7 @@
       "noAccount": "Har du ikke en konto?",
       "register": "Opret konto",
       "registered": "Konto oprettet! Tjek din e-mail for at bekræfte din konto.",
+      "invited": "Du er kommet med på holdet! Tjek din e-mail for at bekræfte din konto, før du logger ind.",
       "accountDeleted": "Din konto er blevet slettet. Vi er kede af at se dig gå.",
       "errorNoSession": "Din session er udløbet. Log venligst ind igen.",
       "errorEmailNotVerified": "Bekræft din e-mailadresse, før du logger ind. Tjek din indbakke.",

@@ -87,6 +87,7 @@
       "noAccount": "Har du ikke en konto?",
       "register": "Registrer deg",
       "registered": "Konto opprettet! Sjekk e-posten din for å bekrefte kontoen.",
+      "invited": "Du har blitt med i teamet! Sjekk e-posten din for å bekrefte kontoen før du logger inn.",
       "accountDeleted": "Kontoen din er slettet. Vi er lei for at du forlater oss.",
       "errorNoSession": "Økten din har utløpt. Vennligst logg inn igjen.",
       "errorEmailNotVerified": "Bekreft e-postadressen din før du logger inn. Sjekk innboksen din.",
