@@ -7,24 +7,29 @@ vi.mock("next/font/google", () => ({
 
 vi.mock("../../src/app/globals.css", () => ({}));
 
-const getPathnameMock = vi.fn<() => Promise<string>>(async () => "/en");
+const getLocaleMock = vi.fn<() => Promise<string>>(async () => "en");
 
 vi.mock("@/lib/pathname", () => ({
-  getPathname: () => getPathnameMock(),
+  getLocale: () => getLocaleMock(),
 }));
 
+import { isLocale, routing } from "@/lib/i18n/routing";
 import RootLayout from "@/app/layout";
 
 async function renderRoot(pathname: string): Promise<void> {
-  getPathnameMock.mockResolvedValueOnce(pathname);
+  // Resolve the locale the same way getLocale() does so callers can pass
+  // full pathnames and the fallback-to-default behaviour is preserved.
+  const segment = pathname.split("/")[1] ?? "";
+  const locale = isLocale(segment) ? segment : routing.defaultLocale;
+  getLocaleMock.mockResolvedValueOnce(locale);
   const element = await RootLayout({ children: "body-content" });
   render(element as React.ReactElement);
 }
 
 describe("RootLayout", () => {
   beforeEach(() => {
-    getPathnameMock.mockReset();
-    getPathnameMock.mockResolvedValue("/en");
+    getLocaleMock.mockReset();
+    getLocaleMock.mockResolvedValue("en");
   });
 
   it("derives lang from the pathname locale prefix and renders LTR", async () => {
