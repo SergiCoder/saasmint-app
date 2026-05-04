@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { userGateway } from "@/infrastructure/registry";
-import { PHONE_PREFIXES } from "@/domain/data/phonePrefixes";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { getMyOrgRole } from "../_data/getMyOrgRole";
 import { getSubscriptions } from "../_data/getSubscriptions";
@@ -55,7 +54,6 @@ export default async function ProfilePage({ params }: Props) {
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <ProfileForm
           user={user}
-          phonePrefixes={PHONE_PREFIXES}
           timezones={TIMEZONES}
           currencyLocked={currencyLocked}
         />
