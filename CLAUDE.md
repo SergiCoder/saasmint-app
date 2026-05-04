@@ -29,6 +29,8 @@ Core types in `src/domain/models/`. All fields `readonly` — treat domain objec
 
 Domain errors in `src/domain/errors/`: `AuthError`, `BillingError`, `ApiError` (carries `status`, `body`, `detail` getter), `NetworkError` (carries `cause`). All have a `code: string`. `ApiError.code` resolution: explicit arg → `body.code` → `HTTP_<status>`. Server actions translate thrown errors via `toActionError()`; clients resolve codes through `actionErrors.<code>` next-intl namespace via `useActionErrorMessage`.
 
+Static reference data lives in `src/domain/data/` as generated constants — not behind a gateway. `PHONE_PREFIXES` (`src/domain/data/phonePrefixes.ts`) is regenerated from the backend via `pnpm sync:phone-prefixes` (script in `scripts/sync-phone-prefixes.ts`); commit the diff. Use this pattern only for data that is effectively immutable and small enough to ship in the bundle.
+
 ## Infrastructure
 
 `src/infrastructure/` organised by provider:
