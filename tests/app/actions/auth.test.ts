@@ -253,6 +253,27 @@ describe("auth server actions", () => {
         }),
       });
     });
+
+    it("uses the active locale from getLocale() in the post-login redirect", async () => {
+      // The redirect must honour the locale currently active in the request
+      // (read from the x-pathname header via getLocale). A French-locale user
+      // should land on /fr/dashboard, not the default /en/dashboard.
+      const { getLocale } = await import("@/lib/pathname");
+      vi.mocked(getLocale).mockResolvedValueOnce("fr");
+      mockPublicApiFetch.mockResolvedValue({
+        access_token: "tok_abc",
+        refresh_token: "ref_abc",
+      });
+
+      const formData = new FormData();
+      formData.set("email", "user@example.com");
+      formData.set("password", "secret123");
+
+      await expect(signIn(undefined, formData)).rejects.toThrow(
+        "NEXT_REDIRECT",
+      );
+      expect(mockRedirect).toHaveBeenCalledWith("/fr/dashboard");
+    });
   });
 
   describe("signUp", () => {
@@ -686,6 +707,18 @@ describe("auth server actions", () => {
       await expect(signOut()).rejects.toThrow("NEXT_REDIRECT");
       expect(mockClearAuthCookies).toHaveBeenCalledOnce();
       expect(mockRedirect).toHaveBeenCalledWith("/en/login");
+    });
+
+    it("redirects to the active locale's /login when the request locale is not the default", async () => {
+      // getLocale() reads the locale from the x-pathname header forwarded by
+      // middleware. When the user is on /es/settings and signs out, the redirect
+      // must land on /es/login rather than the default /en/login.
+      const { getLocale } = await import("@/lib/pathname");
+      vi.mocked(getLocale).mockResolvedValueOnce("es");
+      mockSignOut.mockResolvedValue(undefined);
+
+      await expect(signOut()).rejects.toThrow("NEXT_REDIRECT");
+      expect(mockRedirect).toHaveBeenCalledWith("/es/login");
     });
   });
 
