@@ -17,7 +17,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "sync:phone-prefixes": "node --experimental-strip-types --no-warnings scripts/sync-phone-prefixes.ts"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.4.0",

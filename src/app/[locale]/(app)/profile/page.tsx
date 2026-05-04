@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { referenceGateway, userGateway } from "@/infrastructure/registry";
+import { userGateway } from "@/infrastructure/registry";
+import { PHONE_PREFIXES } from "@/domain/data/phonePrefixes";
 import { getCurrentUser } from "../_data/getCurrentUser";
 import { getMyOrgRole } from "../_data/getMyOrgRole";
 import { getSubscriptions } from "../_data/getSubscriptions";
@@ -31,10 +32,9 @@ export default async function ProfilePage({ params }: Props) {
   // `getCurrentUser` itself is React-cached (the layout requested it in
   // parallel) so the chained subscription call settles in one RTT total.
   const userPromise = getCurrentUser();
-  const [t, user, phonePrefixes, myOrgRole, subscriptions] = await Promise.all([
+  const [t, user, myOrgRole, subscriptions] = await Promise.all([
     getTranslations("profile"),
     userGateway.getProfile(),
-    referenceGateway.getPhonePrefixes(),
     getMyOrgRole(),
     userPromise.then((u) => getSubscriptions(u.preferredCurrency)),
   ]);
@@ -55,7 +55,7 @@ export default async function ProfilePage({ params }: Props) {
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <ProfileForm
           user={user}
-          phonePrefixes={phonePrefixes}
+          phonePrefixes={PHONE_PREFIXES}
           timezones={TIMEZONES}
           currencyLocked={currencyLocked}
         />

@@ -41,7 +41,7 @@ const SUPPORTED_CURRENCIES = [
 
 interface ProfileFormProps {
   user: User;
-  phonePrefixes: PhonePrefix[];
+  phonePrefixes: readonly PhonePrefix[];
   timezones: readonly string[];
   /**
    * When `true`, the currency picker shows a locked-at-first-purchase note
