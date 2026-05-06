@@ -21,7 +21,7 @@ Strict hexagonal layers:
 
 Core types in `src/domain/models/`. All fields `readonly` — treat domain objects as immutable.
 
-- `User`, `Org`, `OrgMember` (role: `owner | admin | member`, `isBilling` flag), `Invitation`, `PhonePrefix`
+- `User` (`isVerified` — email confirmed; drives profile warning and login `email_not_verified` error with resend link), `Org`, `OrgMember` (role: `owner | admin | member`, `isBilling` flag), `Invitation`, `PhonePrefix`
 - `Plan` — `(context: personal|team, tier: 1=free|2=basic|3=pro, interval: month|year)` + single `price`. Backend returns paid plans only; the personal-free card is synthesised client-side where needed.
 - `PlanPrice`, `Product` (one-time), `ProductPrice`
 - `Subscription` — Stripe-mirrored row. `GET /billing/subscriptions/me/` returns a paginated envelope with 0–2 rows. Use `findPersonalSubscription()` / `findTeamSubscription()` to pick a row. `seatLimit` = purchased seat capacity (authoritative cap — do not hardcode a constant); `seatsUsed` = accepted members currently occupying seats. "Scheduled to cancel" UI = `cancelAt` is set; `canceledAt` only flips after the sub actually ends. `scheduledPlan` + `scheduledChangeAt` are set together when a downgrade is deferred to period end (upgrades apply immediately and leave both `null`); cleared when the user releases the schedule via `releaseScheduledChange()` or it applies. Mutating endpoints accept `?context=personal|team` (required when both rows exist; backend defaults to `team` for org members, `personal` otherwise).
