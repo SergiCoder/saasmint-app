@@ -123,7 +123,7 @@ Route-specific clients in co-located `_components/`; shared server fetchers in `
 
 ## Committing
 
-Always use `/commit`. Never commit manually.
+Always use `/commit`. Never commit manually. Do **not** add `Co-Authored-By:` trailers (or any other AI attribution) to commit messages — keep authorship clean.
 
 ## Running
 
