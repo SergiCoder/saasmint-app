@@ -1,7 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { apiFetch, publicApiFetch } from "@/infrastructure/api/apiClient";
+import {
+  apiFetch,
+  publicApiFetch,
+  publicApiFetchVoid,
+} from "@/infrastructure/api/apiClient";
 import { ApiError } from "@/domain/errors/ApiError";
 import { authGateway, planGateway } from "@/infrastructure/registry";
 import {
@@ -279,14 +283,16 @@ export async function resendVerificationEmail(
     return fail("email_required");
   }
 
+  // Fire-and-forget: always return success to avoid leaking whether the email
+  // exists or is already verified — same pattern as resetPassword.
   try {
-    await publicApiFetch("/auth/resend-verification/", {
+    await publicApiFetchVoid("/auth/resend-verification/", {
       method: "POST",
       body: JSON.stringify({ email: email.trim().toLowerCase() }),
     });
   } catch (err) {
+    // Swallow errors — never reveal whether the email exists or is already verified
     console.error("Resend-verification failed", err);
-    return toActionError(err);
   }
 
   return ok();
