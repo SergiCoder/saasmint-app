@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { FormField } from "@/presentation/components/molecules/FormField";
 import { AlertBanner } from "@/presentation/components/molecules/AlertBanner";
@@ -11,6 +11,7 @@ import { Label } from "@/presentation/components/atoms/Label";
 import { uploadAvatar, deleteAvatar } from "@/app/actions/avatar";
 import { compressImage } from "@/lib/compressImage";
 import { updateProfile, updateAvatarUrl } from "@/app/actions/user";
+import { resendVerificationEmail } from "@/app/actions/auth";
 import { LOCALES } from "@/lib/i18n/locales";
 import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
 import type { User } from "@/domain/models/User";
@@ -56,6 +57,25 @@ export function ProfileForm({ user, timezones }: ProfileFormProps) {
   const [phonePrefix, setPhonePrefix] = useState(user.phonePrefix || "");
   const [phone, setPhone] = useState(user.phone || "");
   const [lastActionState, setLastActionState] = useState(state);
+  const [resendPending, startResend] = useTransition();
+  const [resendStatus, setResendStatus] = useState<"idle" | "sent" | "error">(
+    "idle",
+  );
+  const [resendError, setResendError] = useState<string | null>(null);
+
+  function handleResendVerification() {
+    setResendStatus("idle");
+    setResendError(null);
+    startResend(async () => {
+      const result = await resendVerificationEmail(user.email);
+      if (result.ok) {
+        setResendStatus("sent");
+      } else {
+        setResendStatus("error");
+        setResendError(translateError(result));
+      }
+    });
+  }
 
   if (state !== lastActionState) {
     setLastActionState(state);
@@ -116,6 +136,28 @@ export function ProfileForm({ user, timezones }: ProfileFormProps) {
         <AlertBanner variant="error">{translateError(state)}</AlertBanner>
       )}
       {saved && <AlertBanner variant="success">{t("saved")}</AlertBanner>}
+
+      {!user.isVerified && resendStatus !== "sent" && (
+        <AlertBanner variant="warning">
+          <span className="mr-2">{t("emailNotVerified")}</span>
+          <button
+            type="button"
+            onClick={handleResendVerification}
+            disabled={resendPending}
+            className="text-primary-700 hover:text-primary-800 font-medium underline underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t("resendVerification")}
+          </button>
+        </AlertBanner>
+      )}
+      {resendStatus === "sent" && (
+        <AlertBanner variant="success">
+          {t("verificationEmailSent")}
+        </AlertBanner>
+      )}
+      {resendStatus === "error" && resendError && (
+        <AlertBanner variant="error">{resendError}</AlertBanner>
+      )}
 
       <AvatarUpload
         currentSrc={avatarUrl}

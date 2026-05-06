@@ -272,6 +272,26 @@ export async function changePassword(
   return ok();
 }
 
+export async function resendVerificationEmail(
+  email: string,
+): Promise<ActionResult> {
+  if (typeof email !== "string" || !email.trim()) {
+    return fail("email_required");
+  }
+
+  try {
+    await publicApiFetch("/auth/resend-verification/", {
+      method: "POST",
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    });
+  } catch (err) {
+    console.error("Resend-verification failed", err);
+    return toActionError(err);
+  }
+
+  return ok();
+}
+
 export async function verifyEmail(
   token: string,
 ): Promise<ActionResult<{ pendingPlan?: string; isTeamPlan?: boolean }>> {
