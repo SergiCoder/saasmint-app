@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { resendVerificationEmail } from "@/app/actions/auth";
-import { useActionErrorMessage } from "@/lib/actions/useActionErrorMessage";
+import { useResendVerification } from "@/lib/actions/useResendVerification";
 
 interface ResendVerificationLinkProps {
   email?: string;
@@ -11,25 +10,8 @@ interface ResendVerificationLinkProps {
 
 export function ResendVerificationLink({ email }: ResendVerificationLinkProps) {
   const t = useTranslations("auth.login");
-  const translateError = useActionErrorMessage();
-  const [pending, startTransition] = useTransition();
-  const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { pending, status, errorMessage, submit } = useResendVerification();
   const [typedEmail, setTypedEmail] = useState("");
-
-  function submit(target: string) {
-    setStatus("idle");
-    setErrorMessage(null);
-    startTransition(async () => {
-      const result = await resendVerificationEmail(target);
-      if (result.ok) {
-        setStatus("sent");
-      } else {
-        setStatus("error");
-        setErrorMessage(translateError(result));
-      }
-    });
-  }
 
   if (status === "sent") {
     return <p className="mt-2 text-sm">{t("verificationEmailSent")}</p>;
