@@ -17,13 +17,13 @@ export function ResendVerificationLink({ email }: ResendVerificationLinkProps) {
     return <p className="mt-2 text-sm">{t("verificationEmailSent")}</p>;
   }
 
-  if (email) {
+  if (email !== undefined) {
     return (
       <div className="mt-2">
         <button
           type="button"
-          onClick={() => submit(email)}
-          disabled={pending}
+          onClick={() => email.trim() && submit(email)}
+          disabled={pending || !email.trim()}
           className="text-primary-700 hover:text-primary-800 text-sm font-medium underline underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("resendVerification")}
